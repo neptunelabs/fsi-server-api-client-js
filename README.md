@@ -45,7 +45,7 @@ There are two ways of using the API:
 - a promise based API
 - a queue API
 
-Queueing command results in a far more readable code while using the promise based API gives you more flexibility, but a deeply nested code.
+Queueing command results in a far more readable code while using the promise-based API gives you more flexibility, but a deeply nested code.
 
 Let's have a look at an example which just logs in and out of FSI Server:
 

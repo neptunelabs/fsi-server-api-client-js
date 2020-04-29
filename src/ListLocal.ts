@@ -2,7 +2,8 @@ import {default as fs} from "fs";
 import {APITasks, IAPITaskDef} from "./resources/APITasks";
 import {FSIServerClientInterface} from "./FSIServerClientInterface";
 import {FSIServerClientUtils, IPathAndDir} from "./FSIServerClientUtils";
-import {ListServer,
+import {
+    ListServer,
     IListData,
     IListEntry,
     IListEntryUpload,
@@ -24,6 +25,17 @@ interface IFiltersPassed {
 }
 
 export class ListLocal {
+
+    private readonly baseURL: string;
+    private readonly client: FSIServerClient;
+    private readonly com: FSIServerClientInterface;
+
+    constructor(private readonly classInit: IAPIClassInit, private taskController: TaskController) {
+        this.client = classInit.client;
+        this.com = classInit.com;
+
+        this.baseURL = this.client.getServerBaseQuery();
+    }
 
     private static async applyFilters(options: IListOptions, ld: IListData, entry: IListEntry): Promise<IFiltersPassed> {
 
@@ -71,18 +83,6 @@ export class ListLocal {
 
         return entry;
 
-    }
-
-    private readonly baseURL: string;
-    private readonly client: FSIServerClient;
-    private readonly com: FSIServerClientInterface;
-
-
-    constructor(private readonly classInit: IAPIClassInit, private taskController: TaskController) {
-        this.client = classInit.client;
-        this.com = classInit.com;
-
-        this.baseURL = this.client.getServerBaseQuery();
     }
 
     public read(path: string, options: IListOptions = {}): Promise<IListData> {

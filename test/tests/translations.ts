@@ -13,7 +13,6 @@ describe('FSI Server Client, translation test', () => {
 	it('french', () => {
 		expect(FSIServerClient.validateTranslation(french)).to.equal(true);
 	});
-
 	 */
 
 });

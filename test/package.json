@@ -18,6 +18,8 @@
   },
   "devDependencies": {
     "@types/mocha": "^7.0.2",
-    "mocha": "^7.1.2"
+    "@types/chai": "^4.2.11",
+    "mocha": "^7.1.2",
+    "chai": "^4.2.0"
   }
 }

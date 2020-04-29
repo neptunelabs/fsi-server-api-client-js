@@ -1,18 +1,18 @@
 import {APITemplateSupplier} from "../APITemplateSupplier";
 
-const regTemplate:RegExp =  /%s/;
+const regTemplate: RegExp = /%s/;
 
-export interface IAPITemplateDef{
-    key:string,
-    template:string
+export interface IAPITemplateDef {
+    key: string,
+    template: string
 }
 
-export interface IAPITemplateData{
-    def:IAPITemplateDef,
-    content?:any[]
+export interface IAPITemplateData {
+    def: IAPITemplateDef,
+    content?: any[]
 }
 
-export interface ITranslations{
+export interface ITranslations {
     [key: string]: any
 }
 
@@ -27,16 +27,15 @@ export class TranslatableTemplate {
                 private translations: ITranslations = {}) {
     }
 
-    public getMessage(entities:boolean = false):string{
+    public getMessage(entities: boolean = false): string {
 
-        if (entities){
+        if (entities) {
             if (!this.generatedHTML) {
                 this.messageHTML = this.generate(entities);
                 this.generatedHTML = true;
             }
             return this.messageHTML;
-        }
-        else {
+        } else {
             if (!this.generated) {
                 this.message = this.generate(entities);
                 this.generated = true;
@@ -45,17 +44,17 @@ export class TranslatableTemplate {
         }
     }
 
-    public getKey():string{
-        let ret:string = this.def.key;
+    public getKey(): string {
+        let ret: string = this.def.key;
 
-        if (ret === "httpError" || ret === "httpErrorShort"){
+        if (ret === "httpError" || ret === "httpErrorShort") {
             ret += ":" + this.content[0];
         }
 
         return ret;
     }
 
-    private generate(entities:boolean): string {
+    private generate(entities: boolean): string {
 
 
         let msg: string;
@@ -84,7 +83,7 @@ export class TranslatableTemplate {
                 if (typeof (contentItem) === "number") {
                     contentItem = this.supplier.niceInt(contentItem);
                 } else if (typeof (contentItem) === "string") {
-                    contentItem = (entities)?this.supplier.htmlEntities(contentItem):contentItem;
+                    contentItem = (entities) ? this.supplier.htmlEntities(contentItem) : contentItem;
                 }
             }
 

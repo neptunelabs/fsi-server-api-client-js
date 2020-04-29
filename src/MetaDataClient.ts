@@ -212,6 +212,17 @@ export interface IMetaDataOptions extends IHTTPOptions {
 
 export class MetaDataClient {
 
+    private readonly baseURL: string;
+    private readonly client: FSIServerClient;
+    private readonly com: FSIServerClientInterface;
+
+    constructor(private readonly classInit: IAPIClassInit, private taskController: TaskController) {
+        this.client = classInit.client;
+        this.com = classInit.com;
+
+        this.baseURL = this.client.getServerBaseQueryPath();
+    }
+
     public static GET_META_QUERY(data: IMetaData, cmd: string = "saveMetaData"): URLSearchParams {
         const q = new URLSearchParams("cmd=" + encodeURIComponent(cmd));
 
@@ -241,17 +252,6 @@ export class MetaDataClient {
         }
 
         return q;
-    }
-
-    private readonly baseURL: string;
-    private readonly client: FSIServerClient;
-    private readonly com: FSIServerClientInterface;
-
-    constructor(private readonly classInit: IAPIClassInit, private taskController: TaskController) {
-        this.client = classInit.client;
-        this.com = classInit.com;
-
-        this.baseURL = this.client.getServerBaseQueryPath();
     }
 
     public get(path: string, options: IMetaDataOptions = {}): Promise<IMetaData> {

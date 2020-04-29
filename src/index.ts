@@ -8,10 +8,8 @@ export * from './utils/IProgressFunction';
 export * from './utils/IPromptFunction';
 export * from './utils/IPromptOptions';
 
-
 export * from './resources/APIErrors';
 export * from './resources/APITasks';
-
 
 export * from './APIAbortController';
 export * from './APIError';

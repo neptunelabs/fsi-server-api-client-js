@@ -64,6 +64,10 @@ const SHA256_HEX_DIGITS = "0123456789abcdef";
 
 export class SHA256 {
 
+    private iHash: number[] = [];
+    private buffer: number[] = [];
+    private count: number[] = [];
+
     private static rotateRight(n: number, x: number): number {
         return ((x >>> n) | (x << (32 - n)));
     }
@@ -102,10 +106,6 @@ export class SHA256 {
         const msw = (x >> 16) + (y >> 16) + (lsw >> 16);
         return (msw << 16) | (lsw & 0xffff);
     }
-
-    private iHash: number[] = [];
-    private buffer: number[] = [];
-    private count: number[] = [];
 
     public hash(content: string): string | null {
 

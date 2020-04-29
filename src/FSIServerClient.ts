@@ -3,7 +3,15 @@ import {QueueProgress} from "./QueueProgress";
 import {TaskProgress} from "./TaskProgress";
 import {InputChecks as chk} from "./InputChecks";
 import {FSIServerClientInterface} from "./FSIServerClientInterface";
-import {ListServer, ImportStatus, IAddEntryOptions, IListData, IListEntry, IListEntryUpload, IListOptions} from "./ListServer";
+import {
+    ListServer,
+    ImportStatus,
+    IAddEntryOptions,
+    IListData,
+    IListEntry,
+    IListEntryUpload,
+    IListOptions
+} from "./ListServer";
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
 import {TaskController} from "./TaskController";
 import {ITranslations} from "./resources/TranslatableTemplate";
@@ -30,7 +38,6 @@ import {IArchiveType} from "./utils/IArchiveType";
 const modeNode: boolean = FSIServerClientUtils.GET_MODE_NODE();
 
 
-
 export default class FSIServerClient {
 
     // public exported constants
@@ -42,9 +49,6 @@ export default class FSIServerClient {
     public static readonly version = process.env.FSISERVERCLIENTVERSION;
 
 
-
-
-
     public static defaultProgress: IProgressFunction = {
         ctx: global,
         fn: FSIServerClient.DEFAULT_PROGRESS_FUNCTION
@@ -53,72 +57,9 @@ export default class FSIServerClient {
         ctx: global,
         fn: ConsolePrompt.GET
     };
-
-
-
-    public static DEFAULT_PROGRESS_FUNCTION(prg: QueueProgress | TaskProgress): void {
-
-        let msg: string = "<" + prg.timeElapsed + "> ";
-        const qPrg: QueueProgress = prg as QueueProgress;
-
-        try {
-
-            if (qPrg.task) {
-                msg += "step " + qPrg.pos + "/" + qPrg.length + ": ";
-                msg += qPrg.currentTask.getMessage() + " - task progress: " + qPrg.task.percent.toFixed(1) + "% progress: ";
-                msg += qPrg.percent.toFixed(1) + "%, ETA TASK: " + qPrg.task.eta;
-            } else {
-                msg += prg.currentTask.getMessage() + " - progress: " + prg.percent.toFixed(1);
-            }
-        } catch (e) {
-            console.error(e);
-        }
-
-        if (prg.bytesTotal) {
-            msg += " " + prg.bytesDone + " / " + prg.bytesTotal + " bytes";
-        }
-        if (qPrg.task && qPrg.task.bytesTotal) {
-            msg += " File: " + qPrg.task.bytesDone + " / " + qPrg.task.bytesTotal + " bytes";
-        }
-
-        console.log(msg);
-    }
-
-
-    public static HAS_VALID_IMAGE_FILE_EXTENSION(path: string, ignoreCase: boolean = true): boolean {
-        chk.PATH(path);
-        chk.BOOL(ignoreCase, "ignoreCase");
-
-        let res: boolean = false;
-
-        if (path && typeof (path.match) === "function") {
-            if (ignoreCase) {
-                path = path.toLowerCase();
-            }
-
-            const match: any[] | null = path.match(/(\.jpg|\.jpeg|\.tif|\.tiff|\.png|\.gif|\.bmp)$/);
-            res = (match !== null);
-        }
-
-        return res;
-    }
-
-    public static VALIDATE_TRANSLATION(translation: { [key: string]: any }): boolean {
-        chk.OBJ(translation, "translation");
-
-        return FSIServerClientInterface.VALIDATE_TRANSLATION(translation);
-    }
-
-    public static FN_FILE_FILTER_VALID_IMAGES(listData: IListData, entry: IListEntry): Promise<boolean> {
-        return new Promise((resolve) => {
-            return resolve(FSIServerClient.HAS_VALID_IMAGE_FILE_EXTENSION(entry.src));
-        });
-    }
-
     public readonly connectorTypesAll: string = "*";
     public readonly connectorTypesDefault: string[] = ["STORAGE", "MULTIRESOLUTION", "STATIC"];
     public readonly connectorTypesImage: string[] = ["STORAGE", "MULTIRESOLUTION"];
-
     private maxRecursiveDepth: number = 255;
     private readonly com: FSIServerClientInterface;
     private fnProgress?: IProgressFunction;
@@ -150,6 +91,64 @@ export default class FSIServerClient {
         this.iAxios.defaults.validateStatus = () => {
             return true;
         };
+    }
+
+    public static DEFAULT_PROGRESS_FUNCTION(prg: QueueProgress | TaskProgress): void {
+
+        let msg: string = "<" + prg.timeElapsed + "> ";
+        const qPrg: QueueProgress = prg as QueueProgress;
+
+        try {
+
+            if (qPrg.task) {
+                msg += "step " + qPrg.pos + "/" + qPrg.length + ": ";
+                msg += qPrg.currentTask.getMessage() + " - task progress: " + qPrg.task.percent.toFixed(1) + "% progress: ";
+                msg += qPrg.percent.toFixed(1) + "%, ETA TASK: " + qPrg.task.eta;
+            } else {
+                msg += prg.currentTask.getMessage() + " - progress: " + prg.percent.toFixed(1);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
+        if (prg.bytesTotal) {
+            msg += " " + prg.bytesDone + " / " + prg.bytesTotal + " bytes";
+        }
+        if (qPrg.task && qPrg.task.bytesTotal) {
+            msg += " File: " + qPrg.task.bytesDone + " / " + qPrg.task.bytesTotal + " bytes";
+        }
+
+        console.log(msg);
+    }
+
+    public static HAS_VALID_IMAGE_FILE_EXTENSION(path: string, ignoreCase: boolean = true): boolean {
+        chk.PATH(path);
+        chk.BOOL(ignoreCase, "ignoreCase");
+
+        let res: boolean = false;
+
+        if (path && typeof (path.match) === "function") {
+            if (ignoreCase) {
+                path = path.toLowerCase();
+            }
+
+            const match: any[] | null = path.match(/(\.jpg|\.jpeg|\.tif|\.tiff|\.png|\.gif|\.bmp)$/);
+            res = (match !== null);
+        }
+
+        return res;
+    }
+
+    public static VALIDATE_TRANSLATION(translation: { [key: string]: any }): boolean {
+        chk.OBJ(translation, "translation");
+
+        return FSIServerClientInterface.VALIDATE_TRANSLATION(translation);
+    }
+
+    public static FN_FILE_FILTER_VALID_IMAGES(listData: IListData, entry: IListEntry): Promise<boolean> {
+        return new Promise((resolve) => {
+            return resolve(FSIServerClient.HAS_VALID_IMAGE_FILE_EXTENSION(entry.src));
+        });
     }
 
     public setProgressFunction(fnProgress: IProgressFunction | undefined): void {
@@ -241,7 +240,7 @@ export default class FSIServerClient {
         return this.currentUser;
     }
 
-    public getSessionCookie():string|null {
+    public getSessionCookie(): string | null {
         return this.com.sessionCookie;
     }
 

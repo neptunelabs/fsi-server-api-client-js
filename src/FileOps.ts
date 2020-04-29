@@ -20,12 +20,24 @@ const regDirName: RegExp = /[\\/?*<>"|]/;
 
 export interface ICopyOptions extends IHTTPOptions {
     overwrite?: boolean,
-    fnRename?: (entry: IListEntry, subPath:string, tries:number) => string,
+    fnRename?: (entry: IListEntry, subPath: string, tries: number) => string,
     autoRename?: boolean,
     autoRenameRetries?: number
 }
 
 export class FileOps {
+
+    private baseURL: string;
+    private readonly client: FSIServerClient;
+    private readonly com: FSIServerClientInterface;
+
+    constructor(private readonly classInit: IAPIClassInit, private readonly taskController: TaskController) {
+        this.client = classInit.client;
+        this.com = classInit.com;
+
+
+        this.baseURL = this.client.getServerBaseQuery();
+    }
 
     private static isValidDirName(name: string): boolean {
         return !name.match(regDirName);
@@ -49,19 +61,6 @@ export class FileOps {
         const targetDir = FSIServerClientUtils.JOIN_PATH(newPath, subDir);
         return FSIServerClientUtils.JOIN_PATH(targetDir, pdSource.dir);
     }
-
-    private baseURL: string;
-    private readonly client: FSIServerClient;
-    private readonly com: FSIServerClientInterface;
-
-    constructor(private readonly classInit: IAPIClassInit, private readonly taskController: TaskController) {
-        this.client = classInit.client;
-        this.com = classInit.com;
-
-
-        this.baseURL = this.client.getServerBaseQuery();
-    }
-
 
     public createDirectory(path: string, httpOptions: IHTTPOptions = {}): Promise<boolean> {
 

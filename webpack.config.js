@@ -57,14 +57,13 @@ module.exports = {
     externals: [
         nodeExternals({
             whitelist: [
-                'abort-controller', 'url-search-params',
+                'url-search-params',
                 'bytes', 'make-dir', 'pify', 'semver', 'ow',
                 'axios', 'is-buffer', 'follow-redirects'
             ]
         }),
         {
             "crypto": "window.crypto",
-            "abort-controller": "AbortController",
             "url-search-params": "URLSearchParams"
         }
     ],

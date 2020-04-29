@@ -205,8 +205,7 @@ export class TaskController {
 
     public postJsonBoolean(url: string, data: any,
                            mainErrorData: IAPIErrorData,
-                           config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions)
-        : Promise<boolean> {
+                           config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions): Promise<boolean> {
 
         if (!config) {
             config = this.com.getAxiosRequestConfig(httpOptions);

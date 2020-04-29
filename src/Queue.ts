@@ -6,7 +6,8 @@ import {APIError} from "./APIError";
 import {ClientSummaryInfo} from "./ClientSummaryInfo";
 import {Download, IDownloadOptions} from "./Download";
 import {FileOps, ICopyOptions} from "./FileOps";
-import {FSIServerClientInterface,
+import {
+    FSIServerClientInterface,
     IMapStringMethodArguments,
     IOverwriteReply,
     IProgressOptions,
@@ -60,92 +61,6 @@ export interface IBatchContent {
 }
 
 export class Queue {
-
-    public static IS_FUNCTION_ARG(obj: any): obj is IArguments {
-        return Object.prototype.toString.call(obj) === '[object Arguments]';
-    }
-
-
-    // tslint:disable-next-line:no-empty
-    private static defaultProgress(): void {
-    }
-
-    private static doRunLogBatchContent(self: Queue): boolean {
-
-        const logLevel: LogLevel = LogLevel.info;
-
-        if (self.currentBatch.entries.length > 0) {
-
-
-            const nTotal: number = self.currentBatch.entries.length;
-
-            for (let i = 0; i < nTotal; i++) {
-
-                self.abortController.throwIfAborted();
-
-
-                const entry: IListEntry = self.currentBatch.entries[i];
-
-                let line: string = (i + 1) + "/" + nTotal + " " + entry.type.toUpperCase() + ": " + entry.path;
-
-                if (entry.type === "file") {
-                    line += " " + self.com.taskSupplier.getLocaleFloat(bytes(entry.size,
-                        {thousandsSeparator: ",", unitSeparator: " "}));
-
-                    line += " importState: " + entry.importStatus;
-
-                }
-
-                self.taskController.log(logLevel, line);
-
-                if (entry.metaData) {
-                    self.taskController.log(logLevel, entry.metaData.toString());
-                }
-
-            }
-
-        } else {
-            self.taskController.logTask(LogLevel.info, APITasks.queueEmpty);
-        }
-
-        self.taskController.onPromiseOk();
-
-        self.onSingleStepBatchDone();
-
-
-        return true;
-    }
-
-
-    private static doRunlogBatchContentSummary(self: Queue): boolean {
-
-        if (self.currentBatch.entries.length > 0) {
-
-            const level: LogLevel = LogLevel.info;
-            self.taskController.log(level, self.com.taskSupplier.get(APITasks.queueContentSummary).getMessage());
-            self.taskController.log(level, "Entries: " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.entryCount));
-            self.taskController.log(level, "Files: " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.fileCount));
-            self.taskController.log(level, "Directories: " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.directoryCount));
-
-            let sz: string = bytes(self.currentBatch.clientInfo.totalSize);
-            sz += " (" + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.totalSize) + " bytes)";
-
-            self.taskController.log(level, "Total size: " + sz);
-
-
-            for (let i: number = 0; i < 6; i++) {
-                self.taskController.log(level, "Import state " + i + ": " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.importStates[i]));
-            }
-
-        } else {
-            self.taskController.logTask(LogLevel.info, APITasks.queueEmpty);
-        }
-
-        self.onSingleStepBatchDone();
-
-
-        return true;
-    }
 
     private readonly client: FSIServerClient;
     private readonly com: FSIServerClientInterface;
@@ -275,6 +190,89 @@ export class Queue {
         };
     }
 
+    public static IS_FUNCTION_ARG(obj: any): obj is IArguments {
+        return Object.prototype.toString.call(obj) === '[object Arguments]';
+    }
+
+    // tslint:disable-next-line:no-empty
+    private static defaultProgress(): void {
+    }
+
+    private static doRunLogBatchContent(self: Queue): boolean {
+
+        const logLevel: LogLevel = LogLevel.info;
+
+        if (self.currentBatch.entries.length > 0) {
+
+
+            const nTotal: number = self.currentBatch.entries.length;
+
+            for (let i = 0; i < nTotal; i++) {
+
+                self.abortController.throwIfAborted();
+
+
+                const entry: IListEntry = self.currentBatch.entries[i];
+
+                let line: string = (i + 1) + "/" + nTotal + " " + entry.type.toUpperCase() + ": " + entry.path;
+
+                if (entry.type === "file") {
+                    line += " " + self.com.taskSupplier.getLocaleFloat(bytes(entry.size,
+                        {thousandsSeparator: ",", unitSeparator: " "}));
+
+                    line += " importState: " + entry.importStatus;
+
+                }
+
+                self.taskController.log(logLevel, line);
+
+                if (entry.metaData) {
+                    self.taskController.log(logLevel, entry.metaData.toString());
+                }
+
+            }
+
+        } else {
+            self.taskController.logTask(LogLevel.info, APITasks.queueEmpty);
+        }
+
+        self.taskController.onPromiseOk();
+
+        self.onSingleStepBatchDone();
+
+
+        return true;
+    }
+
+    private static doRunlogBatchContentSummary(self: Queue): boolean {
+
+        if (self.currentBatch.entries.length > 0) {
+
+            const level: LogLevel = LogLevel.info;
+            self.taskController.log(level, self.com.taskSupplier.get(APITasks.queueContentSummary).getMessage());
+            self.taskController.log(level, "Entries: " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.entryCount));
+            self.taskController.log(level, "Files: " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.fileCount));
+            self.taskController.log(level, "Directories: " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.directoryCount));
+
+            let sz: string = bytes(self.currentBatch.clientInfo.totalSize);
+            sz += " (" + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.totalSize) + " bytes)";
+
+            self.taskController.log(level, "Total size: " + sz);
+
+
+            for (let i: number = 0; i < 6; i++) {
+                self.taskController.log(level, "Import state " + i + ": " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.importStates[i]));
+            }
+
+        } else {
+            self.taskController.logTask(LogLevel.info, APITasks.queueEmpty);
+        }
+
+        self.onSingleStepBatchDone();
+
+
+        return true;
+    }
 
     //region command methods
     public login(username: string, password: string, options: IOptions = {}): void {
@@ -1830,9 +1828,9 @@ export class Queue {
     }
 
 
-    private getSkipOverwriteReply():Promise<IOverwriteReply>{
-      return new Promise((resolve) => {
-          return resolve({"reply":"Retrying", "continue":true});
+    private getSkipOverwriteReply(): Promise<IOverwriteReply> {
+        return new Promise((resolve) => {
+            return resolve({"reply": "Retrying", "continue": true});
         });
     };
 
@@ -1840,15 +1838,14 @@ export class Queue {
         self: Queue,
         targetPath: string,
         options: ICopyOptions,
-        fnResolve: (arEntries:IListEntry[]) => void,
+        fnResolve: (arEntries: IListEntry[]) => void,
         fnReject: (err: Error) => void,
         copiedEntries: IListEntry[],
-        tries:number = 0
-
-        ): void {
+        tries: number = 0
+    ): void {
 
         const pos: number = self.batchTask.position;
-        let abort:boolean = false;
+        let abort: boolean = false;
 
         const autoRenameRetries = options.autoRenameRetries || 500;
 
@@ -1871,7 +1868,7 @@ export class Queue {
             const onFileExists = async (httpStatus: number): Promise<IOverwriteReply> => {
 
                 // continue without error and try to find an available name for the file to copy
-                if (options.autoRename && tries < autoRenameRetries){
+                if (options.autoRename && tries < autoRenameRetries) {
                     abort = true;
                     self.nextBatchCopy(self, targetPath, options, fnResolve, fnReject, copiedEntries, ++tries);
                     return self.getSkipOverwriteReply();
@@ -1931,25 +1928,25 @@ export class Queue {
                 self.batchNext();
                 self.nextBatchCopy(self, targetPath, options, fnResolve, fnReject, copiedEntries);
             })
-            .catch(async err => {
+                .catch(async err => {
 
-                // continue without error and try to find an available name for the directory to copy
-                if (service === "directory" && options.autoRename === true && tries < autoRenameRetries){
-                    self.nextBatchCopy(self, targetPath, options, fnResolve, fnReject, copiedEntries, ++tries);
-                    return false;
-                }
+                    // continue without error and try to find an available name for the directory to copy
+                    if (service === "directory" && options.autoRename === true && tries < autoRenameRetries) {
+                        self.nextBatchCopy(self, targetPath, options, fnResolve, fnReject, copiedEntries, ++tries);
+                        return false;
+                    }
 
 
-                if (await self.continueOnError(err)) {
-                    self.batchNext();
+                    if (await self.continueOnError(err)) {
+                        self.batchNext();
 
-                    self.addError(err);
-                    self.error(err);
-                    self.nextBatchCopy(self, targetPath, options, fnResolve, fnReject, copiedEntries);
-                } else {
-                    fnReject(err);
-                }
-            });
+                        self.addError(err);
+                        self.error(err);
+                        self.nextBatchCopy(self, targetPath, options, fnResolve, fnReject, copiedEntries);
+                    } else {
+                        fnReject(err);
+                    }
+                });
         } else { // rename done
             this.onBatchFinished();
             fnResolve(copiedEntries);
@@ -1980,7 +1977,7 @@ export class Queue {
 
     private onCustomProgress(taskDescription: string, pos: number = 0, length: number): void {
 
-        this.queueProgress.currentTask.setSubTask(APITasks.startQueueCommand, [(pos +1), length, taskDescription]);
+        this.queueProgress.currentTask.setSubTask(APITasks.startQueueCommand, [(pos + 1), length, taskDescription]);
 
         this.batchTask.length = length;
         this.batchTask.position = pos;

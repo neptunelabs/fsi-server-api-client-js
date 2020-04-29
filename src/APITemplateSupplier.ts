@@ -19,7 +19,7 @@ export class APITemplateSupplier {
 
     public setTranslations(translations: ITranslations): void {
 
-        if (typeof (translations.locale === "object")) {
+        if (typeof translations.locale === "object") {
 
             if (translations.locale.thousandSeparator) {
                 this.thousandSeparator = translations.locale.thousandSeparator;
@@ -93,6 +93,6 @@ export class APITemplateSupplier {
         }
 
         return ret;
-    };
+    }
 
 }

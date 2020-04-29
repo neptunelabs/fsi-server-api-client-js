@@ -154,6 +154,17 @@ const EntryNumberDefaults: { [key: string]: any; } = {
 
 export class ListServer {
 
+    private readonly baseURL: string;
+    private readonly client: FSIServerClient;
+    private readonly com: FSIServerClientInterface;
+
+    constructor(private readonly classInit: IAPIClassInit, private readonly taskController: TaskController) {
+        this.client = classInit.client;
+        this.com = classInit.com;
+
+        this.baseURL = this.client.getServerBaseQuery();
+    }
+
     public static GET_EMPTY_LIST_DATA(path: string = "", connectorType: string = "none"): IListData {
         return {
             entries: [],
@@ -171,7 +182,7 @@ export class ListServer {
         };
     }
 
-    public static CLONE_LIST_ENTRY(entry:IListEntry):IListEntry{
+    public static CLONE_LIST_ENTRY(entry: IListEntry): IListEntry {
         return Object.assign({}, entry);
     };
 
@@ -187,17 +198,6 @@ export class ListServer {
         }
 
         return ret;
-    }
-
-    private readonly baseURL: string;
-    private readonly client: FSIServerClient;
-    private readonly com: FSIServerClientInterface;
-
-    constructor(private readonly classInit: IAPIClassInit, private readonly taskController: TaskController) {
-        this.client = classInit.client;
-        this.com = classInit.com;
-
-        this.baseURL = this.client.getServerBaseQuery();
     }
 
     public read(path: string, options: IListOptions = {}): Promise<IListData> {

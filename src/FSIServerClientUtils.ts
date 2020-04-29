@@ -35,7 +35,7 @@ export class FSIServerClientUtils {
         name = name.replace(/\/$/, "");
 
         return path + "/" + name;
-    };
+    }
 
     public static NOW(): number {
         return (bNow) ? Date.now() : new Date().getTime();
@@ -43,7 +43,7 @@ export class FSIServerClientUtils {
 
     public static ESCAPE_REG_EX(s: string): string {
         return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    };
+    }
 
     public static TRANSFORM_LOCAL_PATH(path: string): string {
         if (path.match(/^([a-zA-Z]):\\/)) {
@@ -65,14 +65,14 @@ export class FSIServerClientUtils {
         const match = path.match(/^[^/]*/);
 
         return (match && match[0]) ? match[0] : "";
-    };
+    }
 
     public static NORMALIZE_PATH(path: string): string {
         path = path.replace(/^\/+/, "");
         path = path.replace(/\/+$/, "");
 
         return path + "/";
-    };
+    }
 
     public static EXTRACT_LAST_DIR(path: string): IPathAndDir {
         let dir: string;
@@ -164,18 +164,6 @@ export class FSIServerClientUtils {
         return path;
     }
 
-    private static translateTimePeriod(n: number, trans: string[], translations?: IStringStringMap) {
-
-        if (!translations) return n + trans[0] + " ";
-        else {
-
-            const key: number = (n === 1) ? 1 : 2;
-            if (translations[trans[key]]) return n + " " + translations[trans[key]] + " ";
-            else return n + trans[0] + " ";
-
-        }
-    };
-
     public static FORMAT_TIME_PERIOD(ms: number, includeMS: boolean = false, bHuman: boolean = true,
                                      translations?: IStringStringMap): string {
 
@@ -229,7 +217,7 @@ export class FSIServerClientUtils {
     }
 
     public static GET_NEW_RELATIVE_PATH(path: string, basePath: string, targetPath: string,
-                                        entry: IListEntry, options: ICopyOptions = {}, tries:number = 0) {
+                                        entry: IListEntry, options: ICopyOptions = {}, tries: number = 0) {
 
         let subPath: string = FSIServerClientUtils.GET_SUB_DIR(basePath, path);
         subPath = subPath.replace(/\/$/, "");
@@ -237,5 +225,17 @@ export class FSIServerClientUtils {
         if (options.fnRename) subPath = options.fnRename(entry, subPath, tries);
 
         return FSIServerClientUtils.NORMALIZE_PATH(targetPath) + subPath;
+    }
+
+    private static translateTimePeriod(n: number, trans: string[], translations?: IStringStringMap): string {
+
+        if (!translations) return n + trans[0] + " ";
+        else {
+
+            const key: number = (n === 1) ? 1 : 2;
+            if (translations[trans[key]]) return n + " " + translations[trans[key]] + " ";
+            else return n + trans[0] + " ";
+
+        }
     }
 }

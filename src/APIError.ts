@@ -13,15 +13,6 @@ interface IAPIErrorContent {
 
 export class APIError extends Error {
 
-    private static getMessageStatic(err: IAPIErrorContent): string {
-        let msg: string = err.main.getMessage();
-        if (err.sub !== undefined) {
-            msg += " " + err.sub.getMessage();
-        }
-
-        return msg;
-    }
-
     public type: string | undefined;
     public loggedAPI: boolean;
     private readonly templates: IAPIErrorContent;
@@ -51,6 +42,15 @@ export class APIError extends Error {
         if (Object.setPrototypeOf) {
             Object.setPrototypeOf(this, actualProto);
         }
+    }
+
+    private static getMessageStatic(err: IAPIErrorContent): string {
+        let msg: string = err.main.getMessage();
+        if (err.sub !== undefined) {
+            msg += " " + err.sub.getMessage();
+        }
+
+        return msg;
     }
 
     public getMainTemplate(): TranslatableTemplate | undefined {

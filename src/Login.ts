@@ -297,7 +297,7 @@ export class Login {
             undefined,
             options
         ) as Promise<string[]>
-    };
+    }
 
     private async hash(str: string): Promise<string> {
         let ret: string | null;

@@ -61,6 +61,59 @@ export interface IProgressOptions extends IHTTPOptions {
 
 export class FSIServerClientInterface {
 
+    private static logLevelLabels: { [key: number]: string } = {
+        0: "trace",
+        1: "debug",
+        2: "info",
+        3: "warn",
+        4: "error",
+        5: "fatal"
+    };
+    public sessionCookie: string | null = null;
+    public bLoggedIn: boolean = false;
+    public err: APIErrorSupplier;
+    public taskSupplier: APITaskSupplier;
+    public iAxios: AxiosInstance;
+    private currentTask: APITask;
+    private previousTask: APITask;
+    private translations: ITranslations = {};
+    private mimeTypes: MimeTypes | false = false;
+    private defaultHeaders: IStringAnyMap = {};
+    private readonly classInit: IAPIClassInit;
+
+    constructor(private readonly client: FSIServerClient,
+                private logLevel: LogLevel) {
+
+        this.classInit = {
+            client,
+            com: this,
+        };
+
+        this.err = new APIErrorSupplier();
+        this.taskSupplier = new APITaskSupplier();
+
+        this.currentTask = this.taskSupplier.get(APITasks.idle);
+        this.previousTask = this.taskSupplier.get(APITasks.idle);
+
+
+        this.iAxios = axios.create({
+            baseURL: client.getHost() + "/"
+        });
+
+        this.defaultHeaders.Accept = "application/json";
+        if (modeNode) {
+            this.defaultHeaders['User-Agent'] = FSIServerClientUtils.USERAGENT;
+        }
+
+        for (const key of Object.keys(this.defaultHeaders)) {
+            this.iAxios.defaults.headers.common[key] = this.defaultHeaders[key];
+        }
+
+        this.iAxios.defaults.validateStatus = () => {
+            return true; // accept all HTTP status codes as valid reply, we catch them on our own
+        };
+    }
+
     public static GET_TRUE_PROMISE(): Promise<boolean> {
         return new Promise((resolve) => {
             return resolve(true);
@@ -90,15 +143,6 @@ export class FSIServerClientInterface {
 
         return valid;
     }
-
-    private static logLevelLabels: { [key: number]: string } = {
-        0: "trace",
-        1: "debug",
-        2: "info",
-        3: "warn",
-        4: "error",
-        5: "fatal"
-    };
 
     private static getLogPrefix(level: LogLevel): string {
 
@@ -142,53 +186,6 @@ export class FSIServerClientInterface {
 
         return valid;
     }
-
-    public sessionCookie: string | null = null;
-    public bLoggedIn: boolean = false;
-    public err: APIErrorSupplier;
-    public taskSupplier: APITaskSupplier;
-    public iAxios: AxiosInstance;
-
-    private currentTask: APITask;
-    private previousTask: APITask;
-    private translations: ITranslations = {};
-    private mimeTypes: MimeTypes | false = false;
-    private defaultHeaders: IStringAnyMap = {};
-    private readonly classInit: IAPIClassInit;
-
-    constructor(private readonly client: FSIServerClient,
-                private logLevel: LogLevel) {
-
-        this.classInit = {
-            client,
-            com: this,
-        };
-
-        this.err = new APIErrorSupplier();
-        this.taskSupplier = new APITaskSupplier();
-
-        this.currentTask = this.taskSupplier.get(APITasks.idle);
-        this.previousTask = this.taskSupplier.get(APITasks.idle);
-
-
-        this.iAxios = axios.create({
-            baseURL: client.getHost() + "/"
-        });
-
-        this.defaultHeaders.Accept = "application/json";
-        if (modeNode) {
-            this.defaultHeaders['User-Agent'] = FSIServerClientUtils.USERAGENT;
-        }
-
-        for (const key of Object.keys(this.defaultHeaders)) {
-            this.iAxios.defaults.headers.common[key] = this.defaultHeaders[key];
-        }
-
-        this.iAxios.defaults.validateStatus = () => {
-            return true; // accept all HTTP status codes as valid reply, we catch them on our own
-        };
-    }
-
 
     public setSessionCookie(sessionCookie: string) {
         this.sessionCookie = sessionCookie;
@@ -415,8 +412,7 @@ export class FSIServerClientInterface {
 
     public putJsonBoolean(url: string, data: any,
                           mainErrorData: IAPIErrorData,
-                          config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions)
-        : Promise<boolean> {
+                          config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions): Promise<boolean> {
 
         if (!config) {
             config = this.getAxiosRequestConfig(httpOptions);
@@ -427,8 +423,7 @@ export class FSIServerClientInterface {
 
     public deleteJsonBoolean(url: string,
                              mainErrorData: IAPIErrorData,
-                             config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions)
-        : Promise<boolean> {
+                             config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions): Promise<boolean> {
 
         if (!config) {
             config = this.getAxiosRequestConfig(httpOptions);

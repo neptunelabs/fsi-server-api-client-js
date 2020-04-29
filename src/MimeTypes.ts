@@ -52,13 +52,13 @@ export class MimeTypes {
         const self = this;
 
         Object.keys(db).forEach((type: string) => {
-            const exts = db[type];
+            const extensions = db[type];
 
             // mime -> extensions
-            self.extensions[type] = exts;
+            self.extensions[type] = extensions;
 
             // extension -> mime
-            for (const ext of exts) {
+            for (const ext of extensions) {
                 self.types[ext] = type;
             }
         });

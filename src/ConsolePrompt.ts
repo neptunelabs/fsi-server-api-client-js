@@ -10,7 +10,6 @@ export class ConsolePrompt {
             output: process.stdout
         });
 
-        // tslint:disable-next-line:promise-must-complete
         return new Promise<string>(async (resolve) => {
 
             const answers: string[] = options.buttonLabels;

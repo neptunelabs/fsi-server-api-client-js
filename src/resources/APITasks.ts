@@ -288,12 +288,12 @@ export class APITasks {
     public static readonly overwriteTargetFile: IAPITaskDef = {
         isTask: true,
         key: "overwriteTargetFile",
-        template: "The file \"%s\" already exists. Overwite?"
+        template: "The file \"%s\" already exists. Overwrite?"
     };
     public static readonly overwriteTargetDirectory: IAPITaskDef = {
         isTask: true,
         key: "overwriteTargetDirectory",
-        template: "The directory \"%s\" already exists. Overwite?"
+        template: "The directory \"%s\" already exists. Overwrite?"
     };
     public static readonly waitDownload: IAPITaskDef = {
         isTask: true,

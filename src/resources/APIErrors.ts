@@ -102,7 +102,7 @@ export class APIErrors {
     public static readonly invalidServiceName: IAPIErrorDef = {
         isError: true,
         key: "invalidServiceName",
-        template: "\%s\" is not a valid service name."
+        template: "\"%s\" is not a valid service name."
     };
     public static readonly invalidNewName: IAPIErrorDef = {
         isError: true,

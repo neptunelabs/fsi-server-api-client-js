@@ -238,7 +238,7 @@ export class MetaDataClient {
                 for (const key of keys) {
                     if (typeof (rawData[key]) === "object") {
                         for (const nam of Object.keys(rawData[key])) {
-                            if (rawData[key].hasOwnProperty(nam) && typeof (rawData[key][nam]) === "string") {
+                            if (typeof (rawData[key][nam]) === "string") {
                                 q.set(key + "." + nam, rawData[key][nam]);
                             }
                         }
@@ -395,7 +395,7 @@ export class MetaDataClient {
         return this.set(path, service, data, "restoreMetaData", options);
     }
 
-    private throwHTTPError(response: AxiosResponse) {
+    private throwHTTPError(response: AxiosResponse): void {
         throw this.com.err.get(APIErrors.httpError,
             [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
     }

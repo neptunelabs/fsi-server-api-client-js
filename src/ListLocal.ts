@@ -154,7 +154,7 @@ export class ListLocal {
                     APIAbortController.THROW_IF_ABORTED(options.abortController);
 
 
-                    const addEntry = async (listEntry: IListEntryUpload) => {
+                    const addEntry = async (listEntry: IListEntryUpload): Promise<void> => {
                         const resFilter: IFiltersPassed = await ListLocal.applyFilters(options, ld, listEntry);
 
                         if (resFilter.passed) {
@@ -273,6 +273,7 @@ export class ListLocal {
                             for (const theEntry of entries) {
                                 added++;
                                 const subStart: number = progressStart + subSize * added;
+                                // eslint-disable-next-line @typescript-eslint/no-use-before-define
                                 await consumeEntry(theEntry, atLevel, subStart, subSize);
                             }
 
@@ -332,7 +333,7 @@ export class ListLocal {
 
             setTimeout(async () => {
 
-                // iterate over all main entries and add files/subdirs
+                // iterate over all main entries and add files/subdirectories
                 for (let i = 0; i < mainEntries.length; i++) {
 
                     APIAbortController.THROW_IF_ABORTED(options.abortController);

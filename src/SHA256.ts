@@ -80,11 +80,11 @@ export class SHA256 {
         return ((x & y) ^ (x & z) ^ (y & z));
     }
 
-    private static get_sigma0(x: number): number {
+    private static getSigma0(x: number): number {
         return (SHA256.rotateRight(2, x) ^ SHA256.rotateRight(13, x) ^ SHA256.rotateRight(22, x));
     }
 
-    private static get_sigma1(x: number): number {
+    private static getSigma1(x: number): number {
         return (SHA256.rotateRight(6, x) ^ SHA256.rotateRight(11, x) ^ SHA256.rotateRight(25, x));
     }
 
@@ -101,7 +101,7 @@ export class SHA256 {
             SHA256.sigma0(W[(j + 1) & 0x0f]));
     }
 
-    private static safe_add(x: number, y: number): number {
+    private static safeAdd(x: number, y: number): number {
         const lsw = (x & 0xffff) + (y & 0xffff);
         const msw = (x >> 16) + (y >> 16) + (lsw >> 16);
         return (msw << 16) | (lsw & 0xffff);
@@ -112,20 +112,20 @@ export class SHA256 {
         let ret: string | null = null;
 
         if (content !== null && content !== undefined) {
-            ret = this.sha256_digest(content);
+            ret = this.sha256Digest(content);
         }
 
         return ret;
     }
 
-    public sha256_digest(data: string): string {
-        this.sha256_init();
-        this.sha256_update(data, data.length);
-        this.sha256_final();
-        return this.sha256_encode_hex();
+    public sha256Digest(data: string): string {
+        this.sha256Init();
+        this.sha256Update(data, data.length);
+        this.sha256Final();
+        return this.sha256EncodeHex();
     }
 
-    private sha256_init(): void {
+    private sha256Init(): void {
         this.iHash = new Array(8);
         this.count = new Array(2);
         this.buffer = new Array(64);
@@ -140,7 +140,7 @@ export class SHA256 {
         this.iHash[7] = 0x5be0cd19;
     }
 
-    private sha256_transform(): void {
+    private sha256Transform(): void {
         // tslint:disable-next-line:one-variable-per-declaration
         let a, b, c, d, e, f, g, h, T1, T2;
         const iHash = this.iHash;
@@ -163,21 +163,21 @@ export class SHA256 {
         }
 
         for (let j = 0; j < 64; j++) {
-            T1 = h + SHA256.get_sigma1(e) + SHA256.choice(e, f, g) + K256[j];
+            T1 = h + SHA256.getSigma1(e) + SHA256.choice(e, f, g) + K256[j];
             if (j < 16) {
                 T1 += W[j];
             } else {
                 T1 += SHA256.expand(W, j);
             }
-            T2 = SHA256.get_sigma0(a) + SHA256.majority(a, b, c);
+            T2 = SHA256.getSigma0(a) + SHA256.majority(a, b, c);
             h = g;
             g = f;
             f = e;
-            e = SHA256.safe_add(d, T1);
+            e = SHA256.safeAdd(d, T1);
             d = c;
             c = b;
             b = a;
-            a = SHA256.safe_add(T1, T2);
+            a = SHA256.safeAdd(T1, T2);
         }
 
         // Compute the current intermediate hash value
@@ -191,7 +191,7 @@ export class SHA256 {
         iHash[7] += h;
     }
 
-    private sha256_update(data: string, inputLen: number): void {
+    private sha256Update(data: string, inputLen: number): void {
         // tslint:disable-next-line:one-variable-per-declaration
         let i, index, curPos = 0;
         // Compute number of bytes mod 64
@@ -210,7 +210,7 @@ export class SHA256 {
             for (let j = index; j < 64; j++) {
                 this.buffer[j] = data.charCodeAt(curPos++);
             }
-            this.sha256_transform();
+            this.sha256Transform();
             index = 0;
         }
 
@@ -220,7 +220,7 @@ export class SHA256 {
         }
     }
 
-    private sha256_final(): void {
+    private sha256Final(): void {
         const count = this.count;
         const buffer = this.buffer;
 
@@ -234,7 +234,7 @@ export class SHA256 {
             for (let i = index; i < 64; i++) {
                 buffer[i] = 0;
             }
-            this.sha256_transform();
+            this.sha256Transform();
             for (let i = 0; i < 56; i++) {
                 buffer[i] = 0;
             }
@@ -247,10 +247,10 @@ export class SHA256 {
         buffer[61] = (count[0] >>> 16) & 0xff;
         buffer[62] = (count[0] >>> 8) & 0xff;
         buffer[63] = count[0] & 0xff;
-        this.sha256_transform();
+        this.sha256Transform();
     }
 
-    private sha256_encode_hex() {
+    private sha256EncodeHex(): string {
         let output = "";
         for (let i = 0; i < 8; i++) {
             for (let j = 28; j >= 0; j -= 4) {

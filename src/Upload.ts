@@ -308,21 +308,21 @@ export class Upload {
             delete headers["Content-Length"];
         }
 
-        const setProgress = (done: number, total: number) => {
+        const setProgress = (done: number, total: number): void => {
             if (options._taskProgress) {
                 options._taskProgress.bytesTotal = done;
                 options._taskProgress.bytesDone = total;
             }
         };
 
-        const onProgress = (done: number, total: number) => {
+        const onProgress = (done: number, total: number): void => {
             self.callProgress(-1, options, APITasks.uploadFile, [sourcePath],
                 done, total);
         };
 
 
         const config: AxiosRequestConfig = this.com.getAxiosRequestConfig(options, headers);
-        config.onUploadProgress = (progressEvent: ProgressEvent) => {
+        config.onUploadProgress = (progressEvent: ProgressEvent): void => {
             onProgress(progressEvent.loaded, progressEvent.total);
         };
 

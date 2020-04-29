@@ -184,7 +184,7 @@ export class ListServer {
 
     public static CLONE_LIST_ENTRY(entry: IListEntry): IListEntry {
         return Object.assign({}, entry);
-    };
+    }
 
     private static isValidConnectorType(loopData: ILoopData, type: string | undefined): boolean {
         let ret: boolean;
@@ -266,7 +266,6 @@ export class ListServer {
                   progressStart: number, progressSize: number): Promise<IListData> {
 
 
-        let unfilteredFiles: number = 0;
         path = FSIServerClientUtils.NORMALIZE_PATH(path);
 
         const isRootDir: boolean = (depth === 0 && path === "/");
@@ -354,8 +353,6 @@ export class ListServer {
                 // last entry in json is always empty, remove it
                 ld.entries.pop();
                 this.initListData(ld);
-
-                unfilteredFiles = ld.summary.imageCount;
 
 
                 if (ld.summary.connectorType === undefined) {
@@ -541,7 +538,7 @@ export class ListServer {
 
                 ld.summary.clientInfo = new ClientSummaryInfo();
 
-                this.updateClientSummary(ld, options);
+                ListServer.updateClientSummary(ld, options);
 
                 ld.summary.clientInfo.note = loopData.note;
                 ld.summary.clientInfo.maxDepth = loopData.maxDepth;
@@ -972,7 +969,7 @@ export class ListServer {
                     data.lists.push(ld);
 
                     this.initListData(ld);
-                    this.updateClientSummary(ld, options);
+                    ListServer.updateClientSummary(ld, options);
 
                 } catch (err) {
 
@@ -1000,7 +997,7 @@ export class ListServer {
         }
     }
 
-    private updateClientSummary(ld: IListData, options: IListOptions): void {
+    private static updateClientSummary(ld: IListData, options: IListOptions): void {
         ld.summary.clientInfo.directoryCount = ld.summary.directoryCount;
         ld.summary.clientInfo.fileCount = ld.summary.imageCount;
         ld.summary.clientInfo.entryCount = ld.summary.entryCount;

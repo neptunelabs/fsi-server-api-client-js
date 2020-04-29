@@ -42,7 +42,7 @@ export class FSIServerClientUtils {
     }
 
     public static ESCAPE_REG_EX(s: string): string {
-        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        return s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
     }
 
     public static TRANSFORM_LOCAL_PATH(path: string): string {
@@ -83,7 +83,7 @@ export class FSIServerClientUtils {
 
         parts.pop();
         if (parts.length > 0) {
-            dir = parts.pop()!;
+            dir = parts.pop() || "";
         } else {
             err = APIErrors.invalidPath;
             dir = "";
@@ -111,7 +111,7 @@ export class FSIServerClientUtils {
         path = path.replace(/\/$/, "");
 
         const parts: string[] = path.split("/");
-        const dir: string = parts.pop()!;
+        const dir: string = parts.pop() || "";
         if (parts.length > 0) {
             path = FSIServerClientUtils.NORMALIZE_PATH(parts.join("/"));
         } else {
@@ -217,7 +217,7 @@ export class FSIServerClientUtils {
     }
 
     public static GET_NEW_RELATIVE_PATH(path: string, basePath: string, targetPath: string,
-                                        entry: IListEntry, options: ICopyOptions = {}, tries: number = 0) {
+                                        entry: IListEntry, options: ICopyOptions = {}, tries: number = 0): string {
 
         let subPath: string = FSIServerClientUtils.GET_SUB_DIR(basePath, path);
         subPath = subPath.replace(/\/$/, "");

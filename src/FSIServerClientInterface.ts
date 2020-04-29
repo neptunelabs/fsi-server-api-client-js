@@ -109,7 +109,7 @@ export class FSIServerClientInterface {
             this.iAxios.defaults.headers.common[key] = this.defaultHeaders[key];
         }
 
-        this.iAxios.defaults.validateStatus = () => {
+        this.iAxios.defaults.validateStatus = (): boolean => {
             return true; // accept all HTTP status codes as valid reply, we catch them on our own
         };
     }
@@ -187,7 +187,7 @@ export class FSIServerClientInterface {
         return valid;
     }
 
-    public setSessionCookie(sessionCookie: string) {
+    public setSessionCookie(sessionCookie: string): void {
         this.sessionCookie = sessionCookie;
         if (modeNode) {
             this.defaultHeaders.Cookie = this.iAxios.defaults.headers.common.Cookie = sessionCookie;
@@ -295,7 +295,7 @@ export class FSIServerClientInterface {
         return this.translations;
     }
 
-    public translateCommands(pOpts: IPromptOptions) {
+    public translateCommands(pOpts: IPromptOptions): void {
         pOpts.buttonLabels = new Array(pOpts.buttons.length);
 
         const trans: { [key: string]: string } = this.translations.commands || {};

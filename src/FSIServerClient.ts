@@ -88,7 +88,7 @@ export default class FSIServerClient {
 
 
         this.iAxios = axios.create({headers: {"Accept": "application/json"}});
-        this.iAxios.defaults.validateStatus = () => {
+        this.iAxios.defaults.validateStatus = (): boolean => {
             return true;
         };
     }
@@ -170,7 +170,7 @@ export default class FSIServerClient {
         return this.fnPrompt;
     }
 
-    public setLogLevel(level: LogLevel) {
+    public setLogLevel(level: LogLevel): void {
         chk.NUM(level, "level", LogLevel.trace, LogLevel.none);
 
         this.com.setLogLevel(level);
@@ -180,7 +180,7 @@ export default class FSIServerClient {
         return this.com.getLogLevel();
     }
 
-    public setTranslations(translations: ITranslations) {
+    public setTranslations(translations: ITranslations): void{
         chk.OBJ(translations, "translations");
 
         this.com.setTranslations(translations);
@@ -228,7 +228,7 @@ export default class FSIServerClient {
         return this.host;
     }
 
-    public setSessionCookie(sessionCookie: string) {
+    public setSessionCookie(sessionCookie: string): void {
         this.com.setSessionCookie(sessionCookie);
     }
 
@@ -257,7 +257,7 @@ export default class FSIServerClient {
         return new Queue(this.classInit, options);
     }
 
-    public isAbortError(err: any) {
+    public isAbortError(err: any): boolean {
         return this.com.isAbortError(err);
     }
 
@@ -321,11 +321,8 @@ export default class FSIServerClient {
     public createDirectory(path: string, copyOptions?: ICopyOptions, taskController?: TaskController): Promise<boolean> {
         chk.PATH(path);
 
-
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.createDir, [path]);
-
-        const ignoreHTTPErrors: { [key: number]: boolean } | undefined = undefined;
 
 
         if (copyOptions && copyOptions.overwrite) {
@@ -462,7 +459,7 @@ export default class FSIServerClient {
             q.set("cmd", command);
             q.set("id", src);
 
-            self.http_post(self.getService(service), q.toString(), options)
+            self.httpPost(self.getService(service), q.toString(), options)
                 .then((res) => {
 
                     if (res && res.data && res.data.statuscode === 200) {
@@ -642,23 +639,23 @@ export default class FSIServerClient {
     }
 
 
-    public http_head(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
+    public httpHead(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
         return this.request(this.iAxios.head(url, this.getAxiosRequestConfig(options, headers)));
     }
 
-    public http_get(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
+    public httpGet(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
         return this.request(this.iAxios.get(url, this.getAxiosRequestConfig(options, headers)));
     }
 
-    public http_delete(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
+    public httpDelete(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
         return this.request(this.iAxios.delete(url, this.getAxiosRequestConfig(options, headers)));
     }
 
-    public http_post(url: string, payload: any, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
+    public httpPost(url: string, payload: any, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
         return this.request(this.iAxios.post(url, payload, this.getAxiosRequestConfig(options, headers)));
     }
 
-    public http_put(url: string, payload: any, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
+    public httpPut(url: string, payload: any, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
         return this.request(this.iAxios.put(url, payload, this.getAxiosRequestConfig(options, headers)));
     }
 
@@ -737,5 +734,5 @@ export default class FSIServerClient {
         }
 
         return taskController;
-    };
+    }
 }

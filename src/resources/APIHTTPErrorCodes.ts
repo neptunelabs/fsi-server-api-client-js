@@ -54,6 +54,6 @@ export class APIHTTPErrorCodes {
         }
 
         return ret;
-    };
+    }
 
 }

@@ -1,4 +1,4 @@
-export const ConsolePromptCommands:{[key:string]:boolean} = {
+export const ConsolePromptCommands: {[key: string]: boolean} = {
     "cancel":true,
     "overwrite":true,
     "overwriteAll":true,

@@ -44,7 +44,7 @@ export class TaskController {
         }
     }
 
-    public log(level: LogLevel, msg: string) {
+    public log(level: LogLevel, msg: string): void {
         this.com.log(level, "(" + this.name + ") " + msg);
     }
 
@@ -220,12 +220,12 @@ export class TaskController {
         this.userDecisions = {};
     }
 
-    public getUserDecision(keys: string) {
+    public getUserDecision(keys: string): IPromptReply {
         // console.log("GET: "+keys);
         return this.userDecisions[keys];
     }
 
-    public evaluateDecision(promptReply: IPromptReply) {
+    public evaluateDecision(promptReply: IPromptReply): void {
 
         // console.log("SET: "+promptReply.errKeys);
 

@@ -86,11 +86,10 @@ export class Download {
         this.baseURL = this.client.getServerBaseQuery();
     }
 
-    public save(pathOrEntry: string | IListEntry, targetPath: string, options: IDownloadOptions = {}): Promise<boolean> {
+    public save(pathOrEntry: string | IListEntry, targetPathArg: any, options: IDownloadOptions = {}): Promise<boolean> {
 
-        if (typeof (targetPath) !== "string") {
-            targetPath = "";
-        }
+        let targetPath: string = (typeof(targetPathArg) !== "string")?"":targetPathArg;
+
 
         const self = this;
         const taskDef: IAPITaskDef = (modeNode) ? APITasks.downloadFile : APITasks.preparingFile;
@@ -105,22 +104,7 @@ export class Download {
             }
         };
 
-        const onProgress = (loaded: number, total: number): void => {
 
-            self.taskController.onStepProgress(-1, options, APITasks.downloadFile, [logPath], loaded, total);
-
-            if (options._taskProgress) {
-                options._taskProgress.bytesTotal = total;
-                options._taskProgress.bytesDone = loaded;
-            }
-
-            if (options._taskProgress && options.fnProgress) {
-                options.fnProgress.fn.call(
-                    options.fnProgress.ctx,
-                    options._taskProgress
-                );
-            }
-        };
 
 
         const path: string = (typeof (pathOrEntry) === "string") ? pathOrEntry : pathOrEntry.path;
@@ -140,6 +124,23 @@ export class Download {
         }
 
 
+        const onProgress = (loaded: number, total: number): void => {
+
+            self.taskController.onStepProgress(-1, options, APITasks.downloadFile, [logPath], loaded, total);
+
+            if (options._taskProgress) {
+                options._taskProgress.bytesTotal = total;
+                options._taskProgress.bytesDone = loaded;
+            }
+
+            if (options._taskProgress && options.fnProgress) {
+                options.fnProgress.fn.call(
+                    options.fnProgress.ctx,
+                    options._taskProgress
+                );
+            }
+        };
+
         this.taskController.setCurrentTask(0, taskDef, [logPath]);
 
         APIAbortController.THROW_IF_ABORTED(options.abortController);
@@ -148,7 +149,7 @@ export class Download {
             return this.addFileToDownload(path, options);
         }
 
-        let streamCreated = false;
+
         let stream: fs.WriteStream;
 
 
@@ -201,7 +202,7 @@ export class Download {
 
 
             const createStream = async (headers: IStringStringMap): Promise<void> => {
-                streamCreated = true;
+
 
                 if (options.getICCProfile === true) {
                     pf.dir += ".icc";
@@ -480,7 +481,6 @@ export class Download {
 
             let archiveName: string;
             let archiveFileName: string;
-            let theInterval: NodeJS.Timeout;
             let watchQuery: URLSearchParams;
             let listURL: string;
             let downloadID: string | undefined;
@@ -493,7 +493,7 @@ export class Download {
             };
 
 
-            const waitForArchive = () => {
+            const waitForArchive = (): void => {
 
                 if (downloadID === undefined) {
 
@@ -537,7 +537,7 @@ export class Download {
                                 }
                             }
 
-                            theInterval = setTimeout(waitForArchive, 500);
+                            setTimeout(waitForArchive, 500);
 
                         })
                         .catch(reject);
@@ -583,7 +583,7 @@ export class Download {
                                 }
                             }
 
-                            theInterval = setTimeout(waitForArchive, 250);
+                            setTimeout(waitForArchive, 250);
 
                         })
                         .catch(reject);
@@ -636,9 +636,7 @@ export class Download {
                     const map: IStringStringMap = options.renderOptions as IStringStringMap;
 
                     for (const key of Object.keys(map)) {
-                        if (map.hasOwnProperty(key)) {
-                            qe.append(key, map[key]);
-                        }
+                        qe.append(key, map[key]);
                     }
 
                     renderingQuery = qe.toString();
@@ -748,7 +746,7 @@ export class Download {
 
         const self = this;
 
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
 
             if (!options._downloadFiles) {
                 options._downloadFiles = [];
@@ -756,10 +754,15 @@ export class Download {
             options._downloadFiles.push(path);
 
             if (!modeNode && !options.queued) {
-                self.downloadArchive(options);
+                self.downloadArchive(options)
+                .then( () => {
+                    resolve(true);
+                })
+                .catch( (err) => {
+                    reject(err);
+                })
             }
-
-            resolve(true);
+            else resolve(true);
         })
     }
 

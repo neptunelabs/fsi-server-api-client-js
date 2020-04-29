@@ -120,7 +120,7 @@ export class Queue {
             this.fnPrompt = this.options.fnPrompt;
         } else if (this.options.fnPrompt === undefined) {
             this.fnPrompt = this.options.fnPrompt = this.client.getPromptFunction();
-        } else if (this.options.fnPrompt === false) {
+        } else if (!this.options.fnPrompt) {
             this.fnPrompt = undefined
         }
 
@@ -194,7 +194,8 @@ export class Queue {
         return Object.prototype.toString.call(obj) === '[object Arguments]';
     }
 
-    // tslint:disable-next-line:no-empty
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     private static defaultProgress(): void {
     }
 
@@ -244,7 +245,7 @@ export class Queue {
         return true;
     }
 
-    private static doRunlogBatchContentSummary(self: Queue): boolean {
+    private static doRunLogBatchContentSummary(self: Queue): boolean {
 
         if (self.currentBatch.entries.length > 0) {
 
@@ -616,12 +617,14 @@ export class Queue {
                          fnProgress: (taskDescription: string, pos: number, length: number) => void,
                          ...args: any[]
                      ) => Promise<boolean>,
+                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                      ...args: any[]
     ): void {
 
         chk.OBJ(scope, "scope");
         chk.FN(fn, "fn");
 
+        // eslint-disable-next-line prefer-rest-params
         this.addTask("runCustomTask", arguments);
     }
 
@@ -681,26 +684,26 @@ export class Queue {
         return this.queueProgress;
     }
 
-    public onTaskProgress(tprg: TaskProgress | QueueProgress): void {
+    public onTaskProgress(tPrg: TaskProgress | QueueProgress): void {
 
         if (this.canceled) {
             return;
         }
 
-        this.queueProgress.currentTask.setSubTaskInstance(tprg.currentTask);
-        this.queueProgress.task.currentTask = tprg.currentTask;
+        this.queueProgress.currentTask.setSubTaskInstance(tPrg.currentTask);
+        this.queueProgress.task.currentTask = tPrg.currentTask;
 
-        if (this.batchTask.length > 0) { // tprg.percent is only sub progress of this task
-            this.queueProgress.task.percent = 100 * (this.batchTask.position + tprg.percent / 100) / this.batchTask.length;
+        if (this.batchTask.length > 0) { // tPrg.percent is only sub progress of this task
+            this.queueProgress.task.percent = 100 * (this.batchTask.position + tPrg.percent / 100) / this.batchTask.length;
         } else {
-            this.queueProgress.task.percent = tprg.percent;
+            this.queueProgress.task.percent = tPrg.percent;
         }
 
-        if (tprg.bytesTotal) {
-            this.queueProgress.bytesDone = this.queueProgress.bytesDoneBefore + tprg.bytesDone;
-            this.queueProgress.task.bytesTotal = tprg.bytesTotal;
-            this.queueProgress.task.bytesDone = tprg.bytesDone;
-            this.queueProgress.task.bytesPerSecond = tprg.bytesPerSecond;
+        if (tPrg.bytesTotal) {
+            this.queueProgress.bytesDone = this.queueProgress.bytesDoneBefore + tPrg.bytesDone;
+            this.queueProgress.task.bytesTotal = tPrg.bytesTotal;
+            this.queueProgress.task.bytesDone = tPrg.bytesDone;
+            this.queueProgress.task.bytesPerSecond = tPrg.bytesPerSecond;
 
             if (this.queueProgress.timeElapsed > 0) {
                 this.queueProgress.bytesPerSecond = this.queueProgress.bytesDone / this.queueProgress.timeElapsed * 1000;
@@ -709,11 +712,11 @@ export class Queue {
 
         }
 
-        this.queueProgress.task.clientSummary = tprg.clientSummary;
+        this.queueProgress.task.clientSummary = tPrg.clientSummary;
 
 
-        if (tprg.logLevel > -1) {
-            this.taskController.log(tprg.logLevel, this.queueProgress.currentTask.getMessage());
+        if (tPrg.logLevel > -1) {
+            this.taskController.log(tPrg.logLevel, this.queueProgress.currentTask.getMessage());
         }
 
         this.runProgress(this.queueProgress);
@@ -825,7 +828,8 @@ export class Queue {
 
     public async runWithResult(): Promise<any[]> {
         await this.run()
-            // tslint:disable-next-line:no-empty
+
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             .catch(() => {
             })
             .finally(() => {
@@ -964,7 +968,7 @@ export class Queue {
 
     private runLogBatchContentSummary(): Promise<boolean> {
         this.taskController.setCurrentTask(LogLevel.trace, APITasks.logBatchContentSummary);
-        return this.runSingleBatchTask(Queue.doRunlogBatchContentSummary);
+        return this.runSingleBatchTask(Queue.doRunLogBatchContentSummary);
     }
 
     private onBatchStart(taskName: string): void {
@@ -1027,7 +1031,7 @@ export class Queue {
                 this.queueProgress.bytesDoneBefore = 0;
     }
 
-    private setDefaultOptionFunction(opts: IProgressOptions) {
+    private setDefaultOptionFunction(opts: IProgressOptions): void {
 
         opts.abortController = this.abortController;
 
@@ -1326,10 +1330,10 @@ export class Queue {
 
         const fnRename = (entry: IListEntry): Promise<string> => {
             return new Promise((resolve) => {
-                let result: string;
+
 
                 const reg = new RegExp("^" + FSIServerClientUtils.ESCAPE_REG_EX(entry._listData.summary._baseDir));
-                result = entry.path.replace(reg, newPath);
+                const result: string = entry.path.replace(reg, newPath);
                 return resolve(result);
             });
         };
@@ -1367,7 +1371,8 @@ export class Queue {
                 const taskName: string = (move) ? "batchMove" : "batchRename";
                 return reject(this.com.err.get(APIErrors.batchLocalFiles, [taskName]));
             } else {
-                self.nextBatchRename(self, fnRename, resolve, reject, move);
+                self.nextBatchRename(self, fnRename, resolve, reject, move)
+                .catch(reject);
             }
         });
     }
@@ -1763,8 +1768,7 @@ export class Queue {
         self: Queue,
         options: IHTTPOptions,
         fnResolve: (success: boolean) => void,
-        fnReject: (err: Error) => void)
-        : void {
+        fnReject: (err: Error) => void): void {
 
         const pos: number = self.batchTask.position;
 
@@ -1832,7 +1836,7 @@ export class Queue {
         return new Promise((resolve) => {
             return resolve({"reply": "Retrying", "continue": true});
         });
-    };
+    }
 
     private nextBatchCopy(
         self: Queue,
@@ -2022,7 +2026,7 @@ export class Queue {
                 case "listServer":
                 case "listLocal":
                     if (typeof (this.iCurrentItem.args[1]) === "object"
-                        && this.iCurrentItem.args[1].recursive === true
+                        && this.iCurrentItem.args[1].recursive
                     ) {
                         lo = this.iCurrentItem.args[1] as IListOptions;
                         lo.continueOnError = this.options.continueOnError;
@@ -2085,7 +2089,7 @@ export class Queue {
                     this.checkAborted();
 
                     if (!this.canceled) {
-                        // a native error occured, output with stack trace
+                        // a native error occurred, output with stack trace
                         if (!(error instanceof APIError) && (!error.type || error.type !== "aborted")) {
                             console.error(error);
                         } else {
@@ -2261,8 +2265,10 @@ export class Queue {
     }
 
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     private runCustomTask(scope: any, fn: (...args: any[]) => Promise<boolean>, ...args: any[]): Promise<boolean> {
 
+        // eslint-disable-next-line prefer-rest-params
         const callArgs: any[] = Array.prototype.slice.call(arguments, 0);
 
         callArgs[1] = this.onCustomProgress;

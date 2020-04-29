@@ -160,8 +160,8 @@ export class Login {
                             this.com.onLoginChange(true);
 
 
-                            const test1 = self.sha256.sha256_digest(username);
-                            const test2 = self.sha256.sha256_digest(password);
+                            const test1 = self.sha256.sha256Digest(username);
+                            const test2 = self.sha256.sha256Digest(password);
                             const pattern = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
 
                             if (test1 === pattern && test2 === pattern) {

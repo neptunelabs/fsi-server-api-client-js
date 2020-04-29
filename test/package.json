@@ -1,0 +1,23 @@
+{
+  "name": "fsi-server-api-client-js-tests",
+  "version": "1.0.0",
+  "description": "Tests for FSI Server API Client",
+  "main": "index.js",
+  "scripts": {
+    "testTranslations": "mocha -r ts-node/register tests/translations.ts",
+    "optest": "mocha -r ts-node/register tests/optest.ts",
+    "test": "mocha -r ts-node/register tests/test.ts"
+  },
+  "author": {
+    "name": "NeptuneLabs GmbH",
+    "url": "https://www.neptunelabs.com/"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@neptunelabs/fsi-server-api-client": "file:../dist/"
+  },
+  "devDependencies": {
+    "@types/mocha": "^7.0.2",
+    "mocha": "^7.1.2"
+  }
+}

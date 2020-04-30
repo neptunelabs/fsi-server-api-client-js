@@ -8,6 +8,7 @@
 
 API client for NeptuneLabs FSI Server
 
+![Node.js CI](https://github.com/neptunelabs/fsi-server-api-client-js/workflows/Node.js%20CI/badge.svg)
 
 ## Table of Contents
 

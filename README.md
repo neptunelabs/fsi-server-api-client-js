@@ -1,4 +1,4 @@
-<div align="center">
+<div>
     <a href="https://github.com/neptunelabs/fsi-server-api-client-js">
         <img width="200" height="70" src="https://fsi-site.neptunelabs.com/fsi/static/assets/logos/fsi_server.svg" alt="FSI Server">
     </a>
@@ -17,6 +17,7 @@ API client for NeptuneLabs FSI Server
     -   [Promise based API versus queue API](#Promise-based-API-versus-queue-API)    
 -   [Getting started](#getting-started)
     -   [Basic examples](#Basic-Examples)
+    -   [Running the samples](#Running-the-samples)
 - [Documentation](../../wiki)
 
 ## About
@@ -51,7 +52,7 @@ Let's have a look at an example which just logs in and out of FSI Server:
 
 ##### Example: Promise based API
 
-~~~Javascript
+~~~javascript
 const FSIServerClient = require("@neptunelabs/fsi-server-api-client");
 const client = new FSIServerClient('https://my.fsi-server.tld');
 
@@ -64,7 +65,7 @@ client.login("user", "password")
 ~~~
 
 ##### Example: Queue API
-~~~Javascript
+~~~javascript
 const FSIServerClient = require("@neptunelabs/fsi-server-api-client");
 const client = new FSIServerClient('https://my.fsi-server.tld');
 
@@ -83,7 +84,7 @@ Besides the code style, the queue API simplifies working with many files, becaus
 ### Basic Examples
 
 ##### Renaming all files in a folder
-~~~Javascript
+~~~javascript
 const queue = client.createQueue({continueOnError:false});
 queue.login("user", "password");
 
@@ -102,7 +103,7 @@ queue.runWithResult();
 ~~~
 
 ##### Downloading assets
-~~~Javascript
+~~~javascript
 const queue = client.createQueue({continueOnError:false});
 queue.login("user", "password");
 
@@ -118,7 +119,7 @@ queue.runWithResult();
 ~~~
 
 ##### Uploading assets
-~~~Javascript
+~~~javascript
 const queue = client.createQueue({continueOnError:false});
 queue.login("user", "password");
 
@@ -135,5 +136,27 @@ queue.batchUpload("/images/", {
 queue.logout();
 queue.runWithResult();
 ~~~
+
+### Running the samples
+- build the module by running these commands in the project root directory:
+
+```bash
+npm i
+npm run build-mod
+```
+
+- go to <b>/samples/src</b> directory.<br/>
+- edit the file <b>/samples/src/ServerVars.ts</b> and enter the host and credentials of the FSI Server instance to use.
+- modify the local directories vars if you want to run the upload/download samples.<br/>
+- run the following commands in the samples/src folder to compile the samples:
+```bash
+npm i
+tsc
+```
+To run a samples type e.g.:
+```bash
+node readMetaData.js
+```
+
 
 Please refer to the wiki for a [complete documentation](../../wiki).

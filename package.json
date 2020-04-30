@@ -1,6 +1,6 @@
 {
   "name": "@neptunelabs/fsi-server-api-client",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "description": "API client for NeptuneLabs FSI Server",
   "homepage": "https://github.com/neptunelabs/fsi-server-api-client-js#readme",
   "main": "dist/index.js",
@@ -39,7 +39,7 @@
     "eslint-plugin-jsdoc": "^24.0.0",
     "eslint-plugin-prefer-arrow": "^1.2.0",
     "shelljs": "^0.8.4",
-    "ts-loader": "^7.0.1",
+    "ts-loader": "^7.0.2",
     "ts-node": "^8.9.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-microsoft-contrib": "^6.2.0",

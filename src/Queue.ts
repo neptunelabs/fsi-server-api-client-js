@@ -190,10 +190,6 @@ export class Queue {
         };
     }
 
-    public static IS_FUNCTION_ARG(obj: any): obj is IArguments {
-        return Object.prototype.toString.call(obj) === '[object Arguments]';
-    }
-
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     private static defaultProgress(): void {
@@ -211,7 +207,6 @@ export class Queue {
             for (let i = 0; i < nTotal; i++) {
 
                 self.abortController.throwIfAborted();
-
 
                 const entry: IListEntry = self.currentBatch.entries[i];
 
@@ -625,7 +620,7 @@ export class Queue {
         chk.FN(fn, "fn");
 
         // eslint-disable-next-line prefer-rest-params
-        this.addTask("runCustomTask", arguments);
+        this.addTask("runCustomTask", args);
     }
 
     //endregion
@@ -757,12 +752,10 @@ export class Queue {
         return this.currentBatch;
     }
 
-    public addTask(cmd: string, args: any[] | IArguments | null = null): void {
+    public addTask(cmd: string, args: any[] | null = null): void {
 
         if (args === null) {
             args = [];
-        } else if (Queue.IS_FUNCTION_ARG(args)) {
-            args = Array.prototype.slice.call(args);
         }
 
         const qItem: QueueItem = new QueueItem(this, this.queueProgress.length, cmd, args);

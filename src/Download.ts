@@ -604,9 +604,7 @@ export class Download {
                 ql.set("headers", "webinterface");
                 listURL = this.client.getServerBaseQueryPath() + ql.toString();
 
-                // tslint:disable-next-line:insecure-random
                 archiveName = options.archiveName || "API_" + Math.round(1000000 * Math.random()) + "_" + FSIServerClientUtils.NOW();
-
 
                 archiveFileName = archiveName + "." + options.archiveType as string;
 

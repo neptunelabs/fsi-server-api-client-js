@@ -36,16 +36,12 @@ export class APIAbortController {
         return this.axiosCancelToken;
     }
 
-    public abort(msg?: string): boolean {
+    public abort(): boolean {
 
         if (!this.aborted) {
             this.aborted = true;
 
-            if (msg === undefined) {
-                msg = this.abortError.getMessage();
-            }
-
-            this.axiosCancelTokenSource.cancel(msg);
+            this.axiosCancelTokenSource.cancel();
             return true;
         } else {
             return false;

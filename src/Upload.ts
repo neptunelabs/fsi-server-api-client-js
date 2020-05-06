@@ -1,6 +1,5 @@
 import {AxiosRequestConfig} from "axios";
 import {default as fs, ReadStream} from "fs";
-// tslint:disable-next-line:import-name
 import URLSearchParams from "url-search-params";
 import {APIErrors} from "./resources/APIErrors";
 import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
@@ -109,10 +108,9 @@ export class Upload {
             relPath = FSIServerClientUtils.MAKE_RELATIVE_PATH(pd.path);
         }
 
-        const finalPath: string = targetPath + relPath + fileName;
+        const targetDir = FSIServerClientUtils.NORMALIZE_PATH(targetPath + relPath);
+        const finalPath: string = targetDir + fileName;
 
-        let targetDir = FSIServerClientUtils.NORMALIZE_PATH(targetPath + relPath);
-        targetDir = targetDir.replace(/\/+$/, "");
 
         const onCreateDirError = async (httpStatus: number): Promise<IOverwriteReply> => {
             if (httpStatus === 409) {
@@ -184,8 +182,7 @@ export class Upload {
                         APIAbortController.THROW_IF_ABORTED(options.abortController);
                         const data: IStringAnyMap | null = (response.data) ? response.data : null;
 
-
-                        if (!data || data.statuscode !== 202) {
+                        if (!data || (data.statuscode !== 202 && data.statuscode !== 404)) {
 
                             if (data && data.statuscode) {
 
@@ -193,7 +190,8 @@ export class Upload {
 
                                     let reply: string = "";
                                     if (options.fnPrompt) {
-                                        const res: IPromptReply = await self.com.getOverwriteReply(options, finalPath, this.taskController);
+                                        const res: IPromptReply = await self.com.getOverwriteReply(options, finalPath,
+                                            this.taskController);
                                         reply = res.reply;
                                     }
 
@@ -206,7 +204,7 @@ export class Upload {
 
                                 } else {
                                     return reject(self.com.err.get(APIErrors.upload, [sourcePath],
-                                        APIErrors.httpErrorShort, [APIHTTPErrorCodes.GET_CODE(data.statuscode.status)]));
+                                        APIErrors.httpErrorShort, [APIHTTPErrorCodes.GET_CODE(data.statuscode)]));
                                 }
                             } else {
 
@@ -225,10 +223,8 @@ export class Upload {
                             stream = file as any;
                         } // from dropped file in browser
                         else { // node local file
-
                             stream = fs.createReadStream(sourcePath);
                             stream.on("error", err => {
-
                                 return reject(self.com.err.get(APIErrors.upload, [sourcePath],
                                     APIErrors.anyError, [err.message]));
                             });

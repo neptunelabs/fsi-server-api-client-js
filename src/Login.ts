@@ -90,7 +90,7 @@ export class Login {
 
 
                 if (typeof (map.salt) !== "string" || map.state !== "success") {
-                    if (typeof (map.message) === "string") {
+                    if (map.message && typeof (map.message) === "string") {
                         throw this.com.err.get(APIErrors.login, [username], APIErrors.serverError, [map.message]);
                     } else {
                         throw this.com.err.get(APIErrors.login, [username], APIErrors.invalidServerReply);

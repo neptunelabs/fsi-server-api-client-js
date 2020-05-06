@@ -24,8 +24,7 @@ export class FSIServerClientUtils {
     public static USERAGENT = 'FSI Server API Client';
 
     public static GET_MODE_NODE(): boolean {
-        // tslint:disable-next-line:no-typeof-undefined
-        return (typeof (window) === "undefined");
+        return (typeof(window) === "undefined");
     }
 
     public static JOIN_PATH(path: string, name: string): string {
@@ -34,7 +33,10 @@ export class FSIServerClientUtils {
         name = name.replace(/^\//, "");
         name = name.replace(/\/$/, "");
 
-        return path + "/" + name;
+        if (path) path += "/";
+        if (name) name += "/";
+
+        return this.NORMALIZE_PATH(path + name);
     }
 
     public static NOW(): number {
@@ -48,13 +50,12 @@ export class FSIServerClientUtils {
     public static TRANSFORM_LOCAL_PATH(path: string): string {
         if (path.match(/^([a-zA-Z]):\\/)) {
 
-
             path = path.replace(/^([a-zA-Z]):\\([^\\])/, "$1://$2");
             path = path.replace(/^([a-zA-Z]):\\$/, "$1://");
-
-            path = path.replace(/\\/g, "/");
-
         }
+
+        path = path.replace(/\\/g, "/");
+
         return path;
     }
 
@@ -68,6 +69,7 @@ export class FSIServerClientUtils {
     }
 
     public static NORMALIZE_PATH(path: string): string {
+        path = path.replace(/\/\//, "/");
         path = path.replace(/^\/+/, "");
         path = path.replace(/\/+$/, "");
 
@@ -76,7 +78,6 @@ export class FSIServerClientUtils {
 
     public static EXTRACT_LAST_DIR(path: string): IPathAndDir {
         let dir: string;
-        let err: IAPIErrorDef | undefined;
 
         path = FSIServerClientUtils.NORMALIZE_PATH(path);
         const parts: string[] = path.split("/");
@@ -85,18 +86,15 @@ export class FSIServerClientUtils {
         if (parts.length > 0) {
             dir = parts.pop() || "";
         } else {
-            err = APIErrors.invalidPath;
             dir = "";
         }
 
-        path = FSIServerClientUtils.NORMALIZE_PATH(parts.join("/"));
-
-        if (path.length < 2) {
-            err = APIErrors.invalidPath;
-        }
+        if (parts.length > 0) path = FSIServerClientUtils.NORMALIZE_PATH(parts.join("/"));
+        else path = "";
 
 
-        return {path, dir, error: err, errorContent: [path]};
+
+        return {path, dir, error: undefined, errorContent: [path]};
     }
 
     public static FILE_AND_PATH(path: string): IPathAndDir {
@@ -116,7 +114,7 @@ export class FSIServerClientUtils {
             path = FSIServerClientUtils.NORMALIZE_PATH(parts.join("/"));
         } else {
             err = APIErrors.invalidPath;
-            path = "/";
+            path = "";
         }
 
         return {path, dir, error: err, errorContent: [path]};
@@ -135,7 +133,8 @@ export class FSIServerClientUtils {
 
         const regBasePath = new RegExp("^" + FSIServerClientUtils.ESCAPE_REG_EX(basePath));
 
-        return path.replace(regBasePath, "");
+        if (path.match(regBasePath)) return path.replace(regBasePath, "");
+        else return "";
     }
 
     public static NORMALIZE_FILE_PATH(path: string): string {
@@ -154,14 +153,16 @@ export class FSIServerClientUtils {
     }
 
     public static MAKE_RELATIVE_PATH(path: string): string {
+
+        path = path.replace(/^(\/\/[^/]+)/, "");
         path = path.replace(/^([a-z]):\/+/i, "");
         path = path.replace(/^\.+\/+/, "");
 
         path = path.replace(/^\.+/, "");
-        path = path.replace(/^[^/]*:\/\//g, "");
-        path = path.replace(/^\/+/g, "");
+        path = path.replace(/^[^/]*:\/\//, "");
+        path = path.replace(/^\/+/, "");
 
-        return path;
+        return FSIServerClientUtils.NORMALIZE_PATH(path);
     }
 
     public static FORMAT_TIME_PERIOD(ms: number, includeMS: boolean = false, bHuman: boolean = true,
@@ -188,7 +189,7 @@ export class FSIServerClientUtils {
         ms = ms % 3600000;
         if (res.length || t > 0) {
             res += this.translateTimePeriod(t, ["h", "hour", "hours"], translations);
-            if (bHuman && ++nBlocks === 2) return res;
+            if (bHuman && ++nBlocks === 2) return res.trim();
         }
 
         t = Math.floor(ms / 60000);
@@ -196,7 +197,7 @@ export class FSIServerClientUtils {
 
         if (res.length || t > 0) {
             res += this.translateTimePeriod(t, ["m", "minute", "minutes"], translations);
-            if (bHuman && ++nBlocks === 2) return res;
+            if (bHuman && ++nBlocks === 2) return res.trim();
         }
 
 
@@ -206,14 +207,14 @@ export class FSIServerClientUtils {
 
         if (!includeMS || res.length || t > 0) {
             res += this.translateTimePeriod(t, ["s", "second", "seconds"], translations);
-            if (bHuman && ++nBlocks === 2) return res;
+            if (bHuman && ++nBlocks === 2) return res.trim();
         }
 
         if (includeMS) {
             res += this.translateTimePeriod(ms, ["ms", "millisecond", "milliseconds"], translations);
         }
 
-        return res;
+        return res.trim();
     }
 
     public static GET_NEW_RELATIVE_PATH(path: string, basePath: string, targetPath: string,

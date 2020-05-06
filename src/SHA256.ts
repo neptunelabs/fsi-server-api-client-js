@@ -141,7 +141,6 @@ export class SHA256 {
     }
 
     private sha256Transform(): void {
-        // tslint:disable-next-line:one-variable-per-declaration
         let a, b, c, d, e, f, g, h, T1, T2;
         const iHash = this.iHash;
         const W: number[] = new Array(16);
@@ -192,14 +191,12 @@ export class SHA256 {
     }
 
     private sha256Update(data: string, inputLen: number): void {
-        // tslint:disable-next-line:one-variable-per-declaration
         let i, index, curPos = 0;
         // Compute number of bytes mod 64
         index = ((this.count[0] >> 3) & 0x3f);
         const remainder = (inputLen & 0x3f);
 
         // Update number of bits
-        // tslint:disable-next-line:no-conditional-assignment
         if ((this.count[0] += (inputLen << 3)) < (inputLen << 3)) {
             this.count[1]++;
         }

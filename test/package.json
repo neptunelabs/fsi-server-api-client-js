@@ -4,9 +4,10 @@
   "description": "Tests for FSI Server API Client",
   "main": "index.js",
   "scripts": {
-    "testTranslations": "mocha -r ts-node/register tests/translations.ts",
-    "optest": "mocha -r ts-node/register tests/optest.ts",
-    "test": "mocha -r ts-node/register tests/test.ts"
+    "integration": "mocha -r ts-node/register tests/integration/**.ts",
+    "unit": "mocha -r ts-node/register tests/unit/**.ts",
+    "translations": "mocha -r ts-node/register tests/translations.ts",
+    "optest": "mocha -r ts-node/register tests/optest.ts"
   },
   "author": {
     "name": "NeptuneLabs GmbH",
@@ -19,7 +20,8 @@
   "devDependencies": {
     "@types/mocha": "^7.0.2",
     "@types/chai": "^4.2.11",
+    "chai": "^4.2.0",
     "mocha": "^7.1.2",
-    "chai": "^4.2.0"
+    "nock": "^12.0.3"
   }
 }

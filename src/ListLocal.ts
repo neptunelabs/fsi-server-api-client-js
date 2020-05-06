@@ -314,7 +314,6 @@ export class ListLocal {
 
             const mainEntries: any[] = [];
 
-            // tslint:disable-next-line:prefer-for-of
             for (let i = 0; i < fl.length; i++) {
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 

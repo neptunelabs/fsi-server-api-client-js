@@ -53,8 +53,8 @@ Let's have a look at an example which just logs in and out of FSI Server:
 ##### Example: Promise based API
 
 ~~~javascript
-const FSIServerClient = require("@neptunelabs/fsi-server-api-client");
-const client = new FSIServerClient('https://my.fsi-server.tld');
+const fsiServerApiClient = require("@neptunelabs/fsi-server-api-client");
+const client = new fsiServerApiClient.FSIServerClient('https://my.fsi-server.tld');
 
 client.login("user", "password")
   .then( () => {
@@ -67,7 +67,7 @@ client.login("user", "password")
 ##### Example: Queue API
 ~~~javascript
 const FSIServerClient = require("@neptunelabs/fsi-server-api-client");
-const client = new FSIServerClient('https://my.fsi-server.tld');
+const client = new fsiServerApiClient.FSIServerClient('https://my.fsi-server.tld');
 
 const queue = client.createQueue({continueOnError:false});
 queue.login("user", "password");

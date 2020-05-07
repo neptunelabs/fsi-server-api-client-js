@@ -326,14 +326,15 @@ export class Queue {
         this.addTask("listLocal", [path, options, this.taskController]);
     }
 
-    public createDirectory(path: string, ignoreIfExists: boolean, httpOptions: IHTTPOptions = {}): void {
-        chk.CREATE_DIRECTORY(path, ignoreIfExists);
-        chk.OBJ(httpOptions, "httpOptions");
+    public createDirectory(path: string, copyOptions: ICopyOptions = {}): void {
+        chk.PATH(path);
+        chk.OBJ(copyOptions, "copyOptions");
 
-        this.setDefaultOptionFunction(httpOptions);
+        this.setDefaultOptionFunction(copyOptions);
 
-        this.addTask("createDirectory", [path, ignoreIfExists, httpOptions, this.taskController]);
+        this.addTask("createDirectory", [path, copyOptions, this.taskController]);
     }
+
 
     public renameFile(oldPath: string, newPath: string, copyOptions: ICopyOptions = {}): void {
         chk.RENAME(oldPath, newPath);

@@ -335,7 +335,6 @@ export class Queue {
         this.addTask("createDirectory", [path, copyOptions, this.taskController]);
     }
 
-
     public renameFile(oldPath: string, newPath: string, copyOptions: ICopyOptions = {}): void {
         chk.RENAME(oldPath, newPath);
         chk.OBJ(copyOptions, "copyOptions");

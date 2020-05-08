@@ -1,4 +1,4 @@
-import urlSearchParams from "url-search-params";
+import urlSearchParams from "@ungap/url-search-params";
 import {APIErrors, IAPIErrorDef} from "./resources/APIErrors";
 import {APITasks} from "./resources/APITasks";
 import {APIAbortController} from "./APIAbortController";

@@ -142,51 +142,53 @@ export class Queue {
         const client = this.client;
 
         this.queueMethods = {
-            "addDirectoryContent": {"ctx": this, "fn": this.runAddDirectoryContent},
-            "addEntries": {"ctx": this, "fn": this.runAddEntries},
-            "addEntryObjects": {"ctx": this, "fn": this.runAddEntryObjects},
-            "batchCopy": {"ctx": this, "fn": this.runBatchCopy},
-            "batchDelete": {"ctx": this, "fn": this.runBatchDelete},
-            "batchDownload": {"ctx": this, "fn": this.runBatchDownLoad},
-            "batchGetMetaData": {"ctx": this, "fn": this.runBatchGetMetaData},
-            "batchMove": {"ctx": this, "fn": this.runBatchMove},
-            "batchReimport": {"ctx": this, "fn": this.runBatchReimport},
-            "batchRename": {"ctx": this, "fn": this.runBatchRename},
-            "batchSendJobCommands": {"ctx": this, "fn": this.runBatchSendJobCommands},
-            "batchSetMetaData": {"ctx": this, "fn": this.runBatchSetMetaData},
+            "addDirectoryContent":      {"ctx": this, "fn": this.runAddDirectoryContent},
+            "addEntries":               {"ctx": this, "fn": this.runAddEntries},
+            "addEntryObjects":          {"ctx": this, "fn": this.runAddEntryObjects},
+            "batchCopy":                {"ctx": this, "fn": this.runBatchCopy},
+            "batchDelete":              {"ctx": this, "fn": this.runBatchDelete},
+            "batchDownload":            {"ctx": this, "fn": this.runBatchDownLoad},
+            "batchGetMetaData":         {"ctx": this, "fn": this.runBatchGetMetaData},
+            "batchMove":                {"ctx": this, "fn": this.runBatchMove},
+            "batchReimport":            {"ctx": this, "fn": this.runBatchReimport},
+            "batchRename":              {"ctx": this, "fn": this.runBatchRename},
+            "batchSendJobCommands":     {"ctx": this, "fn": this.runBatchSendJobCommands},
+            "batchSetMetaData":         {"ctx": this, "fn": this.runBatchSetMetaData},
             // "batchDeleteMetaData":      {"ctx":this, "fn":this.runBatchSetMetaData},
             // "batchRestoreMetaData":     {"ctx":this, "fn":this.runBatchSetMetaData},
             // "batchDownloadICCProfiles": {"ctx":this, "fn":this.runBatchDownLoad},
-            "batchUpload": {"ctx": this, "fn": this.runBatchUpload},
-            "changePassword": {"ctx": client, "fn": client.changePassword},
-            "changeUser": {"ctx": client, "fn": client.changeUser},
-            "clearList": {"ctx": this, "fn": this.runClearList},
-            "copyDirectory": {"ctx": client, "fn": client.copyDirectory},
-            "copyDirectoryContent": {"ctx": client, "fn": client.copyDirectoryContent},
-            "copyFile": {"ctx": client, "fn": client.copyFile},
-            "createDirectory": {"ctx": client, "fn": client.createDirectory},
-            "deleteDirectory": {"ctx": client, "fn": client.deleteDirectory},
-            "deleteFile": {"ctx": client, "fn": client.deleteFile},
-            "deleteMetaData": {"ctx": client, "fn": client.deleteMetaData},
-            "download": {"ctx": client, "fn": client.download},
-            "downloadICCProfile": {"ctx": client, "fn": client.downloadICCProfile},
-            "getMetaData": {"ctx": client, "fn": client.getMetaData},
-            "getUserList": {"ctx": client, "fn": client.getUserList},
-            "listLocal": {"ctx": client, "fn": client.listLocal},
-            "listServer": {"ctx": client, "fn": client.listServer},
-            "logBatchContent": {"ctx": this, "fn": this.runLogBatchContent},
-            "logBatchContentSummary": {"ctx": this, "fn": this.runLogBatchContentSummary},
-            "login": {"ctx": client, "fn": client.login},
-            "logout": {"ctx": client, "fn": client.logout},
-            "reImportDir": {"ctx": client, "fn": client.reImportDir},
-            "reImportFile": {"ctx": client, "fn": client.reImportFile},
-            "renameDirectory": {"ctx": client, "fn": client.renameDirectory},
-            "renameFile": {"ctx": client, "fn": client.renameFile},
-            "restoreMetaData": {"ctx": client, "fn": client.restoreMetaData},
-            "runCustomTask": {"ctx": this, "fn": this.runCustomTask},
-            "sendJobCommand": {"ctx": client, "fn": client.sendJobCommand},
-            "setMetaData": {"ctx": client, "fn": client.setMetaData},
-            "upload": {"ctx": client, "fn": client.upload}
+            "batchUpload":              {"ctx": this, "fn": this.runBatchUpload},
+            "changePassword":           {"ctx": client, "fn": client.changePassword},
+            "changeUser":               {"ctx": client, "fn": client.changeUser},
+            "clearList":                {"ctx": this, "fn": this.runClearList},
+            "copyDirectory":            {"ctx": client, "fn": client.copyDirectory},
+            "copyDirectoryContent":     {"ctx": client, "fn": client.copyDirectoryContent},
+            "copyFile":                 {"ctx": client, "fn": client.copyFile},
+            "createDirectory":          {"ctx": client, "fn": client.createDirectory},
+            "deleteDirectory":          {"ctx": client, "fn": client.deleteDirectory},
+            "deleteFile":               {"ctx": client, "fn": client.deleteFile},
+            "deleteMetaData":           {"ctx": client, "fn": client.deleteMetaData},
+            "download":                 {"ctx": client, "fn": client.download},
+            "downloadICCProfile":       {"ctx": client, "fn": client.downloadICCProfile},
+            "getMetaData":              {"ctx": client, "fn": client.getMetaData},
+            "getUserList":              {"ctx": client, "fn": client.getUserList},
+            "listLocal":                {"ctx": client, "fn": client.listLocal},
+            "listServer":               {"ctx": client, "fn": client.listServer},
+            "logBatchContent":          {"ctx": this, "fn": this.runLogBatchContent},
+            "logBatchContentSummary":   {"ctx": this, "fn": this.runLogBatchContentSummary},
+            "login":                    {"ctx": client, "fn": client.login},
+            "logout":                   {"ctx": client, "fn": client.logout},
+            "moveFile":                 {"ctx": client, "fn": client.moveFile},
+            "moveDirectory":            {"ctx": client, "fn": client.moveDirectory},
+            "reImportDir":              {"ctx": client, "fn": client.reImportDir},
+            "reImportFile":             {"ctx": client, "fn": client.reImportFile},
+            "renameDirectory":          {"ctx": client, "fn": client.renameDirectory},
+            "renameFile":               {"ctx": client, "fn": client.renameFile},
+            "restoreMetaData":          {"ctx": client, "fn": client.restoreMetaData},
+            "runCustomTask":            {"ctx": this, "fn": this.runCustomTask},
+            "sendJobCommand":           {"ctx": client, "fn": client.sendJobCommand},
+            "setMetaData":              {"ctx": client, "fn": client.setMetaData},
+            "upload":                   {"ctx": client, "fn": client.upload}
         };
     }
 
@@ -448,6 +450,24 @@ export class Queue {
 
         this.setDefaultOptionFunction(copyOptions);
         this.addTask("copyFile", [path, toPath, copyOptions, this.taskController]);
+    }
+
+    public moveFile(path: string, toPath: string, copyOptions: ICopyOptions = {}): void {
+        chk.PATH(path);
+        chk.PATH(toPath, "toPath");
+        chk.OBJ(copyOptions, "copyOptions");
+
+        this.setDefaultOptionFunction(copyOptions);
+        this.addTask("moveFile", [path, toPath, copyOptions, this.taskController]);
+    }
+
+    public moveDirectory(path: string, toPath: string, copyOptions: ICopyOptions = {}): void {
+        chk.PATH(path);
+        chk.PATH(toPath, "toPath");
+        chk.OBJ(copyOptions, "copyOptions");
+
+        this.setDefaultOptionFunction(copyOptions);
+        this.addTask("moveDirectory", [path, toPath, copyOptions, this.taskController]);
     }
 
 

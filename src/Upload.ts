@@ -1,6 +1,6 @@
 import {AxiosRequestConfig} from "axios";
 import {default as fs, ReadStream} from "fs";
-import URLSearchParams from "url-search-params";
+import URLSearchParams from "@ungap/url-search-params";
 import {APIErrors} from "./resources/APIErrors";
 import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
 import {APITasks, IAPITaskDef} from "./resources/APITasks";

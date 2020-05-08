@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import urlSearchParams from 'url-search-params';
+import urlSearchParams from '@ungap/url-search-params';
 import {APIErrors} from "./resources/APIErrors";
 import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
 import {APITasks} from "./resources/APITasks";

@@ -8,7 +8,7 @@ jobs:
     name: Build and test code
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
+        node-version: [8.x, 10.x, 12.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -76,7 +76,7 @@ jobs:
         run: npm run build
 
       - name: Publish to NPM
-        run: cd ../dist && npm publish
+        run: cd ./dist && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -114,8 +114,7 @@ jobs:
 
       - name: Build project # This would actually build your project, using zip for an example artifact
         run: |
-          cd dist
-          zip --junk-paths fsi_server_api_client .
+          zip --junk-paths fsi_server_api_client dist/*
 
       - name: Create Release
         id: create_release

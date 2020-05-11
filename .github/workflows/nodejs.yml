@@ -84,6 +84,7 @@ jobs:
         run: npm run build
 
       - name: Publish to NPM
+        if: steps.check.outputs.changed == 'true'
         run: cd ./dist && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -136,6 +137,7 @@ jobs:
         run: echo ::set-env name=version::$(node -pe "require('./package.json').version")
 
       - name: Create Release
+        if: steps.check.outputs.changed == 'true'
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -147,6 +149,7 @@ jobs:
           prerelease: false
 
       - name: Upload Release Asset
+        if: steps.check.outputs.changed == 'true'
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:

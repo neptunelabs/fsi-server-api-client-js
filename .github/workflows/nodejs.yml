@@ -48,6 +48,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Check if version has been updated
+        id: check
+        uses: EndBug/version-check@v1
+        with:
+          diff-search: true
+          file-name: package.json
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Cache node modules
         uses: actions/cache@v1
         env:
@@ -60,12 +68,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Check package version
-        uses: technote-space/package-version-check-action@v1
-        with:
-          COMMIT_DISABLED: 1
-
-      - name : Use Node.js ${{ matrix.node-version }}
+      - name : Use Node.js
         uses: actions/setup-node@v1
         with:
           node-version: 12
@@ -92,6 +95,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Check if version has been updated
+        id: check
+        uses: EndBug/version-check@v1
+        with:
+          diff-search: true
+          file-name: package.json
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache node modules
         uses: actions/cache@v1

@@ -7,7 +7,6 @@ const rp = function (relPath) {
     return path.join(__dirname, relPath);
 };
 
-
 const safePath = function(path){
 
     if (isWin32 && path.match(/\s/)) path = '"' + path + '"';
@@ -16,7 +15,6 @@ const safePath = function(path){
 };
 
 const buildPath = path.join(__dirname, 'dist');
-const testPath = path.join(__dirname, 'test');
 
 const run = function (cl) {
     try {
@@ -43,45 +41,4 @@ target.build = function () {
     cp(rp('package.json'), buildPath);
     cp(rp('package-lock.json'), buildPath);
     cp(rp('README.md'), buildPath);
-};
-
-target.units = function() {
-    // install the just built lib into the test proj
-    pushd('test');
-    run('npm install ../_build');
-    popd();
-
-    console.log("-------Unit Tests-------");
-    run('tsc -p ./test/units');
-    run('mocha test/units');
-};
-
-target.test = function() {
-    // install the just built lib into the test proj
-    target.units();
-
-    console.log("-------Integration Tests-------");
-    run('tsc -p ./test/tests');
-    run('mocha test/tests');
-};
-
-//Deprecated since we automatically build in units before testing, keeping for back compat
-target.buildtest = function() {
-    target.test();
-};
-
-target.samples = function () {
-    pushd('samples');
-    run('npm install ../_build');
-    run('tsc');
-    run('node samples.js');
-    run('npm install');
-    run('npm run react');
-    popd();
-    console.log('done');
-};
-
-target.validate = function() {
-    target.test();
-    target.samples();
 };

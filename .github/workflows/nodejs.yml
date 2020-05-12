@@ -63,7 +63,7 @@ jobs:
       - name : Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: '12.x'
           registry-url: https://registry.npmjs.org/
 
       - name: Check if version has been updated
@@ -75,12 +75,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
+        if: steps.check.outputs.changed == 'true'
         run: npm ci
 
       - name: Build mod
+        if: steps.check.outputs.changed == 'true'
         run: npm run build-mod
 
       - name: Build Web Lib
+        if: steps.check.outputs.changed == 'true'
         run: npm run build
 
       - name: Publish to NPM
@@ -112,7 +115,7 @@ jobs:
       - name : Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: '12.x'
           registry-url: https://registry.npmjs.org/
 
       - name: Check if version has been updated
@@ -124,16 +127,20 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
+        if: steps.check.outputs.changed == 'true'
         run: npm ci
 
       - name: Build Web Lib
+        if: steps.check.outputs.changed == 'true'
         run: npm run build
 
       - name: Build project # This would actually build your project, using zip for an example artifact
+        if: steps.check.outputs.changed == 'true'
         run: |
           zip --junk-paths fsi_server_api_client dist/*
 
       - name: Get version
+        if: steps.check.outputs.changed == 'true'
         run: echo ::set-env name=version::$(node -pe "require('./package.json').version")
 
       - name: Create Release

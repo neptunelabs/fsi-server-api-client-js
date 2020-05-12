@@ -1,6 +1,6 @@
 require('shelljs/make');
 const path = require('path');
-var os = require("os");
+const os = require("os");
 const isWin32 = os.platform() === "win32";
 
 const rp = function (relPath) {

@@ -54,12 +54,17 @@ export class FileOps {
     }
 
     private static getCopyEntryTargetPath(baseSourcePath: string, entry: IListEntry, newPath: string): string {
+        let ret: string;
         const pdSource = FSIServerClientUtils.FILE_AND_PATH(entry.path);
         newPath = FSIServerClientUtils.NORMALIZE_PATH(newPath);
 
         const subDir: string = FSIServerClientUtils.GET_SUB_DIR(baseSourcePath, pdSource.path);
         const targetDir = FSIServerClientUtils.JOIN_PATH(newPath, subDir);
-        return FSIServerClientUtils.JOIN_PATH(targetDir, pdSource.dir);
+
+        if (entry.type === "file") ret = targetDir +  pdSource.dir;
+        else ret = FSIServerClientUtils.JOIN_PATH(targetDir, pdSource.dir);
+
+        return ret;
     }
 
     public createDirectory(path: string, httpOptions: IHTTPOptions = {}): Promise<boolean> {

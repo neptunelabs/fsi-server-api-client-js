@@ -148,7 +148,6 @@ npm run build-mod
 
 - go to <b>/samples/src</b> directory.<br/>
 - edit the file <b>/samples/src/ServerVars.ts</b> and enter the host and credentials of the FSI Server instance to use.
-- modify the local directories vars if you want to run the upload/download samples.<br/>
 - run the following commands in the samples/src folder to compile the samples:
 ```bash
 npm i

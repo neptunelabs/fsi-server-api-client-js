@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import 'mocha';
-import {FSIServerClient} from "@neptunelabs/fsi-server-api-client";
-import {german} from "@neptunelabs/fsi-server-api-client/languages";
+import {FSIServerClient} from "library/index";
+import {german} from "library/languages";
 
 describe('FSI Server Client, translation test', () => {
 

@@ -1,9 +1,9 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, LogLevel} from "@neptunelabs/fsi-server-api-client";
+import {FSIServerClient, LogLevel, IListEntry} from "library/index";
 import {default as data} from "./renameData.json"
-import {IListEntry} from "../../../src";
+
 
 
 

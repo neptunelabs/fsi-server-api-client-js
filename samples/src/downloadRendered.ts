@@ -7,60 +7,71 @@
 
 // PLEASE NOTE: you need to enter the FSI Server credentials in this file
 import {ServerVars} from "./ServerVars";
-const serverVars = new ServerVars();
-
 import {FSIServerClient, LogLevel} from "@neptunelabs/fsi-server-api-client";
 
-const client = new FSIServerClient(serverVars.host);
-client.setProgressFunction(FSIServerClient.defaultProgress);
-client.setPromptFunction(FSIServerClient.defaultPrompt);
+const serverVars = new ServerVars();
 
-client.setLogLevel(LogLevel.trace);
+const myArgs = process.argv.slice(2);
+const targetPath = (myArgs && myArgs[0]);
 
-const queue = client.createQueue({continueOnError: true});
+if (!targetPath) {
+    console.error("Please pass the directory to download the files to as the first argument.");
+    console.error("EXAMPLE: node downloadRendered myDownloads");
+}
+else {
 
-// start session
-queue.login(serverVars.userName, serverVars.passWord);
 
-// list content of dir recursively
-queue.listServer(serverVars.sampleImagesDirectory, {
-    recursive: true
-});
+    const client = new FSIServerClient(serverVars.host);
+    client.setProgressFunction(FSIServerClient.defaultProgress);
+    client.setPromptFunction(FSIServerClient.defaultPrompt);
 
-// output all entries matching criteria
-queue.logBatchContent();
+    client.setLogLevel(LogLevel.trace);
 
-// download desaturated images as PNG with 400px width
+    const queue = client.createQueue({continueOnError: true});
 
-queue.batchDownload(serverVars.localTargetDirectory + "/grey",
-    {
-        downloadProgress: false,
-        flattenTargetPath: false,
-        renderOptions: {
-            effects: "desaturate(average)",
-            format: "gif",
-            width: 400
-        },
-        replaceFileExtension: true,
+    // start session
+    queue.login(serverVars.userName, serverVars.passWord);
 
+    // list content of dir recursively
+    queue.listServer(serverVars.sampleImagesDirectory, {
+        recursive: true
     });
 
+    // output all entries matching criteria
+    queue.logBatchContent();
 
-// download  images as jpeg with 200px width
-queue.batchDownload(serverVars.localTargetDirectory + "/colored",
-    {
-        downloadProgress: false,
-        flattenTargetPath: false,
-        renderOptions: {
-            format: "jpeg",
-            quality: 5,
-            width: 200
-        },
-        replaceFileExtension: true,
-    });
+    // download desaturated images as PNG with 400px width
 
-// close session
-queue.logout();
+    queue.batchDownload(targetPath + "/grey",
+        {
+            downloadProgress: false,
+            flattenTargetPath: false,
+            renderOptions: {
+                effects: "desaturate(average)",
+                format: "gif",
+                width: 400
+            },
+            replaceFileExtension: true,
 
-// run the queued commands
-queue.runWithResult();
+        });
+
+
+    // download  images as jpeg with 200px width
+    queue.batchDownload(targetPath + "/colored",
+        {
+            downloadProgress: false,
+            flattenTargetPath: false,
+            renderOptions: {
+                format: "jpeg",
+                quality: 5,
+                width: 200
+            },
+            replaceFileExtension: true,
+        });
+
+    // close session
+    queue.logout();
+
+    // run the queued commands
+    queue.runWithResult();
+}

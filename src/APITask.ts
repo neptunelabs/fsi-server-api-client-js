@@ -50,7 +50,6 @@ export class APITask {
         return (this.ttSub) ? this.ttSub.getMostDetailedMessage(bHTMLEntities) : this.getMessage(bHTMLEntities);
     }
 
-
     public getKeys(): string {
         let ret: string = this.mainDef.key;
         if (this.ttSub) {

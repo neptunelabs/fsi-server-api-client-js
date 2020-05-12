@@ -4,7 +4,7 @@ const webpack = require('webpack');
 
 module.exports = {
     entry: {
-        fsi_server_api_client: './src/FSIServerClient.ts'
+        fsi_server_api_client: 'FSIServerClient.ts'
     },
     target: "web",
     devtool: 'source-map',
@@ -34,10 +34,10 @@ module.exports = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         modules: [
-            path.resolve('./src'),
-            path.resolve('./node_modules'),
-            path.resolve('./src/resources'),
-            path.resolve('./src/utils')
+            path.resolve('src'),
+            path.resolve('node_modules'),
+            path.resolve('src/resources'),
+            path.resolve('src/utils')
         ]
     },
     output: {

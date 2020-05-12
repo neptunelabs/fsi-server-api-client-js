@@ -1,13 +1,14 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, LogLevel} from "@neptunelabs/fsi-server-api-client";
+import {FSIServerClient, LogLevel} from "library/index";
 import {default as data} from "./uploadData.json"
 
 
 const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.error);
+
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
 
@@ -33,6 +34,15 @@ it('upload and listLocal', () => {
         .put(data.createDirURL2)
         .reply(200, {"statuscode":200});
 
+    // create dir 3
+    nock(host)
+        .matchHeader('accept', 'application/json')
+        .matchHeader("user-agent", "FSI Server API Client")
+        .matchHeader("content-type", "application/x-www-form-urlencoded")
+        .put(data.createDirURL3)
+        .reply(200, {"statuscode":200});
+
+
 
     // postupload file 1
     nock(host)
@@ -40,7 +50,7 @@ it('upload and listLocal', () => {
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
-        .matchHeader("content-length", "137")
+        .matchHeader("content-length", "144")
         .post(data.postRequestURL, data.postBody1)
         .reply(200, {"statuscode":202});
 
@@ -61,7 +71,7 @@ it('upload and listLocal', () => {
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
-        .matchHeader("content-length", "118")
+        .matchHeader("content-length", "125")
         .post(data.postRequestURL, data.postBody2)
         .reply(200, {"statuscode":202});
 
@@ -76,7 +86,7 @@ it('upload and listLocal', () => {
         .reply(201, {"statuscode":201});
 
     const queue = client.createQueue();
-    queue.listLocal("./files", {"recursive":true});
+    queue.listLocal("./test/files", {"recursive":true});
     queue.batchUpload("/images/hk test/empty/");
     return queue.run()
         .then(
@@ -94,7 +104,9 @@ it('upload and listLocal', () => {
 });
 
 
-it('upload existing files', () => {
+// upload existing files
+
+it('upload and listLocal', () => {
 
 
     // setup replies
@@ -115,6 +127,15 @@ it('upload existing files', () => {
         .put(data.createDirURL2)
         .reply(200, {"statuscode":200});
 
+    // create dir 3
+    nock(host)
+        .matchHeader('accept', 'application/json')
+        .matchHeader("user-agent", "FSI Server API Client")
+        .matchHeader("content-type", "application/x-www-form-urlencoded")
+        .put(data.createDirURL3)
+        .reply(200, {"statuscode":200});
+
+
 
     // postupload file 1
     nock(host)
@@ -122,7 +143,7 @@ it('upload existing files', () => {
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
-        .matchHeader("content-length", "137")
+        .matchHeader("content-length", "144")
         .post(data.postRequestURL, data.postBody1)
         .reply(200, {"statuscode":102});
 
@@ -132,14 +153,14 @@ it('upload existing files', () => {
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
-        .matchHeader("content-length", "118")
+        .matchHeader("content-length", "125")
         .post(data.postRequestURL, data.postBody2)
         .reply(200, {"statuscode":102});
 
 
 
     const queue = client.createQueue();
-    queue.listLocal("./files", {"recursive":true});
+    queue.listLocal("./test/files", {"recursive":true});
     queue.batchUpload("/images/hk test/empty/");
     return queue.run()
         .then(
@@ -151,9 +172,8 @@ it('upload existing files', () => {
                 expect(results[0].summary.entryCount).to.equal(4);
                 expect(results[0].summary.imageCount).to.equal(2);
                 expect(results[0].summary.directoryCount).to.equal(2);
-
             }
         )
         .finally(nock.cleanAll)
-
 });
+

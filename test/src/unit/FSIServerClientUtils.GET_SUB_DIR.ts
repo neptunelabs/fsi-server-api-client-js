@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {FSIServerClientUtils} from "../../../src";
+import {FSIServerClientUtils} from "library/index";
 
 const cases = [
     {

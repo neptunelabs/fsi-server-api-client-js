@@ -1,19 +1,47 @@
 import {expect} from 'chai';
 import 'mocha';
 
+class ServerVars  {
 
-// PLEASE NOTE: you need to enter the FSI Server credentials in this file
-import {ServerVars} from "../../samples/src/ServerVars";
+    // PLEASE ENTER THE HOST,CREDENTIALS AND PATHS FOR THE TEST HERE
+
+    // FSI Server
+    public readonly host: string = "";        // example: https://fsi.example.tld
+    public readonly userName: string = "";    // example: admin
+    public readonly passWord: string = "";    // example: admin
+    public readonly tempDirRoot: string = "/images/";
+
+
+
+    public getTempDir(): string{
+        return this.tempDirRoot + "ApiTEMP_" + new Date().getTime() + "_" + Math.round(1000000 * Math.random());
+    }
+
+    constructor(){
+
+        if (!this.host) this.throwRequiredVar("the FSI Server host and credentials");
+        if (!this.userName) this.throwRequiredVar("a valid user name");
+        if (!this.passWord) this.throwRequiredVar("a valid password");
+    }
+
+
+    public throwRequiredVar(what: string): void{
+        throw new Error("Please specify " + what + " in the file \"test/optest.ts\" before running this test!");
+    }
+}
+
 const serverVars = new ServerVars();
 
-import {FSIServerClient, IHTTPOptions, IUploadOptions, LogLevel} from "@neptunelabs/fsi-server-api-client";
+import {FSIServerClient, FSIServerClientUtils, IHTTPOptions, IUploadOptions, LogLevel} from "library/index";
 
 const myFiles: string[] = ["a.jpg", "ä ö ü.jpg"];
 const host = serverVars.host;
-const basePath = serverVars.getTempDir() + "/optest/";
-const uploadPath = basePath + "test/";
-const resourcePath = './files/';
+const basePath = FSIServerClientUtils.NORMALIZE_PATH(serverVars.getTempDir());
+const uploadPath = basePath;
+const resourcePath = 'test/files/';
 const client = new FSIServerClient(host);
+
+
 client.setLogLevel(LogLevel.warn);
 const opts: IHTTPOptions = {abortController: client.getNewAbortController()};
 const uOpts: IUploadOptions = {abortController: opts.abortController, overwriteExisting: true};
@@ -46,6 +74,7 @@ describe('FSI Server Client interface test', () => {
         const result = await client.directoryContains(basePath + "test/files/ü ö ä/", myFiles, undefined, opts);
         expect(result).to.equal(true);
     });
+
 
     it('reImportFile()', async () => {
         const result = await client.reImportFile(basePath + "test/files/ü ö ä/" + myFiles[1], true, true, opts);
@@ -83,7 +112,7 @@ describe('FSI Server Client interface test', () => {
         expect(result).to.equal(true);
     });
 
-    it('copyDir()', async () => {
+    it('copyDirectoryContent()', async () => {
         const result = await client.copyDirectoryContent(basePath + "test", basePath + "test_move",
             {recursive: true, abortController: opts.abortController});
         expect(result).to.equal(true);
@@ -140,3 +169,5 @@ describe('FSI Server Client interface test', () => {
     });
 
 });
+
+

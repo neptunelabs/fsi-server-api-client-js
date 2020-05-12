@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {FSIServerClient} from "@neptunelabs/fsi-server-api-client";
+import {FSIServerClient} from "library/index";
 
 const client = new FSIServerClient('http://fsi.fake.tld');
 

@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, LogLevel, APIError} from "@neptunelabs/fsi-server-api-client";
+import {FSIServerClient, LogLevel, APIError} from "library/index";
 import {default as data} from "./downloadData.json"
 
 import {default as fs} from "fs";

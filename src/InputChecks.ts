@@ -68,11 +68,6 @@ export class InputChecks {
         ow(options, "options", ow.object);
     }
 
-    public static CREATE_DIRECTORY(path: string, ignoreIfExists: boolean): void {
-        InputChecks.PATH(path);
-        InputChecks.BOOL(ignoreIfExists, "ignoreIfExists");
-    }
-
     public static RENAME(oldPath: string, newPath: string): void {
         InputChecks.PATH(oldPath, "oldPath");
         InputChecks.PATH(newPath, "newPath");

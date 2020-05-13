@@ -223,7 +223,7 @@ export class ListServer {
         };
 
         if (options.validConnectorTypes === undefined) {
-            options.validConnectorTypes = this.client.connectorTypesDefault;
+            options.validConnectorTypes = FSIServerClient.connectorTypesDefault;
         }
 
         if (typeof (options.validConnectorTypes) === "string") {

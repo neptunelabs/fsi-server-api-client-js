@@ -250,8 +250,8 @@ export class Login {
                         null,
                         options
                     )
-                        .then(resolve)
-                        .catch(reject);
+                    .then(resolve)
+                    .catch(reject);
 
                 })
                 .catch(err => {

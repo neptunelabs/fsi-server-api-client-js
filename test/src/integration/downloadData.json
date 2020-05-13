@@ -8,6 +8,8 @@
 
   "downloadURL1": "/fsi/service/file/images%2Fa.jpg",
   "downloadURL2": "/fsi/service/file/images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg",
+  "downloadURLICC1": "/fsi/service/icc/images%2Fa.jpg",
+  "downloadURLICC2": "/fsi/service/icc/images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg",
 
   "listURLFails": "/fsi/server?type=list&tpl=interface_thumbview_default.json&source=foo%2F"
 }

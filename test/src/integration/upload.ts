@@ -106,7 +106,7 @@ it('upload and listLocal', () => {
 
 // upload existing files
 
-it('upload and listLocal', () => {
+it('upload and listLocal existing files', () => {
 
 
     // setup replies

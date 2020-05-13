@@ -17,7 +17,7 @@ axios.defaults.adapter = require('axios/lib/adapters/http')
 
 it('download and listServer', () => {
 
-    const path = "./files";
+    const path = "./test/files";
 
     // setup replies
 
@@ -81,6 +81,72 @@ it('download and listServer', () => {
 });
 
 
+it('download ICC', () => {
+
+    const path = "./test/files";
+
+    // setup replies
+
+    // list
+    nock(host)
+        .get(data.listURL)
+        .matchHeader('accept', 'application/json')
+        .matchHeader("user-agent", "FSI Server API Client")
+        .reply(200, data.listReply);
+
+
+// list
+    nock(host)
+        .get(data.downloadURLICC1)
+        .matchHeader('accept', '*/*')
+        .matchHeader("user-agent", "FSI Server API Client")
+        .reply(200, "first");
+
+    nock(host)
+        .get(data.downloadURLICC2)
+        .matchHeader('accept', '*/*')
+        .matchHeader("user-agent", "FSI Server API Client")
+        .reply(200, "second");
+
+
+    const queue = client.createQueue();
+    queue.listServer("images/", {"recursive":true});
+    queue.batchDownloadICCProfiles(path);
+    return queue.run()
+        .then(
+            result => {
+                expect(result).to.equal(true);
+                expect(queue.getResults()[0].entries.length).to.equal(2);
+
+                const contentFile1 = fs.readFileSync(path + "/images/a.jpg.icc", "utf8");
+                expect(contentFile1).to.equal("first");
+
+                const contentFile2 = fs.readFileSync(path + "/images/ä ö ü.jpg.icc", "utf8");
+                expect(contentFile2).to.equal("second");
+            }
+        )
+        .finally( ()  => {
+            nock.cleanAll();
+
+            let success = false;
+            try {
+                fs.unlinkSync(path + "/images/a.jpg.icc");
+                fs.unlinkSync(path + "/images/ä ö ü.jpg.icc");
+                fs.rmdirSync(path + "/images");
+
+                success = true;
+            }
+            catch(e){
+                console.error(e);
+            }
+
+            expect(success).to.equal(true);
+
+        })
+
+});
+
+
 it('download non existing dir', () => {
 
     client.setLogLevel(LogLevel.none);
@@ -99,9 +165,11 @@ it('download non existing dir', () => {
 
     return queue.run()
         .then(
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            () => {},
+            () => {
+                expect("result").equals("must catch");
+                           },
             err => {
+                expect(err.message).to.not.contain("must catch");
                 expect(err).to.be.an.instanceof(APIError);
                 const errors = queue.getErrors();
                 expect(errors[0].message).to.contain("HTTP 403");

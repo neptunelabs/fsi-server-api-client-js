@@ -1,0 +1,51 @@
+{
+  "saltReply": {
+    "state":"success",  "salt":"53b566cdbf2ff5cb15e496e0c027feb71a99e3a9750dd0d3f952c22cd695eafbea9fb45bb2465ff6a1fdfcc715979594f353cf492295ef5630d2ad9837f71aef",    "message":"",
+     "loginmethod":"hash"
+  },
+  "expectedLoginPostData": {
+    "username": "admin",
+    "password": "11c8af969e50753fd06e2269f23f05fb165d1d9c9b3d1d01864176f7a845a1c5"
+  },
+  "loginReplyOK": {
+    "username":"admin",
+    "state":"success",
+    "messageCode":1,
+    "message":"",
+    "expiry":1588252458,
+    "accesslevel":"",
+    "serverversion":"FSI Server 20.03.8768"
+  },
+  "loginReplyData": {
+    "username": "admin",
+    "state": "success",
+    "messageCode": 1,
+    "message": "",
+    "expiry": 1588252458,
+    "accesslevel": "",
+    "serverversion": "FSI Server 20.03.8768",
+    "defaultPassword": true
+  },
+  "loginReplyFailed": {
+    "username":"admin",
+    "state":"failed",
+    "messageCode":6,
+    "message":"Unknown user or password wrong",
+    "expiry":0,
+    "accesslevel":"",
+    "serverversion":"FSI Server 20.03.8768"
+  },
+  "changePassWordRequest": {
+    "newPasswordHash":"8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+    "oldPasswordHash":"11c8af969e50753fd06e2269f23f05fb165d1d9c9b3d1d01864176f7a845a1c5"
+  },
+  "users": ["admin", "foo", "bar", "user"]
+}
+
+
+
+
+
+
+
+

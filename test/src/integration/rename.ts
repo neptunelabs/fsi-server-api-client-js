@@ -40,15 +40,20 @@ it('rename and listServer', () => {
     const items = [
         {"path":"images%2Fa.jpg", "newPath":"images%2Frenamed_a.jpg"},
         {"path":"images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg", "newPath":"images%2Frenamed_%C3%A4+%C3%B6+%C3%BC.jpg"},
-        {"path":"moreimages%2Fa.jpg", "newPath":"moreimages%2Frenamed_a.jpg"}
+        {"path":"moreimages%2Fa.jpg", "newPath":"moreimages%2Frenamed_a.jpg"},
+        {"path":"images%2Fa.jpg", "newPath":"images%2Ffoo.jpg"},
+        {"path":"images%2FoldName%2F", "newPath":"images%2FnewName%2F", "service": "directory"}
+
     ];
 
     for (const item of items){
 
         const body ="cmd=move&to=" + item.newPath;
+        const service = item.service?item.service:"file";
+        const url = "/fsi/service/" + service + "/" + item.path;
 
         nock(host)
-            .post("/fsi/service/file/" + item.path, body)
+            .post(url, body)
             .matchHeader('accept', 'application/json')
             .matchHeader("user-agent", "FSI Server API Client")
             .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -56,9 +61,6 @@ it('rename and listServer', () => {
             .reply(200, data.renameReply);
 
     }
-
-
-
 
     const queue = client.createQueue();
     queue.listServer("images/", {"recursive":true});
@@ -69,6 +71,8 @@ it('rename and listServer', () => {
         })
 
     });
+    queue.renameFile("images/a.jpg", "images/foo.jpg");
+    queue.renameDirectory("images/oldName", "images/newName");
 
 
     return queue.run()

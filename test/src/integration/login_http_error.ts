@@ -23,10 +23,11 @@ it('login with http error', () => {
 
     // run test
     return client.login("admin", "wrong").then(
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         () => {
+            expect("result").equals("must catch");
         },
         err => {
+            expect(err.message).to.not.contain("must catch");
             expect(err).to.be.an.instanceof(APIError);
             expect(err.message).to.contains("HTTP 503");
         }

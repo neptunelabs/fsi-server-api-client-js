@@ -9,10 +9,10 @@
     "watch-ts": "tsc -w",
     "build-mod": "node make.js build",
     "build": "webpack --display-error-details --config webpack.config.js",
-    "test_integration": "mocha -r ts-node/register -r tsconfig-paths/register ./test test/src/integration/**.ts",
-    "test_unit": "mocha -r ts-node/register -r tsconfig-paths/register test/src/unit/**.ts",
-    "test_operation": "mocha -r ts-node/register -r tsconfig-paths/register test/src/optest.ts",
-    "test_translations": "mocha -r ts-node/register -r tsconfig-paths/register test/src/translations.ts"
+    "test-integration": "mocha -r ts-node/register -r tsconfig-paths/register ./test test/src/integration/**.ts",
+    "test-unit": "mocha -r ts-node/register -r tsconfig-paths/register test/src/unit/**.ts",
+    "test-operation": "mocha -r ts-node/register -r tsconfig-paths/register test/src/optest.ts",
+    "test-translations": "mocha -r ts-node/register -r tsconfig-paths/register test/src/translations.ts"
   },
   "repository": {
     "type": "git",
@@ -39,20 +39,20 @@
     "@types/bytes": "^3.1.0",
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
-    "@types/node": "^13.13.5",
+    "@types/node": "^14.0.1",
     "@types/ungap__url-search-params": "^0.1.0",
-    "@typescript-eslint/eslint-plugin": "^2.32.0",
-    "@typescript-eslint/parser": "^2.32.0",
+    "@typescript-eslint/eslint-plugin": "^2.33.0",
+    "@typescript-eslint/parser": "^2.33.0",
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
     "json-schema": "^0.2.5",
     "mocha": "^7.1.2",
     "nock": "^12.0.3",
     "shelljs": "^0.8.4",
-    "tsconfig-paths": "^3.9.0",
     "ts-loader": "^7.0.4",
     "ts-node": "^8.10.1",
-    "typescript": "^3.8.3",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.9.2",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-node-externals": "^1.7.2"
@@ -61,6 +61,6 @@
     "@ungap/url-search-params": "^0.2.0",
     "axios": "^0.19.2",
     "bytes": "^3.1.0",
-    "ow": "^0.17.0"
+    "ow": "^0.15.1"
   }
 }

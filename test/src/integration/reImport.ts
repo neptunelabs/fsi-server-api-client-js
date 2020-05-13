@@ -35,7 +35,6 @@ it('re-import and listServer', () => {
 
 
     // re-import
-
     const paths = [
         "images%2Fa.jpg",
         "images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg",
@@ -54,12 +53,29 @@ it('re-import and listServer', () => {
     }
 
 
+    nock(host)
+        .post("/fsi/service/file/images%2Fa.jpg", data.reImportRequestBody)
+        .matchHeader('accept', 'application/json')
+        .matchHeader("user-agent", "FSI Server API Client")
+        .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
+        .matchHeader("content-length", "37")
+        .reply(200, data.reImportReply);
 
+
+    nock(host)
+        .post("/fsi/service/directory/images%2Ffoo", data.reImportRequestBody)
+        .matchHeader('accept', 'application/json')
+        .matchHeader("user-agent", "FSI Server API Client")
+        .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
+        .matchHeader("content-length", "37")
+        .reply(200, data.reImportReply);
 
     const queue = client.createQueue();
     queue.listServer("images/", {"recursive":true});
     queue.listServer("moreimages/", {"recursive":true});
     queue.batchReimport(true, true);
+    queue.reImportFile("images/a.jpg", true, true);
+    queue.reImportDir("images/foo", true, true);
 
 
     return queue.run()

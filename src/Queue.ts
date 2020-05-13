@@ -475,6 +475,7 @@ export class Queue {
         chk.OBJECT_OR_STRING(pathOrEntry, "pathOrEntry");
         chk.PATH(targetPath, "targetPath");
         chk.OBJ(options, "options");
+        if (options && options.archiveType) chk.ARCHIVE_TYPE(options.archiveType);
 
         this.setDefaultOptionFunction(options);
         this.addTask("download", [pathOrEntry, targetPath, options, this.taskController]);
@@ -484,6 +485,7 @@ export class Queue {
         chk.OBJECT_OR_STRING(pathOrEntry, "pathOrEntry");
         chk.PATH(targetPath, "targetPath");
         chk.OBJ(options, "options");
+        if (options && options.archiveType) chk.ARCHIVE_TYPE(options.archiveType);
 
         this.setDefaultOptionFunction(options);
         this.addTask("downloadICCProfile", [pathOrEntry, targetPath, options, this.taskController]);
@@ -632,18 +634,25 @@ export class Queue {
                          fnProgress: (taskDescription: string, pos: number, length: number) => void,
                          ...args: any[]
                      ) => Promise<boolean>,
-                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                      ...args: any[]
     ): void {
 
         chk.OBJ(scope, "scope");
         chk.FN(fn, "fn");
 
-        // eslint-disable-next-line prefer-rest-params
+        if (typeof(args) !== "object" || typeof(args.concat) !== "function") args = [];
+
+        args.unshift(fn);
+        args.unshift(scope);
+
         this.addTask("runCustomTask", args);
     }
 
     //endregion
+
+    public getAborted(): boolean{
+        return this.canceled;
+    }
 
     public addItemsFromDataTransferItemList(dataTransferItemList: DataTransferItemList, options: IListOptions = {}): Promise<IListData | boolean> {
         chk.OBJ(dataTransferItemList, "dataTransferItemList");
@@ -2278,21 +2287,21 @@ export class Queue {
     }
 
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     private runCustomTask(scope: any, fn: (...args: any[]) => Promise<boolean>, ...args: any[]): Promise<boolean> {
 
-        // eslint-disable-next-line prefer-rest-params
-        const callArgs: any[] = Array.prototype.slice.call(arguments, 0);
+        if (typeof(args) !== "object" || typeof(args.concat) !== "function") args = [];
 
-        callArgs[1] = this.onCustomProgress;
-        callArgs[0] = this;
-        callArgs.unshift(this.client);
+        args.unshift(this.onCustomProgress);
+        args.unshift(this);
+        args.unshift(this.client);
+
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 fn.apply(
                     scope,
-                    callArgs
+                    args
                 )
                     .then((ret) => {
                         return resolve(ret);

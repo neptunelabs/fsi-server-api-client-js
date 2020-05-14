@@ -466,10 +466,9 @@ export default class FSIServerClient {
                     commands = q.toString();
                 }
                 else {
-                    url += "/" + encodeURIComponent(src);
+                    url += "/" + encodeURI(src);
                 }
             }
-
 
             self.httpPost(url, commands, options)
                 .then((res) => {

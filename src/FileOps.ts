@@ -83,7 +83,7 @@ export class FileOps {
             return this.taskController.getErrorPromise(APIErrors.createDir, [path], APIErrors.invalidDirName, [FileOps.getInvalidDirNameCharacters(pathAndDir.dir)]);
         }
 
-        const url = this.client.getServicePath('directory') + "/" + encodeURIComponent(path);
+        const url = this.client.getServicePath('directory') + "/" + encodeURI(path);
 
         return this.com.putJsonBoolean(url, null,
             {def: APIErrors.createDir, content: [path]}, null, httpOptions);
@@ -122,7 +122,7 @@ export class FileOps {
             return FSIServerClientInterface.GET_TRUE_PROMISE();
         } else {
 
-            const url = this.client.getServicePath(service) + "/" + encodeURIComponent(oldPath);
+            const url = this.client.getServicePath(service) + "/" + encodeURI(oldPath);
 
             const query: URLSearchParams = new URLSearchParams();
             query.set("cmd", "move");
@@ -152,7 +152,7 @@ export class FileOps {
             path = FSIServerClientUtils.NORMALIZE_FILE_PATH(path);
         }
 
-        const url = this.client.getServicePath(service) + "/" + encodeURIComponent(path);
+        const url = this.client.getServicePath(service) + "/" + encodeURI(path);
 
         const mainErrorDef: IAPIErrorDef = (service === "file") ? APIErrors.deleteFile : APIErrors.deleteDir;
         return this.com.deleteJsonBoolean(url,
@@ -182,7 +182,7 @@ export class FileOps {
 
         query.set("options", options.join(","));
 
-        const url = this.client.getServicePath(service) + "/" + encodeURIComponent(path);
+        const url = this.client.getServicePath(service) + "/" + encodeURI(path);
 
         const mainErrorDef: IAPIErrorDef = (service === "file") ? APIErrors.reImportFile : APIErrors.reImportDir;
 
@@ -237,7 +237,7 @@ export class FileOps {
             return this.taskController.getErrorPromise(APIErrors.copyFile, [path, toPath], err.def, err.content);
         }
 
-        const url = this.client.getService("file") + "/" + encodeURIComponent(path);
+        const url = this.client.getService("file") + "/" + encodeURI(path);
 
         const query: URLSearchParams = new URLSearchParams();
         query.set("cmd", "copy");

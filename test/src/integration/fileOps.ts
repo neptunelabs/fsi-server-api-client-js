@@ -15,8 +15,8 @@ client.setLogLevel(LogLevel.error);
 axios.defaults.adapter = require('axios/lib/adapters/http')
 
 const paths = [
-    "images%2Fa.jpg",
-    "images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg"
+    "images/a.jpg",
+    "images/%C3%A4%20%C3%B6%20%C3%BC.jpg"
 ]
 
 const dataReply = {
@@ -102,7 +102,7 @@ it('queue.createDirectory()', () => {
 
     // setup replies
     nock(host)
-        .put("/fsi/service/directory/images%2Ffoo")
+        .put("/fsi/service/directory/images/foo")
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .reply(200, dataReply);
@@ -127,7 +127,7 @@ it('queue.deleteDirectory()', () => {
 
     // setup replies
     nock(host)
-        .delete("/fsi/service/directory/images%2Ffoo%2F")
+        .delete("/fsi/service/directory/images/foo/")
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .reply(200, dataReply);
@@ -154,20 +154,20 @@ it('queue.copyDirectory()', () => {
     nockLists();
 
     nock(host)
-        .put("/fsi/service/directory/images%2Fbar%20test%2Fimages")
+        .put("/fsi/service/directory/images/bar%20test/images")
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .reply(200, dataReply);
 
     nock(host)
-        .post("/fsi/service/file/images%2Fa.jpg", "cmd=copy&to=images%2Fbar+test%2Fimages%2Fa.jpg")
+        .post("/fsi/service/file/images/a.jpg", "cmd=copy&to=images%2Fbar+test%2Fimages%2Fa.jpg")
         .matchHeader('accept', 'application/json')
         .matchHeader('content-type', 'application/x-www-form-urlencoded;charset=utf-8')
         .matchHeader("user-agent", "FSI Server API Client")
         .reply(200, dataReply);
 
     nock(host)
-        .post("/fsi/service/file/images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg", "cmd=copy&to=images%2Fbar+test%2Fimages%2F%C3%A4+%C3%B6+%C3%BC.jpg")
+        .post("/fsi/service/file/images/%C3%A4%20%C3%B6%20%C3%BC.jpg", "cmd=copy&to=images%2Fbar+test%2Fimages%2F%C3%A4+%C3%B6+%C3%BC.jpg")
         .matchHeader('accept', 'application/json')
         .matchHeader('content-type', 'application/x-www-form-urlencoded;charset=utf-8')
         .matchHeader("user-agent", "FSI Server API Client")
@@ -195,20 +195,20 @@ it('queue.copyDirectoryContent()', () => {
     nockLists();
 
     nock(host)
-        .put("/fsi/service/directory/images%2Fbar%20test")
+        .put("/fsi/service/directory/images/bar%20test")
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .reply(200, dataReply);
 
     nock(host)
-        .post("/fsi/service/file/images%2Fa.jpg", "cmd=copy&to=images%2Fbar+test%2Fa.jpg")
+        .post("/fsi/service/file/images/a.jpg", "cmd=copy&to=images%2Fbar+test%2Fa.jpg")
         .matchHeader('accept', 'application/json')
         .matchHeader('content-type', 'application/x-www-form-urlencoded;charset=utf-8')
         .matchHeader("user-agent", "FSI Server API Client")
         .reply(200, dataReply);
 
     nock(host)
-        .post("/fsi/service/file/images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg", "cmd=copy&to=images%2Fbar+test%2F%C3%A4+%C3%B6+%C3%BC.jpg")
+        .post("/fsi/service/file/images/%C3%A4%20%C3%B6%20%C3%BC.jpg", "cmd=copy&to=images%2Fbar+test%2F%C3%A4+%C3%B6+%C3%BC.jpg")
         .matchHeader('accept', 'application/json')
         .matchHeader('content-type', 'application/x-www-form-urlencoded;charset=utf-8')
         .matchHeader("user-agent", "FSI Server API Client")
@@ -233,7 +233,7 @@ it('queue.copyFile()', () => {
 
     // setup replies
     nock(host)
-        .post("/fsi/service/file/images%2Fa.jpg", "cmd=copy&to=images%2Fb.jpg")
+        .post("/fsi/service/file/images/a.jpg", "cmd=copy&to=images%2Fb.jpg")
         .matchHeader('accept', 'application/json')
         .matchHeader('content-type', 'application/x-www-form-urlencoded;charset=utf-8')
         .matchHeader("user-agent", "FSI Server API Client")
@@ -259,7 +259,7 @@ it('queue.moveFile()', () => {
 
     // setup replies
     nock(host)
-        .post("/fsi/service/file/images%2Fa.jpg", "cmd=move&to=images%2Fb.jpg")
+        .post("/fsi/service/file/images/a.jpg", "cmd=move&to=images%2Fb.jpg")
         .matchHeader('accept', 'application/json')
         .matchHeader('content-type', 'application/x-www-form-urlencoded;charset=utf-8')
         .matchHeader("user-agent", "FSI Server API Client")
@@ -285,7 +285,7 @@ it('queue.moveDirectory()', () => {
 
     // setup replies
     nock(host)
-        .post("/fsi/service/directory/images%2F", "cmd=move&to=imagesNew%2F")
+        .post("/fsi/service/directory/images/", "cmd=move&to=imagesNew%2F")
         .matchHeader('accept', 'application/json')
         .matchHeader('content-type', 'application/x-www-form-urlencoded;charset=utf-8')
         .matchHeader("user-agent", "FSI Server API Client")
@@ -325,7 +325,7 @@ it('queue.addDirectoryContent()', () => {
         );
 
     nock(host)
-        .get("/fsi/server?type=list&tpl=interface_thumbview_default.json&items=images&source=%2F")
+        .get("/fsi/server?type=list&tpl=interface_thumbview_default.json&items=images&source=/")
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .reply(200,
@@ -367,7 +367,7 @@ it('queue.sendJobCommand()', () => {
 
     // setup replies
     nock(host)
-        .post("/fsi/service/file/images%2Fa.jpg", "cmd=copy&to=images%2Fb.jpg")
+        .post("/fsi/service/file/images/a.jpg", "cmd=copy&to=images%2Fb.jpg")
         .matchHeader('accept', 'application/json')
         .matchHeader('content-type', 'application/x-www-form-urlencoded')
         .matchHeader("user-agent", "FSI Server API Client")

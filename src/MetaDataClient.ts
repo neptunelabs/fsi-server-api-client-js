@@ -224,7 +224,8 @@ export class MetaDataClient {
     }
 
     public static GET_META_QUERY(data: IMetaData, cmd: string = "saveMetaData"): URLSearchParams {
-        const q = new URLSearchParams("cmd=" + encodeURIComponent(cmd));
+        const q = new URLSearchParams();
+        q.set("cmd", cmd);
 
         const emptyValues: boolean = (cmd.toLowerCase() !== "savemetadata");
 
@@ -377,7 +378,7 @@ export class MetaDataClient {
 
         this.taskController.setCurrentTask(LogLevel.debug, APITasks.setMetaData, [service, path, query.toString()]);
 
-        const url = this.client.getServicePath(service) + "/" + encodeURIComponent(path);
+        const url = this.client.getServicePath(service) + "/" + encodeURI(path);
 
         return this.taskController.postJsonBoolean(
             url,

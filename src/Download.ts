@@ -455,7 +455,7 @@ export class Download {
                                 if (downloadID === "file") {
                                     resolve(downloadID);
                                 } else {
-                                    self.client.delete("_downloads/" + encodeURIComponent(downloadID), "file")
+                                    self.client.delete("_downloads/" + encodeURI(downloadID), "file")
                                         .then(() => {
                                             resolve(downloadID);
                                         })
@@ -699,7 +699,7 @@ export class Download {
 
         let url: string;
         if (options.getICCProfile === true) {
-            url = this.client.getServicePath("icc") + "/" + encodeURIComponent(path);
+            url = this.client.getServicePath("icc") + "/" + encodeURI(path);
         } else {
 
             let renderingQuery: string = "";
@@ -726,7 +726,7 @@ export class Download {
             }
 
             if (!renderingQuery) {
-                url = this.client.getServicePath("file") + "/" + encodeURIComponent(path);
+                url = this.client.getServicePath("file") + "/" + encodeURI(path);
             } else {
                 url = this.client.getServerBaseQueryPath() + renderingQuery;
             }

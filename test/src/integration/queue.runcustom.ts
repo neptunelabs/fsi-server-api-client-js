@@ -13,9 +13,6 @@ client.setLogLevel(LogLevel.none);
 axios.defaults.adapter = require('axios/lib/adapters/http');
 
 
-
-
-
 it('queue.runCustom() and queue.logBatchContent()', () => {
 
 

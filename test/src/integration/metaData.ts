@@ -13,8 +13,8 @@ client.setLogLevel(LogLevel.error);
 axios.defaults.adapter = require('axios/lib/adapters/http')
 
 const paths = [
-    "images%2Fa.jpg",
-    "images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg"
+    "images/a.jpg",
+    "images/ä ö ü.jpg"
 ]
 
 const metaDataReply = {
@@ -40,7 +40,7 @@ const nockLists = (): void => {
 const nockPostReplies = (postData: any): void => {
     for (const path of paths){
         nock(host)
-            .post("/fsi/service/file/" + path, postData)
+            .post("/fsi/service/file/" + encodeURI(path), postData)
             .matchHeader('accept', 'application/json')
             .matchHeader("user-agent", "FSI Server API Client")
             .reply(200, metaDataReply);
@@ -52,7 +52,7 @@ const nockPostReplies = (postData: any): void => {
 const nockGetReplies = (): void => {
     for (const path of paths){
         nock(host)
-            .get("/fsi/server?type=info&tpl=foo&renderer=bar&headers=webinterface&source=" + path)
+            .get("/fsi/server?type=info&tpl=foo&renderer=bar&headers=webinterface&source=" + encodeURIComponent(path))
             .matchHeader('accept', 'application/json')
             .matchHeader("user-agent", "FSI Server API Client")
             .reply(200, metaDataReply);

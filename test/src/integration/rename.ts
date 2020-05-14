@@ -38,11 +38,11 @@ it('rename and listServer', () => {
     // re-import
 
     const items = [
-        {"path":"images%2Fa.jpg", "newPath":"images%2Frenamed_a.jpg"},
-        {"path":"images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg", "newPath":"images%2Frenamed_%C3%A4+%C3%B6+%C3%BC.jpg"},
-        {"path":"moreimages%2Fa.jpg", "newPath":"moreimages%2Frenamed_a.jpg"},
-        {"path":"images%2Fa.jpg", "newPath":"images%2Ffoo.jpg"},
-        {"path":"images%2FoldName%2F", "newPath":"images%2FnewName%2F", "service": "directory"}
+        {"path":"images/a.jpg", "newPath":"images%2Frenamed_a.jpg"},
+        {"path":"images/%C3%A4%20%C3%B6%20%C3%BC.jpg", "newPath":"images%2Frenamed_%C3%A4+%C3%B6+%C3%BC.jpg"},
+        {"path":"moreimages/a.jpg", "newPath":"moreimages%2Frenamed_a.jpg"},
+        {"path":"images/a.jpg", "newPath":"images%2Ffoo.jpg"},
+        {"path":"images/oldName/", "newPath":"images%2FnewName%2F", "service": "directory"}
 
     ];
 

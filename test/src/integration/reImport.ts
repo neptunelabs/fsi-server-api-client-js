@@ -36,14 +36,14 @@ it('re-import and listServer', () => {
 
     // re-import
     const paths = [
-        "images%2Fa.jpg",
-        "images%2F%C3%A4%20%C3%B6%20%C3%BC.jpg",
-        "moreimages%2Fa.jpg"
+        "images/a.jpg",
+        "images/ä ö ü.jpg",
+        "moreimages/a.jpg"
     ];
 
     for (const path of paths){
         nock(host)
-            .post("/fsi/service/file/" + path, data.reImportRequestBody)
+            .post("/fsi/service/file/" + encodeURI(path), data.reImportRequestBody)
             .matchHeader('accept', 'application/json')
             .matchHeader("user-agent", "FSI Server API Client")
             .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -54,7 +54,7 @@ it('re-import and listServer', () => {
 
 
     nock(host)
-        .post("/fsi/service/file/images%2Fa.jpg", data.reImportRequestBody)
+        .post("/fsi/service/file/images/a.jpg", data.reImportRequestBody)
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -63,7 +63,7 @@ it('re-import and listServer', () => {
 
 
     nock(host)
-        .post("/fsi/service/directory/images%2Ffoo", data.reImportRequestBody)
+        .post("/fsi/service/directory/images/foo", data.reImportRequestBody)
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
         .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")

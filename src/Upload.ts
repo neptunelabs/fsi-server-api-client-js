@@ -297,7 +297,7 @@ export class Upload {
                        options: IListOptions): Promise<boolean> {
 
         const self = this;
-        const url = self.client.getServicePath("image") + "/" + encodeURIComponent(path);
+        const url = self.client.getServicePath("image") + "/" + encodeURI(path);
         const bSafeHeaders: boolean = !modeNode;
         const bytesTotal: number = parseInt(headers["Content-Length"], 10);
         if (bSafeHeaders) {

@@ -5,7 +5,7 @@ import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
 import {APITasks} from "./resources/APITasks";
 import {APIAbortController} from "./APIAbortController";
 import {FSIServerClientInterface} from "./FSIServerClientInterface";
-import {FSIServerClientUtils, IStringStringMap} from "./FSIServerClientUtils";
+import {FSIServerClientUtils, IStringAnyMap, IStringStringMap} from "./FSIServerClientUtils";
 import {TaskController} from "./TaskController";
 import {FSIServerClient, ImportStatus} from "./index";
 import {IHTTPOptions} from "./utils/IHTTPOptions";
@@ -226,6 +226,7 @@ export class MetaDataClient {
     public static GET_META_QUERY(data: IMetaData, cmd: string = "saveMetaData"): URLSearchParams {
         const q = new URLSearchParams("cmd=" + encodeURIComponent(cmd));
 
+        const emptyValues: boolean = (cmd.toLowerCase() !== "savemetadata");
 
         const rawData: { [key: string]: any } = data;
         const keys = Object.keys(data);
@@ -238,15 +239,19 @@ export class MetaDataClient {
                 for (const key of keys) {
                     if (typeof (rawData[key]) === "object") {
                         for (const nam of Object.keys(rawData[key])) {
-                            if (typeof (rawData[key][nam]) === "string") {
-                                q.set(key + "." + nam, rawData[key][nam]);
+                            if (emptyValues || typeof(rawData[key][nam]) === "string") {
+                                const val: string = (emptyValues)?"":rawData[key][nam];
+                                q.set(key + "." + nam, val);
                             }
                         }
                     }
                 }
             } else { // data contains strings
                 for (const key of keys) {
-                    q.set(key, rawData[key]);
+                    if (emptyValues || typeof(rawData[key]) === "string") {
+                        const val: string = (emptyValues) ? "" : rawData[key];
+                        q.set(key, val);
+                    }
                 }
             }
         }
@@ -337,7 +342,7 @@ export class MetaDataClient {
 
         return new Promise((resolve, reject) => {
             fnMeta(entry)
-                .then(md => {
+                .then( md => {
 
                     APIAbortController.THROW_IF_ABORTED(options.abortController);
 
@@ -356,7 +361,9 @@ export class MetaDataClient {
         });
     }
 
+
     public set(path: string, service: string, data: IMetaData, cmd: string = "saveMetaData", options: IMetaDataOptions = {}): Promise<boolean> {
+
         return this.setWithQuery(path, service, MetaDataClient.GET_META_QUERY(data, cmd), options);
     }
 

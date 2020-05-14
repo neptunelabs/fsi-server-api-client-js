@@ -152,7 +152,7 @@ export class Queue {
             "batchMove":                {"ctx": this, "fn": this.runBatchMove},
             "batchReimport":            {"ctx": this, "fn": this.runBatchReimport},
             "batchRename":              {"ctx": this, "fn": this.runBatchRename},
-            "batchSendJobCommands":     {"ctx": this, "fn": this.runBatchSendJobCommands},
+            "batchSendServiceCommands":     {"ctx": this, "fn": this.runBatchSendServiceCommands},
             "batchSetMetaData":         {"ctx": this, "fn": this.runBatchSetMetaData},
             // "batchDeleteMetaData":      {"ctx":this, "fn":this.runBatchSetMetaData},
             // "batchRestoreMetaData":     {"ctx":this, "fn":this.runBatchSetMetaData},
@@ -186,7 +186,7 @@ export class Queue {
             "renameFile":               {"ctx": client, "fn": client.renameFile},
             "restoreMetaData":          {"ctx": client, "fn": client.restoreMetaData},
             "runCustomTask":            {"ctx": this, "fn": this.runCustomTask},
-            "sendJobCommand":           {"ctx": client, "fn": client.sendJobCommand},
+            "sendServiceCommand":           {"ctx": client, "fn": client.sendServiceCommand},
             "setMetaData":              {"ctx": client, "fn": client.setMetaData},
             "upload":                   {"ctx": client, "fn": client.upload}
         };
@@ -403,8 +403,8 @@ export class Queue {
         this.addTask("setMetaData", [path, data, service, options, this.taskController]);
     }
 
-    public sendJobCommand(src: string, service: string, command: string,
-                          options: IHTTPOptions = {}): void {
+    public sendServiceCommand(src: string, service: string, command: string,
+                              options: IHTTPOptions = {}): void {
         chk.PATH(src, "src");
         chk.PATH(service, "service");
         chk.PATH(command, "command");
@@ -412,7 +412,7 @@ export class Queue {
 
 
         this.setDefaultOptionFunction(options);
-        this.addTask("sendJobCommand", [src, service, command, options, this.taskController]);
+        this.addTask("sendServiceCommand", [src, service, command, options, this.taskController]);
     }
 
     public deleteMetaData(path: string, data: IMetaData, service: string = "file", options: IMetaDataOptions = {}): void {
@@ -611,12 +611,12 @@ export class Queue {
         this.addTask("batchUpload", [targetPath, options]);
     }
 
-    public batchSendJobCommands(service: string, command: string, options: IHTTPOptions = {}): void {
+    public batchSendServiceCommands(service: string, command: string, options: IHTTPOptions = {}): void {
         chk.STRING(service, "service");
         chk.STRING(command, "command");
         chk.OBJ(options, "options");
 
-        this.addTask("batchSendJobCommands", [service, command, options]);
+        this.addTask("batchSendServiceCommands", [service, command, options]);
     }
 
     public logBatchContent(): void {
@@ -1593,24 +1593,24 @@ export class Queue {
         }
     }
 
-    private runBatchSendJobCommands(service: string, command: string, options: IHTTPOptions = {}): Promise<boolean> {
+    private runBatchSendServiceCommands(service: string, command: string, options: IHTTPOptions = {}): Promise<boolean> {
         const self = this;
         this.setDefaultOptionFunction(options);
 
-        this.taskController.setCurrentTask(LogLevel.debug, APITasks.batchSendJobCommands,
+        this.taskController.setCurrentTask(LogLevel.debug, APITasks.batchSendServiceCommands,
             [command, this.currentBatch.entries.length, service]);
-        this.onBatchStart("batchSendJobCommands");
+        this.onBatchStart("batchSendServiceCommands");
 
         return new Promise((resolve, reject) => {
             if (this.batchContainsLocalFiles()) {
-                return reject(this.com.err.get(APIErrors.batchLocalFiles, ["batchSendJobCommands"]));
+                return reject(this.com.err.get(APIErrors.batchLocalFiles, ["batchSendServiceCommands"]));
             } else {
-                self.nextBatchSendJobCommands(self, service, command, options, resolve, reject);
+                self.nextBatchSendServiceCommands(self, service, command, options, resolve, reject);
             }
         });
     }
 
-    private nextBatchSendJobCommands(
+    private nextBatchSendServiceCommands(
         self: Queue,
         service: string,
         command: string,
@@ -1626,13 +1626,13 @@ export class Queue {
             const bc: IBatchContent = self.currentBatch;
             const entry: IListEntry = bc.entries[pos];
 
-            const promise: Promise<boolean> = self.client.sendJobCommand(entry.src, service, command, options, this.taskController);
+            const promise: Promise<boolean> = self.client.sendServiceCommand(entry.src, service, command, options, this.taskController);
 
             self.beforeBatchTask();
 
             promise.then(() => {
                 self.batchNext();
-                self.nextBatchSendJobCommands(self, service, command, options, fnResolve, fnReject);
+                self.nextBatchSendServiceCommands(self, service, command, options, fnResolve, fnReject);
             })
                 .catch(async err => {
 
@@ -1641,7 +1641,7 @@ export class Queue {
 
                         self.addError(err);
                         self.error(err);
-                        self.nextBatchSendJobCommands(self, service, command, options, fnResolve, fnReject);
+                        self.nextBatchSendServiceCommands(self, service, command, options, fnResolve, fnReject);
                     } else {
                         fnReject(err);
                     }
@@ -1706,18 +1706,18 @@ export class Queue {
                 self.batchNext();
                 self.nextBatchSetMetaDataDynamic(self, cmd, fnMeta, options, fnResolve, fnReject);
             })
-                .catch(async err => {
+            .catch(async err => {
 
-                    if (await self.continueOnError(err)) {
-                        self.batchNext();
+                if (await self.continueOnError(err)) {
+                    self.batchNext();
 
-                        self.addError(err);
-                        self.error(err);
-                        self.nextBatchSetMetaDataDynamic(self, cmd, fnMeta, options, fnResolve, fnReject);
-                    } else {
-                        fnReject(err);
-                    }
-                });
+                    self.addError(err);
+                    self.error(err);
+                    self.nextBatchSetMetaDataDynamic(self, cmd, fnMeta, options, fnResolve, fnReject);
+                } else {
+                    fnReject(err);
+                }
+            });
         } else { // done
             this.onBatchFinished();
             fnResolve(true);
@@ -2241,7 +2241,6 @@ export class Queue {
             if (self.batchContainsLocalFiles()) {
                 return reject(self.com.err.get(APIErrors.batchLocalFiles, ["runAddDirectoryContent"]));
             } else {
-
 
                 let n: number = -1;
                 const nEnd: number = this.currentBatch.entries.length;

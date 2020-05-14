@@ -216,7 +216,7 @@ export default class FSIServerClient {
 
 
     public getService(serviceEndpoint: string): string {
-        return this.host + 'service/' + serviceEndpoint;
+        return this.host + 'service/' + serviceEndpoint.toLocaleLowerCase();
     }
 
 
@@ -441,25 +441,37 @@ export default class FSIServerClient {
             new MetaDataClient(this.classInit, taskController).restore(path, service, data, options));
     }
 
-    public sendJobCommand(src: string, service: string, command: string,
-                          options: IHTTPOptions = {}, taskController?: TaskController): Promise<boolean> {
+    public sendServiceCommand(src: string, service: string, commands: string,
+                              options: IHTTPOptions = {}, taskController?: TaskController): Promise<boolean> {
 
         chk.PATH(src, "src");
         chk.PATH(service, "service");
-        chk.PATH(command, "command");
+        chk.PATH(commands, "command");
         chk.OBJ(options, "options");
+
+        service = service.toLocaleLowerCase();
 
         const self = this;
         taskController = this.initTaskController(taskController);
-        taskController.setCurrentTask(LogLevel.debug, APITasks.sendJobCommand, [command, service, src]);
+        taskController.setCurrentTask(LogLevel.debug, APITasks.sendServiceCommand, [commands, service, src]);
 
         return new Promise((resolve, reject) => {
 
-            const q = new URLSearchParams();
-            q.set("cmd", command);
-            q.set("id", src);
+            let url: string = self.getService(service);
+            if (src) {
 
-            self.httpPost(self.getService(service), q.toString(), options)
+                if (service === "jobqueue"){
+                    const q = new URLSearchParams(commands);
+                    q.set("id", src);
+                    commands = q.toString();
+                }
+                else {
+                    url += "/" + encodeURIComponent(src);
+                }
+            }
+
+
+            self.httpPost(url, commands, options)
                 .then((res) => {
 
                     if (res && res.data && res.data.statuscode === 200) {

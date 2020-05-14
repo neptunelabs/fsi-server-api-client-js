@@ -307,15 +307,15 @@ export class APITasks {
         template: "The server requested an unencrypted password.<br/>You are currently <b>not using an SSL secured connection</b>.<br/><br/>Do you want to continue anyways and send an <b>unencrypted password</b>?;"
     };
 
-    public static readonly batchSendJobCommands: IAPITaskDef = {
+    public static readonly batchSendServiceCommands: IAPITaskDef = {
         isTask: true,
-        key: "batchSendJobCommands",
+        key: "batchSendServiceCommands",
         template: "Sending command \"%s\" to %s %s items"
     };
 
-    public static readonly sendJobCommand: IAPITaskDef = {
+    public static readonly sendServiceCommand: IAPITaskDef = {
         isTask: true,
-        key: "sendJobCommand",
+        key: "sendServiceCommand",
         template: "Sending command \"%s\" to %s \"%s\""
     };
 

@@ -31,14 +31,13 @@ it('queue.runCustom() and queue.logBatchContent()', () => {
 
         return new Promise((resolve) => {
 
-            customResult = foo + bar;
-
             const content: IBatchContent | null = theQueue.getCurrentBatchContent();
             if (content) {
 
                 for (let i: number = 0; i < content.entries.length; i++) {
                     const msg: string = "Doing something with entry \"" + content.entries[i].src + "\"";
                     fnProgress.call(theQueue, msg, i, content.entries.length);
+                    customResult += i+":"+content.entries[i].src+"|" + foo + bar;
                 }
             }
 
@@ -70,17 +69,16 @@ it('queue.runCustom() and queue.logBatchContent()', () => {
 
 
 
-    const res = queue.run()
+    return queue.run()
         .then( (result) => {
 
             expect(result).equals(true);
             expect(queue.getResults()[2]).equals(true);
-            expect(customResult).equals("123foo arg");
+            expect(customResult).equals("0:a.jpg|123foo arg1:ä ö ü.jpg|123foo arg2:a.jpg|123foo arg");
         })
         .finally( ()  => {
             nock.cleanAll();
         });
 
-    return res;
 });
 

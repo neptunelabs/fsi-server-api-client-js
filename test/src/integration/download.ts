@@ -81,7 +81,7 @@ it('download and listServer', () => {
 });
 
 
-it('download ICC', () => {
+it('batchDownloadICCProfiles()', () => {
 
     const path = "./test/files";
 
@@ -132,6 +132,51 @@ it('download ICC', () => {
             try {
                 fs.unlinkSync(path + "/images/a.jpg.icc");
                 fs.unlinkSync(path + "/images/ä ö ü.jpg.icc");
+                fs.rmdirSync(path + "/images");
+
+                success = true;
+            }
+            catch(e){
+                console.error(e);
+            }
+
+            expect(success).to.equal(true);
+
+        })
+
+});
+
+
+it('downloadICCProfile', () => {
+
+    const path = "./test/files";
+
+    // setup replies
+    nock(host)
+        .get(data.downloadURLICC1)
+        .matchHeader('accept', '*/*')
+        .matchHeader("user-agent", "FSI Server API Client")
+        .reply(200, "first");
+
+    const queue = client.createQueue();
+    queue.downloadICCProfile("images/a.jpg", path);
+
+    return queue.run()
+        .then(
+            result => {
+                expect(result).to.equal(true);
+
+                const contentFile1 = fs.readFileSync(path + "/images/a.jpg.icc", "utf8");
+                expect(contentFile1).to.equal("first");
+
+            }
+        )
+        .finally( ()  => {
+            nock.cleanAll();
+
+            let success = false;
+            try {
+                fs.unlinkSync(path + "/images/a.jpg.icc");
                 fs.rmdirSync(path + "/images");
 
                 success = true;

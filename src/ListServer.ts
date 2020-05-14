@@ -794,8 +794,8 @@ export class ListServer {
                     // search result item, src contains full path
                     if (map.src.indexOf("/") !== -1) {
                         map.path = decodeURIComponent(map.src);
-                        const pfsrc = FSIServerClientUtils.FILE_AND_PATH(map.path);
-                        map.src = pfsrc.dir;
+                        const fileAndPath = FSIServerClientUtils.FILE_AND_PATH(map.path);
+                        map.src = fileAndPath.dir;
                     } else {
                         if (map.fullsrc === undefined && addOptions && addOptions.basePath !== undefined) {
                             map.path = map.fullsrc = addOptions.basePath + map.src;
@@ -954,7 +954,7 @@ export class ListServer {
                     const connector = FSIServerClientUtils.GET_BASE_PATH(path);
 
                     if (data.requiredConnectors[connector] === undefined) {
-                        throw new Error("Unknown connector \"" + connector + "\"");
+                        return fnReject(new Error("Unknown connector \"" + connector + "\""));
                     }
 
                     const ld: IListData = ListServer.GET_EMPTY_LIST_DATA();

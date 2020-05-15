@@ -384,6 +384,7 @@ export class ListServer {
                                 const theEntry: IListEntry = ld.entries[i];
 
                                 if (theEntry.type === "directory" && !await options.fnDirFilter(ld, theEntry)) {
+
                                     ld.summary.directoryCount--;
                                     ld.summary.entryCount--;
 
@@ -513,7 +514,9 @@ export class ListServer {
                                 const theEntry: IListEntry = ld.entries[i];
                                 if (!await options.fnFileFilter(ld, theEntry)) {
 
-                                    ld.summary.imageCount--;
+                                    if (theEntry.type === "file") ld.summary.imageCount--;
+                                    else ld.summary.directoryCount--;
+
                                     ld.summary.entryCount--;
                                     ld.entries.splice(i, 1);
                                     i--;
@@ -998,14 +1001,17 @@ export class ListServer {
     }
 
     private static updateClientSummary(ld: IListData, options: IListOptions): void {
-        ld.summary.clientInfo.directoryCount = ld.summary.directoryCount;
-        ld.summary.clientInfo.fileCount = ld.summary.imageCount;
-        ld.summary.clientInfo.entryCount = ld.summary.entryCount;
+
+        ld.summary.clientInfo.directoryCount    = ld.summary.directoryCount;
+        ld.summary.clientInfo.fileCount         = ld.summary.imageCount;
+        ld.summary.clientInfo.entryCount        = ld.summary.entryCount;
 
 
         let sz = 0;
         let entries: number = 0;
         for (const entry of ld.entries) {
+            entries++;
+
 
             if (entries % 50 === 0) {
                 APIAbortController.THROW_IF_ABORTED(options.abortController);

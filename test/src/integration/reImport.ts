@@ -5,7 +5,6 @@ import {FSIServerClient, LogLevel} from "library/index";
 import {default as data} from "./reImportData.json"
 
 
-
 const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.error);
@@ -43,7 +42,7 @@ it('re-import and listServer', () => {
 
     for (const path of paths){
         nock(host)
-            .post("/fsi/service/file/" + encodeURI(path), data.reImportRequestBody)
+            .post("/fsi/service/file/" + FSIServerClient.ENCODE_PATH(path), data.reImportRequestBody)
             .matchHeader('accept', 'application/json')
             .matchHeader("user-agent", "FSI Server API Client")
             .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")

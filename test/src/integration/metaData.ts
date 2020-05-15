@@ -40,7 +40,7 @@ const nockLists = (): void => {
 const nockPostReplies = (postData: any): void => {
     for (const path of paths){
         nock(host)
-            .post("/fsi/service/file/" + encodeURI(path), postData)
+            .post("/fsi/service/file/" + FSIServerClient.ENCODE_PATH(path), postData)
             .matchHeader('accept', 'application/json')
             .matchHeader("user-agent", "FSI Server API Client")
             .reply(200, metaDataReply);

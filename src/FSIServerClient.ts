@@ -94,6 +94,15 @@ export default class FSIServerClient {
         };
     }
 
+    public static ENCODE_PATH(path: string): string{
+
+        const parts = path.split("/");
+        for (let i=0; i < parts.length; i++) parts[i] = encodeURIComponent(parts[i]);
+        path = parts.join("/");
+
+        return path;
+    }
+
     public static DEFAULT_PROGRESS_FUNCTION(prg: QueueProgress | TaskProgress): void {
 
         let msg: string = "<" + prg.timeElapsed + "> ";
@@ -466,7 +475,7 @@ export default class FSIServerClient {
                     commands = q.toString();
                 }
                 else {
-                    url += "/" + encodeURI(src);
+                    url += "/" + FSIServerClient.ENCODE_PATH(src);
                 }
             }
 

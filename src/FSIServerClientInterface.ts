@@ -25,6 +25,9 @@ import {IAPIClassInit} from "./utils/IAPIClassInit";
 import {IPromptOptions} from "./utils/IPromptOptions";
 import {IOptions} from "./utils/IOptions";
 import {IUploadOptions} from "./Upload";
+import * as http from "http";
+import * as https from "https";
+
 
 const modeNode: boolean = FSIServerClientUtils.GET_MODE_NODE();
 
@@ -95,10 +98,21 @@ export class FSIServerClientInterface {
         this.currentTask = this.taskSupplier.get(APITasks.idle);
         this.previousTask = this.taskSupplier.get(APITasks.idle);
 
+        if (modeNode){
+            const httpAgent = new http.Agent({ keepAlive: true });
+            const httpsAgent = new https.Agent({ keepAlive: true });
 
-        this.iAxios = axios.create({
-            baseURL: client.getHost() + "/"
-        });
+            this.iAxios = axios.create({
+                httpAgent: httpAgent,
+                httpsAgent: httpsAgent,
+                baseURL: client.getHost() + "/"
+            });
+        }
+        else {
+            this.iAxios = axios.create({
+                baseURL: client.getHost() + "/"
+            });
+        }
 
         this.defaultHeaders.Accept = "application/json";
         if (modeNode) {

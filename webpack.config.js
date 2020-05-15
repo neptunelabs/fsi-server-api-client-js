@@ -11,7 +11,9 @@ module.exports = {
     mode: "production", // or "development",
     node: {
         fs: 'empty',
-        readline: 'empty'
+        readline: 'empty',
+        http: 'empty',
+        https: 'empty',
     },
     module: {
         rules: [{
@@ -27,7 +29,7 @@ module.exports = {
                 /src\/languages/,
                 /samples/,
                 /test/,
-                /temp/,
+                /temp/
             ]
         }]
     },
@@ -71,6 +73,9 @@ module.exports = {
         new webpack.DefinePlugin({
             'process.env.FSISERVERCLIENTVERSION': JSON.stringify(require("./package.json").version)
         })
+
+
+
     ]
 
 };

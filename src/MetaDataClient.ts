@@ -5,7 +5,7 @@ import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
 import {APITasks} from "./resources/APITasks";
 import {APIAbortController} from "./APIAbortController";
 import {FSIServerClientInterface} from "./FSIServerClientInterface";
-import {FSIServerClientUtils, IStringAnyMap, IStringStringMap} from "./FSIServerClientUtils";
+import {FSIServerClientUtils, IStringStringMap} from "./FSIServerClientUtils";
 import {TaskController} from "./TaskController";
 import {FSIServerClient, ImportStatus} from "./index";
 import {IHTTPOptions} from "./utils/IHTTPOptions";
@@ -378,7 +378,7 @@ export class MetaDataClient {
 
         this.taskController.setCurrentTask(LogLevel.debug, APITasks.setMetaData, [service, path, query.toString()]);
 
-        const url = this.client.getServicePath(service) + "/" + encodeURI(path);
+        const url = this.client.getServicePath(service) + "/" + FSIServerClient.ENCODE_PATH(path);
 
         return this.taskController.postJsonBoolean(
             url,

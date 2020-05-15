@@ -67,7 +67,7 @@ client.login("user", "password")
 
 ##### Example: Queue API
 ~~~javascript
-const FSIServerClient = require("@neptunelabs/fsi-server-api-client");
+const fsiServerApiClient = require("@neptunelabs/fsi-server-api-client");
 const client = new fsiServerApiClient.FSIServerClient('https://my.fsi-server.tld');
 
 const queue = client.createQueue({continueOnError:false});

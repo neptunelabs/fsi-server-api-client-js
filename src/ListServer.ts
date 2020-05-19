@@ -361,7 +361,7 @@ export class ListServer {
             }
         };
 
-        const subDirsToRead: IListEntry[] = [];
+        const subDirsToRead: string[] = [];
 
         return this.com.iAxios.get(
             this.client.getServerBaseQueryPath() + q.toString(),
@@ -437,7 +437,7 @@ export class ListServer {
 
                 if (ld.entries.length > 0 && options.recursive) {
 
-                    if (maxRecursiveDepth !== undefined && depth > maxRecursiveDepth) {
+                    if (maxRecursiveDepth !== undefined && depth >= maxRecursiveDepth) {
 
                         this.callProgress(LogLevel.debug, options, APITasks.skipDir, [path, maxRecursiveDepth]);
 
@@ -466,10 +466,10 @@ export class ListServer {
                                         this.callProgress(LogLevel.debug, options, APITasks.skipConnectorType,
                                             [ld.entries[i].path, ld.entries[i].connectorType]);
                                     } else {
-                                        subDirsToRead.push(ld.entries[i]);
+                                        subDirsToRead.push(ld.entries[i].src);
                                     }
                                 } else {
-                                    subDirsToRead.push(ld.entries[i]);
+                                    subDirsToRead.push(ld.entries[i].src);
                                 }
                             }
                         }
@@ -480,7 +480,8 @@ export class ListServer {
                 else return ld;
             })
             .then ( ld => {
-                
+
+
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                 if (ld.entries.length > 0 && options.fnFileFilter) {
@@ -502,6 +503,8 @@ export class ListServer {
 
                 ListServer.updateClientSummary(ld, options);
 
+                if (options.dropEntries) ld.entries = [];
+
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                 if (subDirsToRead.length > 0) {
@@ -514,14 +517,15 @@ export class ListServer {
                         for (let i = 0; i < subDirsToRead.length; i++) {
                             APIAbortController.THROW_IF_ABORTED(options.abortController);
 
-                            const entry: IListEntry = subDirsToRead[i];
+
+                            const subDirPath = path + subDirsToRead[i];
                             const prgStart: number = progressStart + prgSize * i;
 
-                            this.callProgress(LogLevel.trace, options, APITasks.readSubDir, [entry.path, depth],
+                            this.callProgress(LogLevel.trace, options, APITasks.readSubDir, [subDirPath, depth],
                                 prgStart, 100);
 
                             try {
-                                const ldSub: IListData = await this.doRead(entry.path, baseDir, options,
+                                const ldSub: IListData = await this.doRead(subDirPath, baseDir, options,
                                     depth + 1, loopData,
                                     prgStart, prgSize) as IListData;
 
@@ -567,7 +571,7 @@ export class ListServer {
             })
             .then(ld => {
 
-                if (options.dropEntries) ld.entries = [];
+
 
                 ld.summary.clientInfo.note = loopData.note;
                 ld.summary.clientInfo.maxDepth = loopData.maxDepth;

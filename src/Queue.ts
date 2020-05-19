@@ -244,7 +244,7 @@ export class Queue {
 
     private static doRunLogBatchContentSummary(self: Queue): boolean {
 
-        if (self.currentBatch.entries.length > 0) {
+        if (self.currentBatch.clientInfo.entryCount > 0) {
 
             const level: LogLevel = LogLevel.info;
             self.taskController.log(level, self.com.taskSupplier.get(APITasks.queueContentSummary).getMessage());
@@ -870,6 +870,10 @@ export class Queue {
                 this.taskController.log(LogLevel.error, "- " + err.message);
             }
         }
+    }
+
+    public callProgress(): void{
+        if (this.bRunning) this.runProgress(this.queueProgress);
     }
 
 
@@ -2267,7 +2271,11 @@ export class Queue {
 
 
                     self.client.listServer(entry.path,
-                        {recursive: true, baseDir, readInternalConnectors: true, abortController: self.abortController},
+                        {recursive: true,
+                            baseDir,
+                            readInternalConnectors: true,
+                            abortController: self.abortController,
+                            continueOnError: self.options.continueOnError},
                         self.taskController
                     )
                         .then((list) => {

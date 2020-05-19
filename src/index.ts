@@ -12,6 +12,7 @@ export * from './resources/APIErrors';
 export * from './resources/APITasks';
 
 export * from './APIAbortController';
+export * from './APITemplateSupplier';
 export * from './APIError';
 export * from './APITask';
 export * from './ClientSummaryInfo';

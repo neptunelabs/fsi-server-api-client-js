@@ -387,6 +387,7 @@ it('queue.sendJobCommand()', () => {
     const queue = client.createQueue();
     queue.sendServiceCommand("images/a.jpg", "file", query.toString());
     queue.sendServiceCommand("12345", "jobQueue", "cmd=restart");
+    queue.callProgress();
 
 
     return queue.run()

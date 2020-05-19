@@ -13,6 +13,7 @@ import {IAPIClassInit} from "./utils/IAPIClassInit";
 import {LogLevel} from "./LogLevel";
 import {IMetaData} from "./MetaDataClient";
 
+
 const URLSearchParams = urlSearchParams;
 
 export type ListEntryType = "file" | "directory";
@@ -129,6 +130,7 @@ export interface IListOptions extends IProgressOptions {
     headers?: string,
     recursive?: boolean,
     maxRecursiveDepth?: number,
+    dropEntries?: boolean,
     readInternalConnectors?: boolean,
     validConnectorTypes?: string | string[],
     typeFilter?: ListSortTypeFilterValue,
@@ -265,11 +267,9 @@ export class ListServer {
     public doRead(path: string, baseDir: string, options: IListOptions, depth: number = 0, loopData: ILoopData,
                   progressStart: number, progressSize: number): Promise<IListData> {
 
-
         path = FSIServerClientUtils.NORMALIZE_PATH(path);
 
         const isRootDir: boolean = (depth === 0 && path === "/");
-
 
         loopData.maxDepth = Math.max(loopData.maxDepth, depth);
 
@@ -326,6 +326,43 @@ export class ListServer {
         q.set("source", path);
 
 
+        const fileFilterEntries = async (ld: IListData): Promise<void> => {
+            if (options.fnFileFilter) {
+
+                for (let i = 0; i < ld.entries.length; i++) {
+                    const theEntry: IListEntry = ld.entries[i];
+                    if (!await options.fnFileFilter(ld, theEntry)) {
+
+                        if (theEntry.type === "file") ld.summary.imageCount--;
+                        else ld.summary.directoryCount--;
+
+                        ld.summary.entryCount--;
+                        ld.entries.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+        };
+
+        const dirFilterEntries = async (ld: IListData): Promise<void> => {
+            if (options.fnDirFilter) {
+                for (let i = 0; i < ld.entries.length; i++) {
+                    const theEntry: IListEntry = ld.entries[i];
+
+                    if (theEntry.type === "directory" && !await options.fnDirFilter(ld, theEntry)) {
+
+                        ld.summary.directoryCount--;
+                        ld.summary.entryCount--;
+
+                        ld.entries.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+        };
+
+        const subDirsToRead: IListEntry[] = [];
+
         return this.com.iAxios.get(
             this.client.getServerBaseQueryPath() + q.toString(),
             this.com.getAxiosRequestConfig(options)
@@ -349,6 +386,9 @@ export class ListServer {
 
                 let ld: IListData = body as IListData;
                 ld.summary._baseDir = baseDir;
+                ld.summary.clientInfo = new ClientSummaryInfo();
+
+
 
                 // last entry in json is always empty, remove it
                 ld.entries.pop();
@@ -375,27 +415,11 @@ export class ListServer {
                     }
                 }
 
+                APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                 if (ld.entries.length > 0 && options.fnDirFilter) {
 
-                    const filterEntries = async (): Promise<void> => {
-                        if (options.fnDirFilter) {
-                            for (let i = 0; i < ld.entries.length; i++) {
-                                const theEntry: IListEntry = ld.entries[i];
-
-                                if (theEntry.type === "directory" && !await options.fnDirFilter(ld, theEntry)) {
-
-                                    ld.summary.directoryCount--;
-                                    ld.summary.entryCount--;
-
-                                    ld.entries.splice(i, 1);
-                                    i--;
-                                }
-                            }
-                        }
-                    };
-
-                    return filterEntries().then(() => {
+                    return dirFilterEntries(ld).then(() => {
                         return ld;
                     })
                         .catch(() => {
@@ -405,10 +429,11 @@ export class ListServer {
                 } else {
                     return ld;
                 }
-
+                
             })
-            .then(ld => {
+            .then ( ld => {
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
+
 
                 if (ld.entries.length > 0 && options.recursive) {
 
@@ -424,108 +449,43 @@ export class ListServer {
                         return ld;
                     } else {
 
-                        const getSubdirectories = async (): Promise<void> => {
 
-                            const nEnd = ld.entries.length;
-                            const dirs: IListEntry[] = [];
+                        const nEnd = ld.entries.length;
 
-                            for (let i = 0; i < nEnd; i++) {
+                        for (let i = 0; i < nEnd; i++) {
 
-                                APIAbortController.THROW_IF_ABORTED(options.abortController);
+                            APIAbortController.THROW_IF_ABORTED(options.abortController);
 
-                                if (ld.entries[i].type === "directory") {
+                            if (ld.entries[i].type === "directory") {
 
-                                    if (isRootDir) {
-                                        if (!options.readInternalConnectors && ld.entries[i].src.indexOf("_") === 0) {
-                                            this.callProgress(LogLevel.debug, options, APITasks.skipInternalConnector,
-                                                [ld.entries[i].path]);
-                                        } else if (!ListServer.isValidConnectorType(loopData, ld.entries[i].connectorType)) {
-                                            this.callProgress(LogLevel.debug, options, APITasks.skipConnectorType,
-                                                [ld.entries[i].path, ld.entries[i].connectorType]);
-                                        } else {
-                                            dirs.push(ld.entries[i]);
-                                        }
+                                if (isRootDir) {
+                                    if (!options.readInternalConnectors && ld.entries[i].src.indexOf("_") === 0) {
+                                        this.callProgress(LogLevel.debug, options, APITasks.skipInternalConnector,
+                                            [ld.entries[i].path]);
+                                    } else if (!ListServer.isValidConnectorType(loopData, ld.entries[i].connectorType)) {
+                                        this.callProgress(LogLevel.debug, options, APITasks.skipConnectorType,
+                                            [ld.entries[i].path, ld.entries[i].connectorType]);
                                     } else {
-                                        dirs.push(ld.entries[i]);
+                                        subDirsToRead.push(ld.entries[i]);
                                     }
-                                }
-                            }
-
-                            const prgSize: number = (dirs.length === 0) ? 0 : progressSize / dirs.length;
-
-                            for (let i = 0; i < dirs.length; i++) {
-                                APIAbortController.THROW_IF_ABORTED(options.abortController);
-
-                                const entry: IListEntry = dirs[i];
-                                const prgStart: number = progressStart + prgSize * i;
-
-                                this.callProgress(LogLevel.trace, options, APITasks.readSubDir, [entry.path, depth],
-                                    prgStart, 100);
-
-                                try {
-                                    const ldSub: IListData = await this.doRead(entry.path, baseDir, options,
-                                        depth + 1, loopData,
-                                        prgStart, prgSize) as IListData;
-
-                                    // ld is the listData of the current(!) dir
-                                    ld.summary.entryCount += ldSub.summary.entryCount;
-                                    ld.summary.directoryCount += ldSub.summary.directoryCount;
-                                    ld.summary.imageCount += ldSub.summary.imageCount;
-                                    ld.summary.completeCount += ldSub.summary.completeCount;
-
-
-                                    ld.entries = ld.entries.concat(ldSub.entries);
-
-                                } catch (err) {
-                                    if (this.com.isAbortError(err) || (options.continueOnError !== undefined && !options.continueOnError)) {
-                                        throw err;
-                                    }
-
-                                    if (options._fnQueueError !== undefined) {
-                                        options._fnQueueError.fn.call(options._fnQueueError.ctx, err);
-                                    }
-
-                                    this.taskController.error(err);
-                                }
-                            }
-                        };
-
-                        return getSubdirectories().then(() => {
-                            if (depth === 0) {
-                                if (loopData.note === "") {
-                                    loopData.note = "complete";
-                                }
-                            }
-                            return ld;
-                        })
-                    }
-                } else {
-                    return ld;
-                }
-
-            })
-            .then(ld => {
-
-                if (ld.entries.length > 0 && options.fnFileFilter) {
-
-                    const filterEntries = async (): Promise<void> => {
-                        if (options.fnFileFilter) {
-                            for (let i = 0; i < ld.entries.length; i++) {
-                                const theEntry: IListEntry = ld.entries[i];
-                                if (!await options.fnFileFilter(ld, theEntry)) {
-
-                                    if (theEntry.type === "file") ld.summary.imageCount--;
-                                    else ld.summary.directoryCount--;
-
-                                    ld.summary.entryCount--;
-                                    ld.entries.splice(i, 1);
-                                    i--;
+                                } else {
+                                    subDirsToRead.push(ld.entries[i]);
                                 }
                             }
                         }
-                    };
 
-                    return filterEntries().then(() => {
+                        return ld;
+                    }
+                }
+                else return ld;
+            })
+            .then ( ld => {
+                
+                APIAbortController.THROW_IF_ABORTED(options.abortController);
+
+                if (ld.entries.length > 0 && options.fnFileFilter) {
+
+                    return fileFilterEntries(ld).then( () => {
                         return ld;
                     })
                         .catch(() => {
@@ -536,12 +496,78 @@ export class ListServer {
                     return ld;
                 }
 
+
             })
             .then(ld => {
 
-                ld.summary.clientInfo = new ClientSummaryInfo();
-
                 ListServer.updateClientSummary(ld, options);
+
+                APIAbortController.THROW_IF_ABORTED(options.abortController);
+
+                if (subDirsToRead.length > 0) {
+
+
+                    const getSubdirectories = async (): Promise<void> => {
+
+                        const prgSize: number = (subDirsToRead.length === 0) ? 0 : progressSize / subDirsToRead.length;
+
+                        for (let i = 0; i < subDirsToRead.length; i++) {
+                            APIAbortController.THROW_IF_ABORTED(options.abortController);
+
+                            const entry: IListEntry = subDirsToRead[i];
+                            const prgStart: number = progressStart + prgSize * i;
+
+                            this.callProgress(LogLevel.trace, options, APITasks.readSubDir, [entry.path, depth],
+                                prgStart, 100);
+
+                            try {
+                                const ldSub: IListData = await this.doRead(entry.path, baseDir, options,
+                                    depth + 1, loopData,
+                                    prgStart, prgSize) as IListData;
+
+                                // ld is the listData of the current(!) dir
+                                ld.summary.entryCount += ldSub.summary.entryCount;
+                                ld.summary.directoryCount += ldSub.summary.directoryCount;
+                                ld.summary.imageCount += ldSub.summary.imageCount;
+                                ld.summary.completeCount += ldSub.summary.completeCount;
+
+                                if (!options.dropEntries){
+                                    ld.entries = ld.entries.concat(ldSub.entries);
+                                }
+
+                                ListServer.addClientSummaryInfo(ld.summary.clientInfo, ldSub.summary.clientInfo);
+
+                            } catch (err) {
+                                if (this.com.isAbortError(err) || (options.continueOnError !== undefined && !options.continueOnError)) {
+                                    throw err;
+                                }
+
+                                if (options._fnQueueError !== undefined) {
+                                    options._fnQueueError.fn.call(options._fnQueueError.ctx, err);
+                                }
+
+                                this.taskController.error(err);
+                            }
+                        }
+                    };
+
+                    return getSubdirectories().then(() => {
+                        if (depth === 0) {
+                            if (loopData.note === "") {
+                                loopData.note = "complete";
+                            }
+                        }
+                        return ld;
+                    })
+
+                } else {
+                    return ld;
+                }
+
+            })
+            .then(ld => {
+
+                if (options.dropEntries) ld.entries = [];
 
                 ld.summary.clientInfo.note = loopData.note;
                 ld.summary.clientInfo.maxDepth = loopData.maxDepth;
@@ -1000,6 +1026,21 @@ export class ListServer {
         }
     }
 
+    private static addClientSummaryInfo(infoMain: ClientSummaryInfo, infoAdd: ClientSummaryInfo): void{
+
+        infoMain.directoryCount     += infoAdd.directoryCount;
+        infoMain.fileCount          += infoAdd.fileCount;
+        infoMain.entryCount         += infoAdd.entryCount;
+
+
+        for (const state in infoMain.importStates){
+            infoMain.importStates[state] += infoAdd.importStates[state];
+        }
+
+        infoMain.totalSize += infoAdd.totalSize;
+
+    }
+
     private static updateClientSummary(ld: IListData, options: IListOptions): void {
 
         ld.summary.clientInfo.directoryCount    = ld.summary.directoryCount;
@@ -1028,50 +1069,10 @@ export class ListServer {
             }
         }
 
-        ld.summary.clientInfo.totalSize = sz;
-
+        ld.summary.clientInfo.totalSize += sz;
 
         if (options.generateDirProgress && options._taskProgress && options._taskProgress.clientSummary) {
-
-            const cs = options._taskProgress.clientSummary;
-
-            sz = 0;
-            let files: number = 0;
-            let dirs: number = 0;
-            entries = 0;
-
-            for (const entry of ld.entries) {
-                entries++;
-
-
-                if (entries % 50 === 0) {
-                    APIAbortController.THROW_IF_ABORTED(options.abortController);
-                }
-
-                if (entry._listData.summary.dir !== ld.summary.dir) {
-                    break;
-                }
-
-                if (entry.type === "file") {
-                    files++;
-                    if (!isNaN(entry.size)) {
-                        sz += entry.size;
-                    }
-
-                    if (entry.importStatus !== undefined) {
-                        cs.importStates[entry.importStatus]++;
-                    }
-                } else {
-                    dirs++;
-                }
-            }
-
-            cs.directoryCount += dirs;
-            cs.fileCount += files;
-            cs.entryCount += entries;
-            cs.totalSize += sz;
-
-
+            ListServer.addClientSummaryInfo(options._taskProgress.clientSummary, ld.summary.clientInfo);
         }
 
     }

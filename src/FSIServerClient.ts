@@ -73,6 +73,7 @@ export default class FSIServerClient {
     private readonly classInit: IAPIClassInit;
     private static regExValidFileExtension = /(\.jpg|\.jpeg|\.tif|\.tiff|\.png|\.gif|\.bmp)$/;
 
+
     constructor(private readonly host: string) {
 
         chk.HOST(host);

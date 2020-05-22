@@ -300,11 +300,11 @@ export class FileOps {
 
                     // 2) get content from source dir
 
-                    const listPromise: Promise<object> = self.client.listServer(path, listOptions);
+                    const listPromise: Promise<IListData> = self.client.listServer(path, listOptions);
 
 
                     listPromise.then(body => {
-                        return body as IListData;
+                        return body;
                     })
                         .then(ld => {
 

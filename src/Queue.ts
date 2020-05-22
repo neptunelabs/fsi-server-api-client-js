@@ -2046,7 +2046,7 @@ export class Queue {
 
             this.queueProgress.currentTask = this.taskController.setCurrentTask(LogLevel.debug, APITasks.startQueueCommand, [this.queueProgress.pos, this.queueProgress.length, this.iCurrentItem.cmd]);
 
-            let lo: IListOptions | null = null;
+            let listOptions: IListOptions | null = null;
 
             switch (this.iCurrentItem.cmd) {
                 case "listServer":
@@ -2054,8 +2054,8 @@ export class Queue {
                     if (typeof (this.iCurrentItem.args[1]) === "object"
                         && this.iCurrentItem.args[1].recursive
                     ) {
-                        lo = this.iCurrentItem.args[1] as IListOptions;
-                        lo.continueOnError = this.options.continueOnError;
+                        listOptions = this.iCurrentItem.args[1] as IListOptions;
+                        listOptions.continueOnError = this.options.continueOnError;
                     }
                     break;
                 case "download":
@@ -2070,12 +2070,12 @@ export class Queue {
                 case "addEntries":
                 case "addEntryObjects":
                     if (typeof (this.iCurrentItem.args[1]) === "object") {
-                        lo = this.iCurrentItem.args[1] as IListOptions;
-                        lo.continueOnError = this.options.continueOnError;
+                        listOptions = this.iCurrentItem.args[1] as IListOptions;
+                        listOptions.continueOnError = this.options.continueOnError;
                     }
             }
 
-            this.addProgressCallbacks(lo);
+            this.addProgressCallbacks(listOptions);
             this.taskController.reset();
 
             const promise: Promise<boolean | object> = this.getMethod(this.iCurrentItem);
@@ -2108,7 +2108,7 @@ export class Queue {
                     this.appendListData(ld);
                 }
 
-                this.runNext(fnResolve, fnReject);
+                return this.runNext(fnResolve, fnReject);
             })
                 .catch(async error => {
 

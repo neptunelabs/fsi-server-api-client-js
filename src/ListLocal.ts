@@ -399,10 +399,10 @@ export class ListLocal {
                     self.callProgress(LogLevel.trace, options, APITasks.readSubDir, [entry.path, depth],
                         prgStart, 100);
 
-                    try {
-                        const ldSub: IListData = await self.listDataFromLocalDir(
+                    await self.listDataFromLocalDir(
                             entry.path, options, useDirs, useFiles,
-                            depth + 1, loopData, prgStart, prgSize);
+                            depth + 1, loopData, prgStart, prgSize)
+                        .then( (ldSub) => {
 
                         APIAbortController.THROW_IF_ABORTED(options.abortController);
 
@@ -414,8 +414,9 @@ export class ListLocal {
                         ld.summary.clientInfo.totalSize += ldSub.summary.clientInfo.totalSize;
 
                         ld.entries = ld.entries.concat(ldSub.entries);
+                    })
 
-                    } catch (err) {
+                    .catch ( err => {
 
                         if (this.com.isAbortError(err) || (options.continueOnError !== undefined && !options.continueOnError)) {
                             throw err;
@@ -426,7 +427,7 @@ export class ListLocal {
                         }
 
                         self.taskController.error(err);
-                    }
+                    });
                 }
             };
 

@@ -15,6 +15,8 @@ module.exports = {
         "@typescript-eslint/interface-name-prefix": 0,
         "@typescript-eslint/member-delimiter-style": 0,
         "@typescript-eslint/no-explicit-any":0,
+        "@typescript-eslint/explicit-module-boundary-types":0,
+        "@typescript-eslint/ban-types":0,
         "no-async-promise-executor":0
 
     }

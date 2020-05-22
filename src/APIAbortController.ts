@@ -4,7 +4,7 @@ import {APIError} from "./APIError";
 export class APIAbortController {
 
     private axiosCancelTokenSource: CancelTokenSource = axios.CancelToken.source();
-    private axiosCancelToken: CancelToken = this.axiosCancelTokenSource.token;
+
     private aborted: boolean = false;
     private abortThrown: boolean = false;
 
@@ -33,7 +33,13 @@ export class APIAbortController {
     }
 
     public getAxiosCancelToken(): CancelToken {
-        return this.axiosCancelToken;
+
+        // the token keeps a reference to each request!
+        // therefore we need to get a new token for each sequential request,
+        // ! otherwise we create a memory leak !
+        this.axiosCancelTokenSource = axios.CancelToken.source();
+
+        return this.axiosCancelTokenSource.token;
     }
 
     public abort(): boolean {

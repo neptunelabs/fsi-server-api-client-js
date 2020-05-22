@@ -27,11 +27,14 @@ export class FSIServerClientUtils {
         return (typeof(window) === "undefined");
     }
 
+
+    private static readonly RGX_JOIN_PATH_1 = /^\//;
+    private static readonly RGX_JOIN_PATH_2 = /\/$/;
     public static JOIN_PATH(path: string, name: string): string {
-        path = path.replace(/^\//, "");
-        path = path.replace(/\/$/, "");
-        name = name.replace(/^\//, "");
-        name = name.replace(/\/$/, "");
+        path = path.replace(this.RGX_JOIN_PATH_1, "")
+        .replace(this.RGX_JOIN_PATH_2, "");
+        name = name.replace(this.RGX_JOIN_PATH_1, "")
+        .replace(this.RGX_JOIN_PATH_2, "");
 
         if (path) path += "/";
         if (name) name += "/";
@@ -43,38 +46,48 @@ export class FSIServerClientUtils {
         return (bNow) ? Date.now() : new Date().getTime();
     }
 
+    private static readonly RGX_ESCAPE_REG_EX = /[-/\\^$*+?.()|[\]{}]/g;
     public static ESCAPE_REG_EX(s: string): string {
-        return s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+        return s.replace(this.RGX_ESCAPE_REG_EX, '\\$&');
     }
 
-    public static TRANSFORM_LOCAL_PATH(path: string): string {
-        if (path.match(/^([a-zA-Z]):\\/)) {
+    private static readonly RGX_TRANSFORM_LOCAL_PATH_1 = /^([a-zA-Z]):\\([^\\])/;
+    private static readonly RGX_TRANSFORM_LOCAL_PATH_2 = /^([a-zA-Z]):\\$/;
+    private static readonly RGX_TRANSFORM_LOCAL_PATH_3 = /\\/g;
 
-            path = path.replace(/^([a-zA-Z]):\\([^\\])/, "$1://$2");
-            path = path.replace(/^([a-zA-Z]):\\$/, "$1://");
+    public static TRANSFORM_LOCAL_PATH(path: string): string {
+        if (path.match(this.RGX_TRANSFORM_LOCAL_PATH_2)) {
+
+            path = path.replace(this.RGX_TRANSFORM_LOCAL_PATH_1, "$1://$2")
+            .replace(this.RGX_TRANSFORM_LOCAL_PATH_2, "$1://");
         }
 
-        path = path.replace(/\\/g, "/");
+        path = path.replace(this.RGX_TRANSFORM_LOCAL_PATH_3, "/");
 
         return path;
     }
 
-
+    private static readonly RGX_GET_BASE_PATH = /^[^/]*/;
     public static GET_BASE_PATH(path: string): string {
 
         path = FSIServerClientUtils.NORMALIZE_PATH(path);
-        const match = path.match(/^[^/]*/);
+        const match = path.match(this.RGX_GET_BASE_PATH);
 
         return (match && match[0]) ? match[0] : "";
     }
 
+    private static readonly RGX_NORMALIZE_PATH_1 = /\/\//;
+    private static readonly RGX_NORMALIZE_PATH_2 = /^\/+/;
+    private static readonly RGX_NORMALIZE_PATH_3 = /\/+$/;
     public static NORMALIZE_PATH(path: string): string {
-        path = path.replace(/\/\//, "/");
-        path = path.replace(/^\/+/, "");
-        path = path.replace(/\/+$/, "");
+        path = path.replace(this.RGX_NORMALIZE_PATH_1, "/")
+        .replace(this.RGX_NORMALIZE_PATH_2, "")
+        .replace(this.RGX_NORMALIZE_PATH_3, "");
 
         return path + "/";
     }
+
+
 
     public static EXTRACT_LAST_DIR(path: string): IPathAndDir {
         let dir: string;
@@ -97,16 +110,18 @@ export class FSIServerClientUtils {
         return {path, dir, error: undefined, errorContent: [path]};
     }
 
+    private static readonly RGX_FILE_AND_PATH_1 = /\//;
+    private static readonly RGX_FILE_AND_PATH_2 = /\/$/;
     public static FILE_AND_PATH(path: string): IPathAndDir {
         let err: IAPIErrorDef | undefined;
 
 
-        if (path.length < 3 || !path.match(/\//) || path.match(/\/$/)) {
+        if (path.length < 3 || !path.match(this.RGX_FILE_AND_PATH_1) || path.match(this.RGX_FILE_AND_PATH_2)) {
             err = APIErrors.noValidFile;
         }
 
-        path = FSIServerClientUtils.NORMALIZE_PATH(path);
-        path = path.replace(/\/$/, "");
+        path = FSIServerClientUtils.NORMALIZE_PATH(path)
+        .replace(this.RGX_FILE_AND_PATH_2, "");
 
         const parts: string[] = path.split("/");
         const dir: string = parts.pop() || "";
@@ -120,9 +135,11 @@ export class FSIServerClientUtils {
         return {path, dir, error: err, errorContent: [path]};
     }
 
+    private static readonly RGX_GET_PARENT_PATH_1 = /\/+$/;
+    private static readonly RGX_GET_PARENT_PATH_2 = /\/[^/]*$/;
     public static GET_PARENT_PATH(path: string): string {
-        path = path.replace(/\/+$/, "");
-        let ret: string = path.replace(/\/[^/]*$/, "");
+        path = path.replace(this.RGX_GET_PARENT_PATH_1, "");
+        let ret: string = path.replace(this.RGX_GET_PARENT_PATH_2, "");
         ret = FSIServerClientUtils.NORMALIZE_PATH(ret);
         return ret;
     }
@@ -148,19 +165,27 @@ export class FSIServerClientUtils {
         return FSIServerClientUtils.JOIN_PATH(pd.path, newDir);
     }
 
+    private static readonly RGX_REPLACE_FILE_EXTENSION = /\.[^.].*$/;
     public static REPLACE_FILE_EXTENSION(path: string, ext: string): string {
-        return path.replace(/\.[^.].*$/, "." + ext);
+        return path.replace(this.RGX_REPLACE_FILE_EXTENSION, "." + ext);
     }
 
+    private static readonly RGX_MAKE_RELATIVE_PATH = [
+        /^(\/\/[^/]+)/,
+        /^([a-z]):\/+/i,
+        /^\.+\/+/,
+        /^\.+/,
+        /^[^/]*:\/\//,
+        /^\/+/
+    ];
     public static MAKE_RELATIVE_PATH(path: string): string {
 
-        path = path.replace(/^(\/\/[^/]+)/, "");
-        path = path.replace(/^([a-z]):\/+/i, "");
-        path = path.replace(/^\.+\/+/, "");
-
-        path = path.replace(/^\.+/, "");
-        path = path.replace(/^[^/]*:\/\//, "");
-        path = path.replace(/^\/+/, "");
+        path = path.replace(this.RGX_MAKE_RELATIVE_PATH[0], "")
+        .replace(this.RGX_MAKE_RELATIVE_PATH[1], "")
+        .replace(this.RGX_MAKE_RELATIVE_PATH[2], "")
+        .replace(this.RGX_MAKE_RELATIVE_PATH[3], "")
+        .replace(this.RGX_MAKE_RELATIVE_PATH[4], "")
+        .replace(this.RGX_MAKE_RELATIVE_PATH[5], "");
 
         return FSIServerClientUtils.NORMALIZE_PATH(path);
     }
@@ -217,11 +242,12 @@ export class FSIServerClientUtils {
         return res.trim();
     }
 
+    private static readonly RGX_GET_NEW_RELATIVE_PATH = /\/$/;
     public static GET_NEW_RELATIVE_PATH(path: string, basePath: string, targetPath: string,
                                         entry: IListEntry, options: ICopyOptions = {}, tries: number = 0): string {
 
         let subPath: string = FSIServerClientUtils.GET_SUB_DIR(basePath, path);
-        subPath = subPath.replace(/\/$/, "");
+        subPath = subPath.replace(this.RGX_GET_NEW_RELATIVE_PATH, "");
 
         if (options.fnRename) subPath = options.fnRename(entry, subPath, tries);
 

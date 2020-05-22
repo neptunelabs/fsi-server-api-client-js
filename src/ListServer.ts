@@ -156,6 +156,8 @@ const EntryNumberDefaults: { [key: string]: any; } = {
 
 export class ListServer {
 
+    private globalCount = 0;
+
     private readonly baseURL: string;
     private readonly client: FSIServerClient;
     private readonly com: FSIServerClientInterface;
@@ -264,8 +266,131 @@ export class ListServer {
         return this.doRead(path, baseDir, options, 0, loopData, 0, 100);
     }
 
+    private static  dirFilterEntries = async (ld: IListData, options: IListOptions): Promise<void> => {
+        if (options.fnDirFilter) {
+
+            const collectEntries: boolean = !options.dropEntries;
+
+            for (let i = 0; i < ld.entries.length; i++) {
+                const theEntry: IListEntry = ld.entries[i];
+
+                if (theEntry.type !== "directory") break;
+
+                if (!await options.fnDirFilter(ld, theEntry)) {
+
+                    ld.summary.directoryCount--;
+                    ld.summary.entryCount--;
+
+                    if (collectEntries){
+                        ld.entries.splice(i, 1);
+                        i--;
+                    }
+
+                }
+            }
+        }
+    };
+
+    private static fileFilterEntries = async (ld: IListData, options: IListOptions): Promise<void> => {
+        if (options.fnFileFilter) {
+
+            const collectEntries: boolean = !options.dropEntries;
+
+            for (let i = 0; i < ld.entries.length; i++) {
+                const theEntry: IListEntry = ld.entries[i];
+
+                if (!await options.fnFileFilter(ld, theEntry)) {
+
+                    if (theEntry.type === "file") ld.summary.imageCount--;
+                    else ld.summary.directoryCount--;
+
+                    ld.summary.entryCount--;
+
+                    if (collectEntries) {
+                        ld.entries.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+        }
+    };
+
+
+    private getSubdirectories = async (
+        path: string,
+        baseDir: string,
+        subDirsToRead: string[],
+        ld: IListData,
+        options: IListOptions,
+        progressSize: number,
+        progressStart: number,
+        depth: number,
+        loopData: ILoopData
+
+
+    ): Promise<void> => {
+
+        const collectEntries: boolean = !options.dropEntries;
+        const prgSize: number = (subDirsToRead.length === 0) ? 0 : progressSize / subDirsToRead.length;
+
+        let src = subDirsToRead.pop();
+        let i = 0;
+
+
+        while (src) {
+            APIAbortController.THROW_IF_ABORTED(options.abortController);
+
+            const subDirPath = path + src;
+            const prgStart: number = progressStart + prgSize * i;
+
+            this.callProgress(LogLevel.trace, options, APITasks.readSubDir, [subDirPath, depth],
+                prgStart, 100);
+
+
+            await this.doRead(subDirPath, baseDir, options,
+                depth + 1, loopData, prgStart, prgSize)
+            .then ( (ldSub: IListData) => {
+
+                // ld is the listData of the current(!) dir
+                ld.summary.entryCount       += ldSub.summary.entryCount;
+                ld.summary.directoryCount   += ldSub.summary.directoryCount;
+                ld.summary.imageCount       += ldSub.summary.imageCount;
+                ld.summary.completeCount    += ldSub.summary.completeCount;
+
+                if (collectEntries){
+                    ld.entries = ld.entries.concat(ldSub.entries);
+                }
+
+                ListServer.addClientSummaryInfo(ld.summary.clientInfo, ldSub.summary.clientInfo);
+            })
+            .catch( (err) => {
+                if (this.com.isAbortError(err) || (options.continueOnError !== undefined && !options.continueOnError)) {
+                    throw err;
+                }
+
+                if (options._fnQueueError !== undefined) {
+                    options._fnQueueError.fn.call(options._fnQueueError.ctx, err);
+                }
+
+                this.taskController.error(err);
+
+            });
+
+
+
+            i++;
+            src = subDirsToRead.pop();
+        }
+
+
+
+
+    };
+
+
     public doRead(path: string, baseDir: string, options: IListOptions, depth: number = 0, loopData: ILoopData,
                   progressStart: number, progressSize: number): Promise<IListData> {
+
 
         path = FSIServerClientUtils.NORMALIZE_PATH(path);
 
@@ -298,6 +423,7 @@ export class ListServer {
         if (options.sortOrder) {
             q.set("sortorder", options.sortOrder);
         }
+
         if (options.headers) {
             q.set("headers", options.headers);
         }
@@ -322,52 +448,19 @@ export class ListServer {
             q.set("items", options.items.join(","));
         }
 
-
         q.set("source", path);
-
-
-        const fileFilterEntries = async (ld: IListData): Promise<void> => {
-            if (options.fnFileFilter) {
-
-                for (let i = 0; i < ld.entries.length; i++) {
-                    const theEntry: IListEntry = ld.entries[i];
-                    if (!await options.fnFileFilter(ld, theEntry)) {
-
-                        if (theEntry.type === "file") ld.summary.imageCount--;
-                        else ld.summary.directoryCount--;
-
-                        ld.summary.entryCount--;
-                        ld.entries.splice(i, 1);
-                        i--;
-                    }
-                }
-            }
-        };
-
-        const dirFilterEntries = async (ld: IListData): Promise<void> => {
-            if (options.fnDirFilter) {
-                for (let i = 0; i < ld.entries.length; i++) {
-                    const theEntry: IListEntry = ld.entries[i];
-
-                    if (theEntry.type === "directory" && !await options.fnDirFilter(ld, theEntry)) {
-
-                        ld.summary.directoryCount--;
-                        ld.summary.entryCount--;
-
-                        ld.entries.splice(i, 1);
-                        i--;
-                    }
-                }
-            }
-        };
 
         const subDirsToRead: string[] = [];
 
+
         return this.com.iAxios.get(
+
+            //return this.com.iAxios.get(
             this.client.getServerBaseQueryPath() + q.toString(),
             this.com.getAxiosRequestConfig(options)
         )
             .then(response => {
+
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                 if (response.status !== 200) {
@@ -384,15 +477,15 @@ export class ListServer {
                     throw this.com.err.get(APIErrors.list, [path], APIErrors.invalidServerReply);
                 }
 
-                let ld: IListData = body as IListData;
+                const ld: IListData = body as IListData;
                 ld.summary._baseDir = baseDir;
                 ld.summary.clientInfo = new ClientSummaryInfo();
 
 
-
                 // last entry in json is always empty, remove it
                 ld.entries.pop();
-                this.initListData(ld);
+
+                this.initListData(ld, options);
 
 
                 if (ld.summary.connectorType === undefined) {
@@ -400,40 +493,38 @@ export class ListServer {
                 }
 
                 if (depth === 0 && !isRootDir) {
-                    // check internal connector and validate connector type against listOptions.
+                    // check internal connector and validate connector type against listOptions
 
                     if (!options.readInternalConnectors && path.indexOf("_") === 0) {
                         this.callProgress(LogLevel.debug, options, APITasks.skipInternalConnector,
                             [path]);
-                        ld = ListServer.GET_EMPTY_LIST_DATA(ld.summary.connectorType, ld.summary.dir);
+                        return ListServer.GET_EMPTY_LIST_DATA(ld.summary.connectorType, ld.summary.dir);
                     } else if (!ListServer.isValidConnectorType(loopData, ld.summary.connectorType)) {
 
                         this.callProgress(LogLevel.debug, options, APITasks.skipConnectorType,
                             [path, ld.summary.connectorType]);
 
-                        ld = ListServer.GET_EMPTY_LIST_DATA(ld.summary.connectorType, ld.summary.dir);
+                        return ListServer.GET_EMPTY_LIST_DATA(ld.summary.connectorType, ld.summary.dir);
                     }
                 }
 
+                return ld;
+
+            })
+            .then ( async (ld) => {
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                 if (ld.entries.length > 0 && options.fnDirFilter) {
-
-                    return dirFilterEntries(ld).then(() => {
-                        return ld;
-                    })
-                        .catch(() => {
-                            return ld;
-                        });
-
-                } else {
-                    return ld;
+                    await ListServer.dirFilterEntries(ld, options)
                 }
-                
+
+
+
+                return ld;
+
             })
             .then ( ld => {
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
-
 
                 if (ld.entries.length > 0 && options.recursive) {
 
@@ -454,7 +545,7 @@ export class ListServer {
 
                         for (let i = 0; i < nEnd; i++) {
 
-                            APIAbortController.THROW_IF_ABORTED(options.abortController);
+                            if (i % 50 === 0) APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                             if (ld.entries[i].type === "directory") {
 
@@ -472,6 +563,9 @@ export class ListServer {
                                     subDirsToRead.push(ld.entries[i].src);
                                 }
                             }
+                            else {
+                                break;
+                            }
                         }
 
                         return ld;
@@ -479,27 +573,19 @@ export class ListServer {
                 }
                 else return ld;
             })
-            .then ( ld => {
-
+            .then ( async (ld) => {
 
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                 if (ld.entries.length > 0 && options.fnFileFilter) {
-
-                    return fileFilterEntries(ld).then( () => {
-                        return ld;
-                    })
-                        .catch(() => {
-                            return ld;
-                        });
-
-                } else {
-                    return ld;
+                    await ListServer.fileFilterEntries(ld, options);
                 }
 
+                return ld;
 
             })
-            .then(ld => {
+            .then(async  (ld) => {
+                APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                 ListServer.updateClientSummary(ld, options);
 
@@ -509,60 +595,15 @@ export class ListServer {
 
                 if (subDirsToRead.length > 0) {
 
+                    await this.getSubdirectories(path, baseDir, subDirsToRead, ld, options, progressSize, progressStart, depth, loopData);
 
-                    const getSubdirectories = async (): Promise<void> => {
-
-                        const prgSize: number = (subDirsToRead.length === 0) ? 0 : progressSize / subDirsToRead.length;
-
-                        for (let i = 0; i < subDirsToRead.length; i++) {
-                            APIAbortController.THROW_IF_ABORTED(options.abortController);
-
-
-                            const subDirPath = path + subDirsToRead[i];
-                            const prgStart: number = progressStart + prgSize * i;
-
-                            this.callProgress(LogLevel.trace, options, APITasks.readSubDir, [subDirPath, depth],
-                                prgStart, 100);
-
-                            try {
-                                const ldSub: IListData = await this.doRead(subDirPath, baseDir, options,
-                                    depth + 1, loopData,
-                                    prgStart, prgSize) as IListData;
-
-                                // ld is the listData of the current(!) dir
-                                ld.summary.entryCount += ldSub.summary.entryCount;
-                                ld.summary.directoryCount += ldSub.summary.directoryCount;
-                                ld.summary.imageCount += ldSub.summary.imageCount;
-                                ld.summary.completeCount += ldSub.summary.completeCount;
-
-                                if (!options.dropEntries){
-                                    ld.entries = ld.entries.concat(ldSub.entries);
-                                }
-
-                                ListServer.addClientSummaryInfo(ld.summary.clientInfo, ldSub.summary.clientInfo);
-
-                            } catch (err) {
-                                if (this.com.isAbortError(err) || (options.continueOnError !== undefined && !options.continueOnError)) {
-                                    throw err;
-                                }
-
-                                if (options._fnQueueError !== undefined) {
-                                    options._fnQueueError.fn.call(options._fnQueueError.ctx, err);
-                                }
-
-                                this.taskController.error(err);
-                            }
+                    if (depth === 0) {
+                        if (loopData.note === "") {
+                            loopData.note = "complete";
                         }
-                    };
+                    }
 
-                    return getSubdirectories().then(() => {
-                        if (depth === 0) {
-                            if (loopData.note === "") {
-                                loopData.note = "complete";
-                            }
-                        }
-                        return ld;
-                    })
+                    return ld;
 
                 } else {
                     return ld;
@@ -571,10 +612,8 @@ export class ListServer {
             })
             .then(ld => {
 
-
-
-                ld.summary.clientInfo.note = loopData.note;
-                ld.summary.clientInfo.maxDepth = loopData.maxDepth;
+                ld.summary.clientInfo.note      = loopData.note;
+                ld.summary.clientInfo.maxDepth  = loopData.maxDepth;
 
                 if (depth === 0) {
                     this.callProgress(LogLevel.trace, options, APITasks.readListServer, [path], 100, 100);
@@ -582,11 +621,13 @@ export class ListServer {
                 }
 
                 return ld;
+
             })
             .catch(error => {
                 throw error;
             });
-    }
+
+}
 
 
     public addEntries(paths: string[], options: IListOptions): Promise<IListData[]> {
@@ -705,27 +746,38 @@ export class ListServer {
     }
 
 
-    private initListData(ld: IListData): void {
+    private initListData(ld: IListData, options: IListOptions): void {
         const dir: string = ld.summary.dir;
 
-        ld.entries.forEach((entry: IStringAnyMap) => {
-            entry._listData = ld;
+        if (options.dropEntries){
+            ld.entries.forEach((entry: IStringAnyMap) => {
+                entry.path = dir + entry.src;
+                entry.size = parseInt(entry.size, 10);
+                entry.importStatus = parseInt(entry.importstatus, 10);
+                delete entry.importstatus;
+            });
+        }
+        else {
+            ld.entries.forEach((entry: IStringAnyMap) => {
+                entry.path = dir + entry.src;
 
-            entry.lastModified = entry.lastmodified;
-            delete entry.lastmodified;
-            entry.importStatus = entry.importstatus;
-            delete entry.importstatus;
+                entry._listData = ld;
 
-            entry.path = dir + entry.src;
+                entry.lastModified = entry.lastmodified;
+                delete entry.lastmodified;
+                entry.importStatus = entry.importstatus;
+                delete entry.importstatus;
 
-            for (const o of Object.keys(EntryNumberDefaults)) {
-                if (entry[o] === undefined) {
-                    entry[o] = EntryNumberDefaults[o];
-                } else {
-                    entry[o] = parseInt(entry[o], 10);
+                for (const o of Object.keys(EntryNumberDefaults)) {
+                    if (entry[o] === undefined) {
+                        entry[o] = EntryNumberDefaults[o];
+                    } else {
+                        entry[o] = parseInt(entry[o], 10);
+                    }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     private callProgress(level: number, options: IListOptions, apiTaskDef: IAPITaskDef, content: any[],
@@ -1001,7 +1053,7 @@ export class ListServer {
 
                     data.lists.push(ld);
 
-                    this.initListData(ld);
+                    this.initListData(ld, options);
                     ListServer.updateClientSummary(ld, options);
 
                 } catch (err) {

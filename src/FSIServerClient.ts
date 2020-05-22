@@ -34,6 +34,7 @@ import {IHTTPOptions} from "./utils/IHTTPOptions";
 import {IOptions} from "./utils/IOptions";
 import {LogLevel} from "./LogLevel";
 import {IArchiveType} from "./utils/IArchiveType";
+import {APIError} from "./APIError";
 
 const modeNode: boolean = FSIServerClientUtils.GET_MODE_NODE();
 
@@ -267,8 +268,8 @@ export default class FSIServerClient {
         return new Queue(this.classInit, options);
     }
 
-    public isAbortError(err: any): boolean {
-        return this.com.isAbortError(err);
+    public isAbortError(err: Error): boolean {
+        return this.com.isAbortError(err as APIError);
     }
 
     public getNewAbortController(): APIAbortController {

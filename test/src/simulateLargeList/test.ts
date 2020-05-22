@@ -1,21 +1,36 @@
-import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, LogLevel, APIError} from "library/index";
+import {FSIServerClient, LogLevel, APITemplateSupplier} from "library/index";
 
 
+const templateSupplier = new APITemplateSupplier();
 
 const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
-client.setLogLevel(LogLevel.trace);
+client.setLogLevel(LogLevel.info);
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
 
 
 
-const nDirs = 2;
-const nFiles = 10;
-const maxDepths = 3;
+const nDirs = 6;
+const nFiles = 100;
+const maxDepths = 9;
+const defectLimit = Math.floor(nFiles / 2);
+let nFilesCreated = 0;
+let nDirsCreated = 0;
+const timeStart = Date.now();
+
+const log = () => {
+  const elapsed = Date.now() -  timeStart;
+  const fps = Math.floor(nFilesCreated / elapsed * 1000);
+  console.log(
+      client.formatTimePeriod(elapsed) + " "
+      + templateSupplier.niceInt(nDirsCreated) + " dirs, "
+      + templateSupplier.niceInt(nFilesCreated) + " files, "
+      + templateSupplier.niceInt(fps) + " files/sec");
+
+};
 
 
 // list
@@ -27,11 +42,10 @@ nock(host)
         const sourceParam = uri.match(/&source=([^&]*)/);
 
         if (sourceParam && sourceParam[1]){
-            let path = decodeURIComponent(sourceParam[1]);
+            const path = decodeURIComponent(sourceParam[1]);
             let pathNoSlash;
             if (path.indexOf("/") !== 0) {
                 pathNoSlash = path;
-                path = "/" + path;
             }
             else pathNoSlash = path.replace(/^\//, "");
 
@@ -54,6 +68,7 @@ nock(host)
 
             dirContent.summary.entryCount       += nDirs;
             dirContent.summary.directoryCount   += nDirs;
+            nDirsCreated += nDirs;
 
             let id = 1;
             for (let i = 0; i < nDirs; i++, id++){
@@ -76,6 +91,7 @@ nock(host)
 
                 dirContent.summary.entryCount += nFiles;
                 dirContent.summary.imageCount += nFiles;
+                nFilesCreated += nDirs;
 
                 let numFile = 1;
                 for (let i = 0; i < nFiles; i++, id++, numFile++) {
@@ -87,7 +103,7 @@ nock(host)
                         "lastmodified": "1363089142000",
                         "width": "2000",
                         "height": "1000",
-                        "importstatus": "1",
+                        "importstatus": (i < defectLimit)?3:1,
                         "type": "file"
                     }
 
@@ -116,12 +132,21 @@ queue.listServer("/",
         dropEntries: true
     });
 
-queue.logBatchContent();
+//queue.logBatchContent();
 queue.logBatchContentSummary();
 
 
+
+const intervalLog = setInterval(log, 1000);
+
 queue.run().finally( () => {
    nock.cleanAll();
+   clearInterval(intervalLog);
+
+   const bc = queue.getCurrentBatchContent();
+   if (bc && bc.entries) console.log("batch contains " + bc.entries.length + " entries");
+
+
 });
 
 

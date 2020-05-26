@@ -1,10 +1,7 @@
 {
   "name": "fsi-server-api-client-js-samples",
   "version": "1.0.0",
-  "description": "Tests for typed-rest-client",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "Sample code using @neptunelabs/fsi-server-api-client",
   "author": {
     "name": "NeptuneLabs GmbH",
     "url": "https://www.neptunelabs.com/"

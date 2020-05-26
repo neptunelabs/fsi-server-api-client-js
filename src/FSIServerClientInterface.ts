@@ -12,7 +12,7 @@ import {APIErrorSupplier} from "./APIErrorSupplier";
 import {APITask} from "./APITask";
 import {APITaskSupplier} from "./APITaskSupplier";
 import {ClientSummaryInfo} from "./ClientSummaryInfo";
-import {FSIServerClientUtils, IStringAnyMap} from "./FSIServerClientUtils";
+import {FSIServerClientUtils, IStringAnyMap, IStringStringMap} from "./FSIServerClientUtils";
 import {MimeTypes} from "./MimeTypes";
 import {TaskController} from "./TaskController";
 import {TaskProgress} from "./TaskProgress";
@@ -27,6 +27,8 @@ import {IOptions} from "./utils/IOptions";
 import {IUploadOptions} from "./Upload";
 import * as http from "http";
 import * as https from "https";
+
+
 
 
 const modeNode: boolean = FSIServerClientUtils.GET_MODE_NODE();
@@ -99,8 +101,13 @@ export class FSIServerClientInterface {
         this.previousTask = this.taskSupplier.get(APITasks.idle);
 
         if (modeNode){
-            const httpAgent = new http.Agent({ keepAlive: true });
-            const httpsAgent = new https.Agent({ keepAlive: true });
+
+            const httpAgentOptions = {
+                "keepAlive": true
+            };
+
+            const httpAgent  = new http.Agent(httpAgentOptions);
+            const httpsAgent = new https.Agent(httpAgentOptions);
 
             this.iAxios = axios.create({
                 httpAgent: httpAgent,
@@ -272,7 +279,7 @@ export class FSIServerClientInterface {
             };
 
         if (options !== null && options.abortController) {
-            ret.cancelToken = options.abortController.getAxiosCancelToken();
+            ret.cancelToken = options.abortController.renewCancelToken();
         }
 
 

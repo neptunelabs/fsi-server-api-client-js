@@ -12,8 +12,8 @@
     "test-integration": "mocha -r ts-node/register -r tsconfig-paths/register ./test test/src/integration/**.ts",
     "test-unit": "mocha -r ts-node/register -r tsconfig-paths/register test/src/unit/**.ts",
     "test-operation": "mocha -r ts-node/register -r tsconfig-paths/register test/src/optest.ts",
-    "test-translations": "mocha -r ts-node/register -r tsconfig-paths/register test/src/translations.ts",
-    "test-simulateLargeList": "mocha -r ts-node/register -r tsconfig-paths/register test/src/simulateLargeList/**.ts"
+    "test-translation": "mocha -r ts-node/register -r tsconfig-paths/register test/src/translations.ts",
+    "test-simulateLargeList": "mocha -r ts-node/register -r tsconfig-paths/register --expose-gc test/src/simulateLargeList/index.ts"
   },
   "repository": {
     "type": "git",
@@ -40,12 +40,12 @@
     "@types/bytes": "^3.1.0",
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
-    "@types/node": "^14.0.5",
+    "@types/node": "^14.0.1",
     "@types/ungap__url-search-params": "^0.1.0",
-    "@typescript-eslint/eslint-plugin": "^3.0.0",
-    "@typescript-eslint/parser": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^3.0.1",
+    "@typescript-eslint/parser": "^3.0.1",
     "chai": "^4.2.0",
-    "eslint": "^7.0.0",
+    "eslint": "^7.1.0",
     "json-schema": "^0.2.5",
     "mocha": "^7.1.2",
     "nock": "^12.0.3",

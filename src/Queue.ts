@@ -1207,8 +1207,6 @@ export class Queue {
             [this.currentBatch.entries.length, targetPath]);
         this.onBatchStart("batchUpload");
 
-
-        // console.log(self.currentBatch.entries[0]._listData);
         this.queueProgress.bytesTotal = this.currentBatch.clientInfo.totalSize;
 
         this.setDefaultOptionFunction(options);
@@ -1994,6 +1992,9 @@ export class Queue {
     }
 
     private onStopExecution(): void {
+
+        // get a new cancel token so that the last request will be released
+        this.abortController.release();
 
         this.bRunning = false;
 

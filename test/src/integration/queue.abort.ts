@@ -4,27 +4,22 @@ import {default as nock} from 'nock'
 import {FSIServerClient, LogLevel} from "library/index";
 import {default as data} from "./reImportData.json"
 
-
-
 const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.none);
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
 
-
 it('queue.abort()', () => {
 
-
     // setup replies
-
     // list
     nock(host)
-        .get(data.listURL1)
+        .persist()
+        .get(/\/fsi\/server\?type=list&tpl=interface_thumbview_default.json&source=.*/)
         .matchHeader('accept', 'application/json')
         .matchHeader("user-agent", "FSI Server API Client")
-        .delayConnection(10)
-        .reply(200, data.listReply1);
+        .reply(200, data.listReply3);
 
 
     const queue = client.createQueue();
@@ -42,7 +37,10 @@ it('queue.abort()', () => {
             nock.cleanAll();
         });
 
-    queue.abort();
+    setTimeout( () => {
+        queue.abort();
+    }, 10)
+
 
     return res;
 });

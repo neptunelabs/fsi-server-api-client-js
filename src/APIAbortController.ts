@@ -4,7 +4,7 @@ import {APIError} from "./APIError";
 export class APIAbortController {
 
     private axiosCancelTokenSource: CancelTokenSource = axios.CancelToken.source();
-
+    private tokenInUse: boolean = false;
     private aborted: boolean = false;
     private abortThrown: boolean = false;
 
@@ -32,12 +32,26 @@ export class APIAbortController {
         return this.aborted;
     }
 
-    public getAxiosCancelToken(): CancelToken {
+    public release():boolean{
 
-        // the token keeps a reference to each request!
-        // therefore we need to get a new token for each sequential request,
-        // ! otherwise we create a memory leak !
-        this.axiosCancelTokenSource = axios.CancelToken.source();
+        if (!this.aborted) {
+            this.renewCancelToken();
+            this.tokenInUse = false;
+            return true;
+        }
+        else return false;
+    }
+
+    public renewCancelToken(): CancelToken {
+
+        if (this.tokenInUse){
+            // the token keeps a reference to each request!
+            // therefore we need to get a new token for each sequential request,
+            // ! otherwise we create a memory leak !
+            this.axiosCancelTokenSource.cancel();
+            this.axiosCancelTokenSource = axios.CancelToken.source();
+        }
+        else this.tokenInUse = true;
 
         return this.axiosCancelTokenSource.token;
     }
@@ -48,6 +62,10 @@ export class APIAbortController {
             this.aborted = true;
 
             this.axiosCancelTokenSource.cancel();
+
+            this.renewCancelToken();
+            this.tokenInUse = false;
+
             return true;
         } else {
             return false;

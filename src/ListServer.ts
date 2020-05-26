@@ -454,14 +454,14 @@ export class ListServer {
 
 
         return this.com.iAxios.get(
-
-            //return this.com.iAxios.get(
             this.client.getServerBaseQueryPath() + q.toString(),
             this.com.getAxiosRequestConfig(options)
         )
             .then(response => {
 
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
+
+                if (options.abortController) options.abortController.release();
 
                 if (response.status !== 200) {
                     throw this.com.err.get(APIErrors.list, [path],

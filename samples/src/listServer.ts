@@ -20,8 +20,10 @@ client.setLogLevel(LogLevel.trace);
 const queue = client.createQueue(
     {continueOnError: true});
 
+
 // start session
 queue.login(serverVars.userName, serverVars.passWord);
+
 
 // list content of dir recursively and keep only files with width > 3000px
 queue.listServer(serverVars.sampleConnector, {

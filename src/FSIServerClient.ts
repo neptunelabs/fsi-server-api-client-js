@@ -260,6 +260,7 @@ export default class FSIServerClient {
     }
 
     public createQueue(options: IQueueOptions = {}): Queue {
+
         chk.OBJ(options, "options");
         if (options.fnProgress === undefined && this.fnProgress) {
             options.fnProgress = this.fnProgress;
@@ -274,6 +275,10 @@ export default class FSIServerClient {
 
     public getNewAbortController(): APIAbortController {
         return this.com.getNewAbortController();
+    }
+
+    public releaseAbortController(abortController:APIAbortController): boolean {
+        return abortController.release();
     }
 
 
@@ -656,7 +661,7 @@ export default class FSIServerClient {
 
         if (options) {
             if (options.abortController) {
-                ret.cancelToken = options.abortController.getAxiosCancelToken();
+                ret.cancelToken = options.abortController.renewCancelToken();
             }
             if (options.responseType) {
                 ret.responseType = options.responseType;

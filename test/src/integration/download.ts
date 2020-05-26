@@ -14,7 +14,6 @@ client.setLogLevel(LogLevel.error);
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
 
-
 it('download and listServer', () => {
 
     const path = "./test/files";

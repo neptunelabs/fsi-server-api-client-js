@@ -1,7 +1,6 @@
-import {FSIServerClient, IListData, IListEntry, LogLevel} from "@neptunelabs/fsi-server-api-client";
+import {FSIServerClient, IListData, IListEntry, LogLevel, APITemplateSupplier} from "@neptunelabs/fsi-server-api-client";
 // PLEASE NOTE: you need to enter the FSI Server credentials in this file
 import {ServerVars} from "./ServerVars";
-import {APITemplateSupplier} from "../../src";
 const serverVars = new ServerVars();
 
 const client = new FSIServerClient(serverVars.host);

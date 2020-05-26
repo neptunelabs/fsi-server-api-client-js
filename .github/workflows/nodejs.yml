@@ -38,7 +38,7 @@ jobs:
         run: npm run build-mod
 
       - name: Tests
-        run: npm run test-translations && npm run test-unit && npm run test-integration
+        run: npm run test-translation && npm run test-unit && npm run test-integration
 
   publish-npm:
     needs: build

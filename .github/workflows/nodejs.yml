@@ -4,6 +4,7 @@ on: [push]
 
 jobs:
   build:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-18.04
     name: Build and test code
     strategy:
@@ -48,6 +49,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Check version changes
+        id: check
+        uses: EndBug/version-check@v1
+
+      - name: Version update detected
+        if: steps.check.outputs.changed == 'true'
+        run: 'echo "Version change found! New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
+
       - name: Cache node modules
         uses: actions/cache@v1
         env:
@@ -61,18 +70,11 @@ jobs:
             ${{ runner.os }}-
 
       - name : Use Node.js
+        if: steps.check.outputs.changed == 'true'
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
           registry-url: https://registry.npmjs.org/
-
-      - name: Check if version has been updated
-        id: check
-        uses: EndBug/version-check@v1
-        with:
-          diff-search: true
-          file-name: package.json
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         if: steps.check.outputs.changed == 'true'
@@ -100,6 +102,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Check if version has been updated
+        id: check
+        uses: EndBug/version-check@v1
+
       - name: Cache node modules
         uses: actions/cache@v1
         env:
@@ -113,18 +119,11 @@ jobs:
             ${{ runner.os }}-
 
       - name : Use Node.js ${{ matrix.node-version }}
+        if: steps.check.outputs.changed == 'true'
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
           registry-url: https://registry.npmjs.org/
-
-      - name: Check if version has been updated
-        id: check
-        uses: EndBug/version-check@v1
-        with:
-          diff-search: true
-          file-name: package.json
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         if: steps.check.outputs.changed == 'true'

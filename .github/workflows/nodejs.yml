@@ -49,14 +49,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check version changes
-        id: check
-        uses: EndBug/version-check@v1
-        with:
-          diff-search: true
-          file-name: package.json
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Version update detected
         if: steps.check.outputs.changed == 'true'
         run: 'echo "Version change found! New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
@@ -79,6 +71,10 @@ jobs:
         with:
           node-version: '12.x'
           registry-url: https://registry.npmjs.org/
+
+      - name: Check version changes
+        id: check
+        uses: EndBug/version-check@v1
 
       - name: Install dependencies
         if: steps.check.outputs.changed == 'true'
@@ -106,14 +102,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check if version has been updated
-        id: check
-        uses: EndBug/version-check@v1
-        with:
-          diff-search: true
-          file-name: package.json
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Cache node modules
         uses: actions/cache@v1
         env:
@@ -132,6 +120,10 @@ jobs:
         with:
           node-version: '12.x'
           registry-url: https://registry.npmjs.org/
+
+      - name: Check if version has been updated
+        id: check
+        uses: EndBug/version-check@v1
 
       - name: Install dependencies
         if: steps.check.outputs.changed == 'true'

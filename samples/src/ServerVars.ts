@@ -19,15 +19,6 @@ export class ServerVars  {
 
     constructor(){
 
-
-        this.host = "http://fsi-dev.base.lan";
-        this.userName = "admin";
-        this.passWord = "admin";
-
-        // server
-        this.tempDirRoot = "images/API/";
-
-
         if (!this.host) this.throwRequiredVar("the FSI Server host");
         if (!this.userName) this.throwRequiredVar("a valid user name");
         if (!this.passWord) this.throwRequiredVar("a valid password");

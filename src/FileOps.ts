@@ -131,7 +131,7 @@ export class FileOps {
                 query.set("overwrite", "true");
             }
 
-            return this.taskController.postJsonBoolean(url, query,
+            return this.com.postJSONBoolean(url, query,
                 {def: APIErrors.rename, content: [oldPath, newPath]}, null, copyOptions);
         }
     }
@@ -186,7 +186,7 @@ export class FileOps {
 
         const mainErrorDef: IAPIErrorDef = (service === "file") ? APIErrors.reImportFile : APIErrors.reImportDir;
 
-        return this.taskController.postJsonBoolean(url, query, {def: mainErrorDef, content: [path]},
+        return this.com.postJSONBoolean(url, query, {def: mainErrorDef, content: [path]},
             null, httpOptions);
     }
 
@@ -247,7 +247,7 @@ export class FileOps {
         }
 
 
-        return this.taskController.postJsonBoolean(url, query,
+        return this.com.postJSONBoolean(url, query,
             {def: APIErrors.copyFile, content: [path, toPath]}, null, copyOptions);
     }
 

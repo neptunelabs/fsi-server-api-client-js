@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, LogLevel} from "library/index";
+import {APIError, FSIServerClient, LogLevel} from "library/index";
 import {default as data} from "./reImportData.json"
 
 const host = 'http://fsi.fake.tld';
@@ -27,11 +27,13 @@ it('queue.abort()', () => {
 
     const res = queue.run()
         .then( () => {
-            expect("result").equals("must catch");
-        })
-        .catch( (err) => {
-            expect(err.message).to.not.contain("must catch");
             expect(queue.getAborted()).equals(true);
+
+            const errors = queue.getErrors();
+            expect(errors).to.have.lengthOf(1);
+            const err: APIError = errors[0] as APIError;
+            expect(err).to.have.property("type");
+            if (err.type) expect(err.type).to.equal("aborted");
         })
         .finally( ()  => {
             nock.cleanAll();

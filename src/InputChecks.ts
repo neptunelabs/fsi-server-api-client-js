@@ -45,11 +45,11 @@ export class InputChecks {
     }
 
     public static HOST(host: string): void {
-        ow(host, "_host", ow.string.not.empty.is(
+        ow(host, "host", ow.string.not.empty.is(
             (theHost: string) => {
 
                 return ((theHost.match(/^(http|https):\/\//) !== null) ||
-                    "Expected '_host' to be a valid host URL.")
+                    "Expected 'host' to be a valid host URL.")
             }));
     }
 

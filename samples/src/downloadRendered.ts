@@ -25,7 +25,7 @@ else {
     client.setProgressFunction(FSIServerClient.defaultProgress);
     client.setPromptFunction(FSIServerClient.defaultPrompt);
 
-    client.setLogLevel(LogLevel.trace);
+    client.setLogLevel(LogLevel.info);
 
     const queue = client.createQueue({continueOnError: true});
 

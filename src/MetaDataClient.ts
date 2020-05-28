@@ -1,7 +1,5 @@
-import {AxiosResponse} from "axios";
 import urlSearchParams from "@ungap/url-search-params";
 import {APIErrors} from "./resources/APIErrors";
-import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
 import {APITasks} from "./resources/APITasks";
 import {APIAbortController} from "./APIAbortController";
 import {FSIServerClientInterface} from "./FSIServerClientInterface";
@@ -279,57 +277,47 @@ export class MetaDataClient {
 
         const url = this.baseURL + q.toString();
 
-        return this.com.iAxios.get(
+        return this.com.getJSON(
             url,
-            this.com.getAxiosRequestConfig(options)
+            {def: APIErrors.getMetaData, content: [path]},
+            undefined,
+            options
         )
-            .then(response => {
+        .then(meta => {
+            APIAbortController.THROW_IF_ABORTED(options.abortController);
 
-                APIAbortController.THROW_IF_ABORTED(options.abortController);
+            if (typeof (meta) === "object") {
 
-                if (response.status === 200) {
-                    return response.data;
-                } else {
-                    this.throwHTTPError(response);
-                }
-            })
-            .then(meta => {
-                APIAbortController.THROW_IF_ABORTED(options.abortController);
+                if (typeof (meta.general) === "object") {
 
-                if (typeof (meta) === "object") {
+                    const type: string = (meta.general.size === undefined) ? "directory" : "file";
 
-                    if (typeof (meta.general) === "object") {
-
-                        const type: string = (meta.general.size === undefined) ? "directory" : "file";
-
-                        for (const o of Object.keys(MetaDataNumberDefaults[type])) {
-                            if (meta.general[o] === undefined) {
-                                meta.general[o] = MetaDataNumberDefaults[type][o];
-                            } else {
-                                meta.general[o] = parseInt(meta.general[o], 10);
-                            }
-                        }
-
-                        for (const o of Object.keys(MetaDataBooleanDefaults[type])) {
-                            if (meta.general[o] === undefined) {
-                                meta.general[o] = MetaDataBooleanDefaults[type][o];
-                            } else {
-                                meta.general[o] = (meta.general[o] === "true");
-                            }
+                    for (const o of Object.keys(MetaDataNumberDefaults[type])) {
+                        if (meta.general[o] === undefined) {
+                            meta.general[o] = MetaDataNumberDefaults[type][o];
+                        } else {
+                            meta.general[o] = parseInt(meta.general[o], 10);
                         }
                     }
 
-
-                    return meta;
-                } else {
-                    throw this.com.err.get(APIErrors.getMetaData, [path], APIErrors.invalidServerReply);
+                    for (const o of Object.keys(MetaDataBooleanDefaults[type])) {
+                        if (meta.general[o] === undefined) {
+                            meta.general[o] = MetaDataBooleanDefaults[type][o];
+                        } else {
+                            meta.general[o] = (meta.general[o] === "true");
+                        }
+                    }
                 }
 
 
-            })
-            .catch(error => {
-                throw error;
-            });
+                return meta;
+            } else {
+                throw this.com.err.get(APIErrors.getMetaData, [path], APIErrors.invalidServerReply);
+            }
+
+
+        })
+
     }
 
     public setByFunction(entry: IListEntry, cmd: string = "saveMetaData", fnMeta: (entry: IListEntry) => Promise<IMetaData | null>,
@@ -380,19 +368,17 @@ export class MetaDataClient {
 
         const url = this.client.getServicePath(service) + "/" + FSIServerClient.ENCODE_PATH(path);
 
-        return this.taskController.postJsonBoolean(
+        return this.com.postJSONBoolean(
             url,
             query,
             {def: APIErrors.changeMetaData, content: [path]},
             null,
             options
         )
-            .then(() => {
-                return true;
-            })
-            .catch(error => {
-                throw error;
-            });
+        .then(() => {
+            return true;
+        })
+
     }
 
     public delete(path: string, service: string, data: IMetaData, options: IMetaDataOptions = {}): Promise<boolean> {
@@ -403,8 +389,4 @@ export class MetaDataClient {
         return this.set(path, service, data, "restoreMetaData", options);
     }
 
-    private throwHTTPError(response: AxiosResponse): void {
-        throw this.com.err.get(APIErrors.httpError,
-            [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
-    }
 }

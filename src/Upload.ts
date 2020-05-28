@@ -165,10 +165,12 @@ export class Upload {
                     q.set("Lastmodified", headers['Last-Modified']);
                     q.set("Filesize", headers['Content-Length']);
 
-                    existPromise = this.com.iAxios.post(
+                    existPromise = this.com.postResponse(
                         self.client.getServicePath("postupload"),
                         q,
-                        this.com.getAxiosRequestConfig(options)
+                        undefined,
+                        undefined,
+                        options
                     );
 
                 } else {
@@ -325,6 +327,8 @@ export class Upload {
 
         setProgress(0, bytesTotal);
 
+
+
         return new Promise((resolve, reject) => {
 
             this.com.iAxios.put(url, stream, config)
@@ -341,7 +345,11 @@ export class Upload {
                 })
                 .catch(err => {
                     reject(err);
-                });
+                })
+                .finally( () => {
+                    if (options.abortController) options.abortController.release();
+                })
         });
     }
+
 }

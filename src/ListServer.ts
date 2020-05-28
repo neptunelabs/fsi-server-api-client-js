@@ -1,6 +1,7 @@
+import axios from "axios";
+
 import urlSearchParams from "@ungap/url-search-params";
 import {APIErrors} from "./resources/APIErrors";
-import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
 import {APITasks, IAPITaskDef} from "./resources/APITasks";
 import {APIAbortController} from "./APIAbortController";
 import {ClientSummaryInfo} from "./ClientSummaryInfo"
@@ -81,6 +82,7 @@ export interface ILoopData {
     checkConnectorType: boolean,
     blackList: { [key: string]: boolean }
     validConnectorTypes: { [key: string]: boolean }
+    canceled:boolean
 }
 
 export type ListSortValue =
@@ -156,8 +158,6 @@ const EntryNumberDefaults: { [key: string]: any; } = {
 
 export class ListServer {
 
-    private globalCount = 0;
-
     private readonly baseURL: string;
     private readonly client: FSIServerClient;
     private readonly com: FSIServerClientInterface;
@@ -223,7 +223,9 @@ export class ListServer {
             checkConnectorType: true,
             maxDepth: 0,
             note: "",
-            validConnectorTypes: {}
+            validConnectorTypes: {},
+            canceled: false
+
         };
 
         if (options.validConnectorTypes === undefined) {
@@ -336,7 +338,6 @@ export class ListServer {
         let src = subDirsToRead.pop();
         let i = 0;
 
-
         while (src) {
             APIAbortController.THROW_IF_ABORTED(options.abortController);
 
@@ -364,8 +365,13 @@ export class ListServer {
                 ListServer.addClientSummaryInfo(ld.summary.clientInfo, ldSub.summary.clientInfo);
             })
             .catch( (err) => {
-                if (this.com.isAbortError(err) || (options.continueOnError !== undefined && !options.continueOnError)) {
-                    throw err;
+
+                if (this.com.isAbortError(err) || (!options.continueOnError)) {
+
+                    if (axios.isCancel(err)){
+                        return err;
+                    }
+                    else throw err;
                 }
 
                 if (options._fnQueueError !== undefined) {
@@ -376,19 +382,15 @@ export class ListServer {
 
             });
 
-
-
             i++;
             src = subDirsToRead.pop();
         }
 
-
-
-
     };
 
 
-    public doRead(path: string, baseDir: string, options: IListOptions, depth: number = 0, loopData: ILoopData,
+
+    public async doRead(path: string, baseDir: string, options: IListOptions, depth: number = 0, loopData: ILoopData,
                   progressStart: number, progressSize: number): Promise<IListData> {
 
 
@@ -452,24 +454,17 @@ export class ListServer {
 
         const subDirsToRead: string[] = [];
 
-
-        return this.com.iAxios.get(
+        return this.com.getJSON(
             this.client.getServerBaseQueryPath() + q.toString(),
-            this.com.getAxiosRequestConfig(options)
+            {def: APIErrors.list, content: [path]},
+            undefined,
+            options
         )
             .then(response => {
 
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 
-                if (options.abortController) options.abortController.release();
-
-                if (response.status !== 200) {
-                    throw this.com.err.get(APIErrors.list, [path],
-                        APIErrors.httpError,
-                        [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
-                }
-
-                const body: IStringAnyMap = response.data;
+                const body: IStringAnyMap = response;
 
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 
@@ -595,7 +590,7 @@ export class ListServer {
 
                 if (subDirsToRead.length > 0) {
 
-                    await this.getSubdirectories(path, baseDir, subDirsToRead, ld, options, progressSize, progressStart, depth, loopData);
+                   await this.getSubdirectories(path, baseDir, subDirsToRead, ld, options, progressSize, progressStart, depth, loopData);
 
                     if (depth === 0) {
                         if (loopData.note === "") {
@@ -621,11 +616,8 @@ export class ListServer {
                 }
 
                 return ld;
-
             })
-            .catch(error => {
-                throw error;
-            });
+
 
 }
 
@@ -796,17 +788,15 @@ export class ListServer {
 
         const url: string = this.client.getServerBaseQueryPath() + q;
 
-        return this.com.iAxios.get(
+        return this.com.getJSON(
             url,
-            this.com.getAxiosRequestConfig(options)
+            {def: APIErrors.addEntry, content: [path]},
+            undefined,
+            options
         )
             .then(response => {
-                if (response.status !== 200) {
-                    throw this.com.err.get(APIErrors.addEntry, [path], APIErrors.httpError,
-                        [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
-                }
 
-                const entry: IListEntry = response.data as IListEntry;
+                const entry: IListEntry = response as IListEntry;
                 const dir: string = FSIServerClientUtils.GET_PARENT_PATH(entry.src);
                 entry.path = entry.src;
                 entry.src = entry.src.substr(dir.length);

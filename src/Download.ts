@@ -2,7 +2,6 @@ import {AxiosRequestConfig} from "axios";
 import {default as fs} from "fs";
 import urlSearchParams from "@ungap/url-search-params";
 import {APIErrors, IAPIErrorDef} from "./resources/APIErrors";
-import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
 import {APITasks, IAPITaskDef} from "./resources/APITasks";
 import {APIAbortController} from "./APIAbortController";
 import {FSIServerClientInterface, IProgressOptions, IPromptReply} from "./FSIServerClientInterface";
@@ -359,18 +358,15 @@ export class Download {
                 config.responseType = "stream";
 
 
-                this.com.iAxios.get(
+
+                this.com.getResponse(
                     url,
+                    undefined,
                     config
                 )
                     .then(async response => {
 
                         APIAbortController.THROW_IF_ABORTED(options.abortController);
-
-                        if (response.status !== 200) {
-                            throw self.com.err.get(APIErrors.httpError,
-                                [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
-                        }
 
                         if (options._taskProgress) {
                             options._taskProgress.bytesTotal = parseInt(response.headers["content-length"], 10);
@@ -502,91 +498,78 @@ export class Download {
                         [archiveFileName],
                         0, 100);
 
-                    this.com.iAxios.get(
+                    this.com.getJSON(
                         listURL,
-                        this.com.getAxiosRequestConfig()
+                        undefined
+
                     )
-                        .then((response) => {
+                    .then(body => {
 
-                            if (response.status === 200) {
-                                return response.data;
-                            } else {
-                                reject(new Error("HTTP Error"));
-                            }
-
-
-                        })
-                        .then(body => {
-
-                            if (body) {
-                                const ld: IListData = body as IListData;
-
-                                if (ld.summary.entryCount > 0 && ld.summary.entryCount !== entryCountChecked) {
-                                    ld.entries.pop();
-                                    entryCountChecked = ld.summary.entryCount;
-
-
-                                    for (const ldEntry of ld.entries) {
-                                        const entry: IListEntryDownload = ldEntry as IListEntryDownload;
-                                        if (entry.fileName === archiveFileName && entry.src) {
-                                            downloadID = entry.src;
-                                            watchQuery.set("items", downloadID);
-                                            return waitForArchive();
-                                        }
-                                    }
-                                }
-                            }
-
-                            setTimeout(waitForArchive, 500);
-
-                        })
-                        .catch(reject);
-
-                } else {
-
-                    if (!waitForCompletion) {
-                        return resolve(downloadID);
-                    }
-
-                    this.com.iAxios.post("server", watchQuery, this.com.getAxiosRequestConfig(options))
-                        .then((response) => {
-
-                            if (response.status === 200) {
-                                return response.data;
-                            } else {
-                                reject(new Error("HTTP Error"));
-                            }
-
-                        })
-                        .then(body => {
-
+                        if (body) {
                             const ld: IListData = body as IListData;
 
-                            if (ld.entries.length > 0) {
+                            if (ld.summary.entryCount > 0 && ld.summary.entryCount !== entryCountChecked) {
+                                ld.entries.pop();
+                                entryCountChecked = ld.summary.entryCount;
 
-                                const entry: IListEntryDownload = ld.entries[0] as IListEntryDownload;
 
-                                if (entry.src === downloadID) {
-
-                                    let progress: number = parseFloat(entry.progress);
-                                    if (isNaN(progress)) {
-                                        progress = 0;
-                                    }
-
-                                    setSubTaskTemporary();
-                                    self.callProgress(LogLevel.trace, options, APITasks.waitDownload,
-                                        [archiveFileName], progress, 100);
-
-                                    if (entry.status === "1" && entry.progress === "100") {
-                                        return resolve(downloadID);
+                                for (const ldEntry of ld.entries) {
+                                    const entry: IListEntryDownload = ldEntry as IListEntryDownload;
+                                    if (entry.fileName === archiveFileName && entry.src) {
+                                        downloadID = entry.src;
+                                        watchQuery.set("items", downloadID);
+                                        return waitForArchive();
                                     }
                                 }
                             }
+                        }
 
-                            setTimeout(waitForArchive, 250);
+                        setTimeout(waitForArchive, 500);
 
-                        })
-                        .catch(reject);
+                    })
+                    .catch(reject);
+
+            } else {
+
+                if (!waitForCompletion) {
+                    return resolve(downloadID);
+                }
+
+                this.com.postJSON(
+                    "server",
+                    watchQuery,
+                    undefined,
+                    undefined,
+                    options)
+                    .then(body => {
+
+                        const ld: IListData = body as IListData;
+
+                        if (ld.entries.length > 0) {
+
+                            const entry: IListEntryDownload = ld.entries[0] as IListEntryDownload;
+
+                            if (entry.src === downloadID) {
+
+                                let progress: number = parseFloat(entry.progress);
+                                if (isNaN(progress)) {
+                                    progress = 0;
+                                }
+
+                                setSubTaskTemporary();
+                                self.callProgress(LogLevel.trace, options, APITasks.waitDownload,
+                                    [archiveFileName], progress, 100);
+
+                                if (entry.status === "1" && entry.progress === "100") {
+                                    return resolve(downloadID);
+                                }
+                            }
+                        }
+
+                        setTimeout(waitForArchive, 250);
+
+                    })
+                    .catch(reject);
                 }
             };
 
@@ -648,43 +631,36 @@ export class Download {
                     q.append("file", file);
                 }
 
-                return this.com.iAxios.post(
+                return this.com.postJSON(
                     self.client.getServicePath("jobqueue"),
                     q,
-                    this.com.getAxiosRequestConfig(options)
+                    undefined,
+                    undefined,
+                    options
                 )
-
-                    .then(response => {
-                        if (response.status !== 200) {
-                            return reject(self._com.err.get(APIErrors.httpError,
-                                [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]));
-                        } else {
-                            return response.data;
-                        }
-                    })
-                    .then(body => {
+                .then(body => {
 
 
-                        if (!body || !body.statuscode || body.statuscode !== 200) {
-                            return reject(self._com.err.get(APIErrors.invalidServerReply));
-                        }
+                    if (!body || !body.statuscode || body.statuscode !== 200) {
+                        return reject(self._com.err.get(APIErrors.invalidServerReply));
+                    }
 
-                        if (body.id) { // FSI Server since 2019/10
-                            downloadID = "" + body.id;
-                            watchQuery.set("items", downloadID);
-                        }
+                    if (body.id) { // FSI Server since 2019/10
+                        downloadID = "" + body.id;
+                        watchQuery.set("items", downloadID);
+                    }
 
-                        if (waitForCompletion) {
-                            setSubTaskTemporary();
-                            self.callProgress(LogLevel.trace, options, APITasks.waitDownload,
-                                [archiveFileName],
-                                0, 100);
-                        }
+                    if (waitForCompletion) {
+                        setSubTaskTemporary();
+                        self.callProgress(LogLevel.trace, options, APITasks.waitDownload,
+                            [archiveFileName],
+                            0, 100);
+                    }
 
-                        waitForArchive();
+                    waitForArchive();
 
-                    })
-                    .catch(reject);
+                })
+                .catch(reject);
             }
         });
     }

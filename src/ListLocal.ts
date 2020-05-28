@@ -98,7 +98,8 @@ export class ListLocal {
             checkConnectorType: true,
             maxDepth: 0,
             note: "",
-            validConnectorTypes: {}
+            validConnectorTypes: {},
+            canceled: false
         };
 
         if (options.maxRecursiveDepth === undefined) {
@@ -418,7 +419,7 @@ export class ListLocal {
 
                     .catch ( err => {
 
-                        if (this.com.isAbortError(err) || (options.continueOnError !== undefined && !options.continueOnError)) {
+                        if (this.com.isAbortError(err) || (!options.continueOnError)) {
                             throw err;
                         }
 

@@ -4,6 +4,9 @@ import {IArchiveType} from "library/utils/IArchiveType";
 
 const client = new FSIServerClient('http://fsi.fake.tld');
 
+
+
+
 it('ListServer.ImportStatus should return valid status values', function() {
 
     expect(ImportStatus.none).to.equal(0);
@@ -51,4 +54,14 @@ it('check client static properties and public functions', function() {
     })
 
 
+});
+
+
+it('APIAbortController.reset()', function() {
+
+    const abortController = client.getNewAbortController();
+    abortController.abort();
+    expect(abortController.getAborted()).to.equal(true);
+    abortController.reset();
+    expect(abortController.getAborted()).to.equal(false);
 });

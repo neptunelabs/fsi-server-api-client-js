@@ -1,7 +1,6 @@
-import {AxiosRequestConfig} from "axios";
 import {APIErrors, IAPIErrorDef} from "./resources/APIErrors";
 import {APITasks, IAPITaskDef} from "./resources/APITasks";
-import {APIError, IAPIErrorData} from "./APIError";
+import {APIError} from "./APIError";
 import {APITask} from "./APITask";
 import {FSIServerClientInterface, IProgressOptions, IPromptReply} from "./FSIServerClientInterface";
 import {FSIServerClientUtils} from "./FSIServerClientUtils";
@@ -9,8 +8,8 @@ import {TaskProgress} from "./TaskProgress";
 import {FSIServerClient} from "./index";
 import {IAPIClassInit} from "./utils/IAPIClassInit";
 import {LogLevel} from "./LogLevel";
-import {IMetaData} from "./MetaDataClient";
-import {IHTTPOptions} from "./utils/IHTTPOptions";
+
+
 
 export interface IUserDecisions {
     [key: string]: IPromptReply;
@@ -172,27 +171,9 @@ export class TaskController {
     }
 
 
-    public wrapObjPromise(p: Promise<object>): Promise<object> {
-        return this.wrapPromise(p) as Promise<object>;
-    }
-
-
-    public wrapBoolPromise(p: Promise<boolean>): Promise<boolean> {
-        return this.wrapPromise(p) as Promise<boolean>;
-    }
-
-    public wrapNumberPromise(p: Promise<boolean>): Promise<number> {
-        return this.wrapPromise(p) as Promise<number>;
-    }
-
-
-    public wrapMetaPromise(p: Promise<IMetaData>): Promise<IMetaData> {
-        return this.wrapPromise(p) as Promise<IMetaData>;
-    }
-
-
     public onPromiseError(msg: string, error: APIError): void {
-        this.log(LogLevel.error, "ERROR: " + msg + " -> " + error.message);
+        if (error.message) msg += " -> " + error.message;
+        this.log(LogLevel.error, "ERROR: " + msg);
     }
 
     public onPromiseOk(): void {
@@ -200,20 +181,6 @@ export class TaskController {
 
             this.log(LogLevel.trace, "DONE: " + this.currentTask.getMessage());
         }
-    }
-
-
-    public postJsonBoolean(url: string, data: any,
-                           mainErrorData: IAPIErrorData,
-                           config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions): Promise<boolean> {
-
-        if (!config) {
-            config = this.com.getAxiosRequestConfig(httpOptions);
-        }
-
-        return this.wrapBoolPromise(
-            this.com.runAxiosBooleanPromise(this.com.iAxios.post(url, data, config), mainErrorData, httpOptions)
-        );
     }
 
     public resetUserDecisions(): void {
@@ -244,7 +211,7 @@ export class TaskController {
     }
 
 
-    private wrapPromise(p: Promise<any>): Promise<any> {
+    public wrapPromise(p: Promise<any>): Promise<any> {
 
         const msg: string = (this.currentTask) ? this.currentTask.getMessage() : "unknown";
 
@@ -252,10 +219,10 @@ export class TaskController {
             this.onPromiseOk();
             return arg;
         })
-            .catch(error => {
-                this.onPromiseError(msg, error);
-                throw error;
-            });
+        .catch(error => {
+            this.onPromiseError(msg, error);
+            throw error;
+        });
     }
 
 

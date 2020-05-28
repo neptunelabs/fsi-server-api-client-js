@@ -26,7 +26,6 @@ import {MetaDataClient, IMetaData, IMetaDataOptions} from "./MetaDataClient";
 import {FSIServerClientUtils, IStringAnyMap} from "./FSIServerClientUtils";
 import {Download, IDownloadOptions} from "./Download";
 import {Upload, IUploadOptions} from "./Upload";
-import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
 import {IProgressFunction} from "./utils/IProgressFunction";
 import {IAPIClassInit} from "./utils/IAPIClassInit";
 import {IPromptFunction} from "./utils/IPromptFunction";
@@ -289,7 +288,7 @@ export default class FSIServerClient {
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.login, [this.host, username]);
 
-        return taskController.wrapObjPromise(
+        return taskController.wrapPromise(
             new Login(this.classInit, taskController).authenticate(username, password, options)) as Promise<ILoginReply>;
     }
 
@@ -304,8 +303,8 @@ export default class FSIServerClient {
             ret = taskController.getErrorPromise(APIErrors.logoutNotLoggedIn);
         } else {
 
-            ret = taskController.wrapBoolPromise(
-                new Login(this.classInit, taskController).logout(options));
+            ret = taskController.wrapPromise(
+                new Login(this.classInit, taskController).logout(options)) as Promise<boolean>;
         }
 
         return ret;
@@ -319,7 +318,7 @@ export default class FSIServerClient {
 
         taskController.setCurrentTask(LogLevel.debug, APITasks.readListServer, ["/" + path]);
 
-        return taskController.wrapObjPromise(
+        return taskController.wrapPromise(
             new ListServer(this.classInit, taskController).read(path, options)) as Promise<IListData>;
 
     }
@@ -330,7 +329,7 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapObjPromise(
+        return taskController.wrapPromise(
             new ListLocal(this.classInit, taskController).read(path, options)) as Promise<IListData>;
     }
 
@@ -349,8 +348,8 @@ export default class FSIServerClient {
             copyOptions.ignoreErrors = {409: true};
         }
 
-        return taskController.wrapBoolPromise(
-            new FileOps(this.classInit, taskController).createDirectory(path, copyOptions)
+        return taskController.wrapPromise(
+            new FileOps(this.classInit, taskController).createDirectory(path, copyOptions) as Promise<boolean>
         );
     }
 
@@ -382,8 +381,8 @@ export default class FSIServerClient {
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.reImportDir, [path]);
 
-        return taskController.wrapNumberPromise(
-            new FileOps(this.classInit, taskController).reImportDir(path, image, metaData, httpOptions));
+        return taskController.wrapPromise(
+            new FileOps(this.classInit, taskController).reImportDir(path, image, metaData, httpOptions)) as Promise<number>;
     }
 
     public reImportFile(path: string, image: boolean = true, metaData: boolean = true,
@@ -394,8 +393,8 @@ export default class FSIServerClient {
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.reImportFile, [path]);
 
-        return taskController.wrapNumberPromise(
-            new FileOps(this.classInit, taskController).reImportFile(path, image, metaData, httpOptions));
+        return taskController.wrapPromise(
+            new FileOps(this.classInit, taskController).reImportFile(path, image, metaData, httpOptions)) as Promise<number>;
     }
 
     public deleteFile(path: string, httpOptions?: IHTTPOptions, taskController?: TaskController): Promise<boolean> {
@@ -422,8 +421,8 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapMetaPromise(
-            new MetaDataClient(this.classInit, taskController).get(path, options));
+        return taskController.wrapPromise(
+            new MetaDataClient(this.classInit, taskController).get(path, options))  as Promise<IMetaData>;
     }
 
     public setMetaData(path: string, data: IMetaData, service: string = "file",
@@ -432,8 +431,8 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapBoolPromise(
-            new MetaDataClient(this.classInit, taskController).set(path, service, data, "saveMetaData", options));
+        return taskController.wrapPromise(
+            new MetaDataClient(this.classInit, taskController).set(path, service, data, "saveMetaData", options)) as Promise<boolean>;
     }
 
     public deleteMetaData(path: string, data: IMetaData, service: string = "file",
@@ -443,8 +442,8 @@ export default class FSIServerClient {
         taskController = this.initTaskController(taskController);
 
 
-        return taskController.wrapBoolPromise(
-            new MetaDataClient(this.classInit, taskController).delete(path, service, data, options));
+        return taskController.wrapPromise(
+            new MetaDataClient(this.classInit, taskController).delete(path, service, data, options)) as Promise<boolean>;
     }
 
     public restoreMetaData(path: string, data: IMetaData, service: string = "file", options: IMetaDataOptions = {},
@@ -453,8 +452,8 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapBoolPromise(
-            new MetaDataClient(this.classInit, taskController).restore(path, service, data, options));
+        return taskController.wrapPromise(
+            new MetaDataClient(this.classInit, taskController).restore(path, service, data, options)) as Promise<boolean>;
     }
 
     public sendServiceCommand(src: string, service: string, commands: string,
@@ -508,8 +507,8 @@ export default class FSIServerClient {
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.changePassWord, [this.getCurrentUser()]);
 
-        return taskController.wrapBoolPromise(
-            new Login(this.classInit, taskController).changePassword(currentPassword, newPassWord, options));
+        return taskController.wrapPromise(
+            new Login(this.classInit, taskController).changePassword(currentPassword, newPassWord, options)) as Promise<boolean>;
     }
 
     public changeUser(user: string, options: IHTTPOptions = {}, taskController?: TaskController): Promise<boolean> {
@@ -528,7 +527,7 @@ export default class FSIServerClient {
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.getUserList);
 
-        return taskController.wrapObjPromise(
+        return taskController.wrapPromise(
             new Login(this.classInit, taskController).getUserList(options)) as Promise<string[]>;
     }
 
@@ -539,8 +538,8 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapBoolPromise(
-            new FileOps(this.classInit, taskController).copyDirectory(path, toPath, true, listOptions, queue));
+        return taskController.wrapPromise(
+            new FileOps(this.classInit, taskController).copyDirectory(path, toPath, true, listOptions, queue)) as Promise<boolean>;
 
     }
 
@@ -550,8 +549,8 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapBoolPromise(
-            new FileOps(this.classInit, taskController).copyDirectory(path, toPath, false, listOptions, queue));
+        return taskController.wrapPromise(
+            new FileOps(this.classInit, taskController).copyDirectory(path, toPath, false, listOptions, queue)) as Promise<boolean>;
     }
 
     public copyFile(path: string, toPath: string, copyOptions?: ICopyOptions, taskController?: TaskController): Promise<boolean> {
@@ -561,8 +560,8 @@ export default class FSIServerClient {
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.copyFile, [path, toPath]);
 
-        return taskController.wrapBoolPromise(
-            new FileOps(this.classInit, taskController).copyFile(path, toPath, copyOptions));
+        return taskController.wrapPromise(
+            new FileOps(this.classInit, taskController).copyFile(path, toPath, copyOptions)) as Promise<boolean>;
     }
 
 
@@ -573,7 +572,7 @@ export default class FSIServerClient {
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.addEntries, [paths.length]);
 
-        return taskController.wrapObjPromise(
+        return taskController.wrapPromise(
             new ListServer(this.classInit, taskController).addEntries(paths, options)) as Promise<IListData[]>;
 
     }
@@ -588,7 +587,7 @@ export default class FSIServerClient {
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.addEntries, [entries.length]);
 
-        return taskController.wrapObjPromise(
+        return taskController.wrapPromise(
             new ListServer(this.classInit, taskController).addEntryObjects(entries, options, addOptions)) as Promise<IListData[]>;
     }
 
@@ -600,8 +599,8 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapBoolPromise(
-            new Download(this.classInit, taskController).save(pathOrEntry, targetPath, options));
+        return taskController.wrapPromise(
+            new Download(this.classInit, taskController).save(pathOrEntry, targetPath, options)) as Promise<boolean>;
     }
 
     public downloadICCProfile(pathOrEntry: string | IListEntry, targetPath: string,
@@ -618,8 +617,8 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapBoolPromise(
-            new Download(this.classInit, taskController).save(pathOrEntry, targetPath, options));
+        return taskController.wrapPromise(
+            new Download(this.classInit, taskController).save(pathOrEntry, targetPath, options)) as Promise<boolean>;
     }
 
     public upload(source: string | IListEntryUpload, targetPath: string,
@@ -630,8 +629,8 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapBoolPromise(
-            new Upload(this.classInit, taskController).store(source, targetPath, options));
+        return taskController.wrapPromise(
+            new Upload(this.classInit, taskController).store(source, targetPath, options)) as Promise<boolean>;
     }
 
     public directoryContains(path: string, files: string[] = [], directories: string[] = [],
@@ -642,8 +641,8 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapBoolPromise(
-            new ListServer(this.classInit, taskController).directoryContains(path, files, directories, options));
+        return taskController.wrapPromise(
+            new ListServer(this.classInit, taskController).directoryContains(path, files, directories, options)) as Promise<boolean>;
     }
 
     public getAxiosRequestConfigUserAgent(options?: IHTTPOptions, headers?: IStringAnyMap): AxiosRequestConfig {
@@ -677,23 +676,28 @@ export default class FSIServerClient {
 
 
     public httpHead(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
-        return this.request(this.iAxios.head(url, this.getAxiosRequestConfigUserAgent(options, headers)));
+        return this.request(this.iAxios.head(url, this.getAxiosRequestConfigUserAgent(options, headers))
+            , options);
     }
 
     public httpGet(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
-        return this.request(this.iAxios.get(url, this.getAxiosRequestConfigUserAgent(options, headers)));
+        return this.request(this.iAxios.get(url, this.getAxiosRequestConfigUserAgent(options, headers))
+            , options);
     }
 
     public httpDelete(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
-        return this.request(this.iAxios.delete(url, this.getAxiosRequestConfigUserAgent(options, headers)));
+        return this.request(this.iAxios.delete(url, this.getAxiosRequestConfigUserAgent(options, headers))
+            , options);
     }
 
     public httpPost(url: string, payload: any, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
-        return this.request(this.iAxios.post(url, payload, this.getAxiosRequestConfigUserAgent(options, headers)));
+        return this.request(this.iAxios.post(url, payload, this.getAxiosRequestConfigUserAgent(options, headers))
+            , options);
     }
 
     public httpPut(url: string, payload: any, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
-        return this.request(this.iAxios.put(url, payload, this.getAxiosRequestConfigUserAgent(options, headers)));
+        return this.request(this.iAxios.put(url, payload, this.getAxiosRequestConfigUserAgent(options, headers))
+            , options);
     }
 
     public async hash(str: string): Promise<string> {
@@ -729,8 +733,8 @@ export default class FSIServerClient {
             taskDef,
             [oldPath, newPath]);
 
-        return taskController.wrapBoolPromise(
-            new FileOps(this.classInit, taskController).rename(oldPath, newPath, strService, copyOptions));
+        return taskController.wrapPromise(
+            new FileOps(this.classInit, taskController).rename(oldPath, newPath, strService, copyOptions)) as Promise<boolean>;
 
     }
 
@@ -741,27 +745,14 @@ export default class FSIServerClient {
 
         taskController = this.initTaskController(taskController);
 
-        return taskController.wrapBoolPromise(
-            new FileOps(this.classInit, taskController).delete(path, strService, httpOptions));
+        return taskController.wrapPromise(
+            new FileOps(this.classInit, taskController).delete(path, strService, httpOptions)) as Promise<boolean>;
     }
 
     //endregion
 
-    private request(p: Promise<AxiosResponse>): Promise<AxiosResponse> {
-
-        return new Promise((resolve, reject) => {
-            p
-                .then(res => {
-                    if (res.status > 399) {
-                        reject(this.com.err.get(APIErrors.httpErrorShort, [APIHTTPErrorCodes.GET_CODE(res.status)]));
-                    } else {
-                        resolve(res);
-                    }
-
-                })
-                .catch(reject)
-
-        });
+    private request(p: Promise<AxiosResponse>, options?:IOptions): Promise<AxiosResponse> {
+        return this.com.runAxiosResponsePromise(p, undefined,  options);
     }
 
     private initTaskController(taskController: TaskController | undefined): TaskController {

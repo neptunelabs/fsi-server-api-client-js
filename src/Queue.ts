@@ -1099,8 +1099,6 @@ export class Queue {
             } else {
                 self.nextBatchDownload(self, targetPath, options, resolve, reject);
             }
-
-
         });
     }
 
@@ -1136,7 +1134,6 @@ export class Queue {
             const orgQueued: boolean | undefined = options.queued;
             options.queued = true;
             const promise: Promise<boolean | string> = self.client.download(entry, targetPath, options, this.taskController);
-
 
             self.beforeBatchTask();
 
@@ -1742,8 +1739,9 @@ export class Queue {
             const entry: IListEntry = bc.entries[pos];
 
 
-            const promise: Promise<boolean> = this.taskController.wrapBoolPromise(
-                new MetaDataClient(this.classInit, this.taskController).setWithQuery(entry.path, entry.type, query, options)
+            const promise: Promise<boolean> = this.taskController.wrapPromise(
+                new MetaDataClient(this.classInit, this.taskController)
+                    .setWithQuery(entry.path, entry.type, query, options) as Promise<boolean>
             );
 
             self.beforeBatchTask();
@@ -2088,7 +2086,8 @@ export class Queue {
             }
 
 
-            promise.then(body => {
+            promise
+                .then(body => {
 
                 this.results[curQueuePos] = body;
 
@@ -2111,30 +2110,31 @@ export class Queue {
 
                 return this.runNext(fnResolve, fnReject);
             })
-                .catch(async error => {
+            .catch(async error => {
 
-                    this.checkAborted();
+                this.checkAborted();
 
-                    if (!this.canceled) {
-                        // a native error occurred, output with stack trace
-                        if (!(error instanceof APIError) && (!error.type || error.type !== "aborted")) {
-                            console.error(error);
-                        } else {
-                            this.error(error);
-                        }
-                        this.addError(error);
-                    }
-
-                    if (!this.canceled && await this.continueOnError(error)) {
-                        this.runNext(fnResolve, fnReject);
+                if (!this.canceled) {
+                    // a native error occurred, output with stack trace
+                    if (!(error instanceof APIError) && (!error.type || error.type !== "aborted")) {
+                        console.error(error);
                     } else {
-                        this.onStopExecution();
-                        this.canceled = true;
-                        fnReject(this.com.err.get(APIErrors.queueStoppedWithErrors));
+                        this.error(error);
                     }
-                }).finally(() => {
+                    this.addError(error);
+                }
+
+                if (!this.canceled && await this.continueOnError(error)) {
+                    this.runNext(fnResolve, fnReject);
+                } else {
+                    this.onStopExecution();
+                    this.canceled = true;
+                    fnReject(this.com.err.get(APIErrors.queueStoppedWithErrors));
+                }
+            }).finally(() => {
                 this.batchTask.running = false;
             });
+
         } else {
             this.onStopExecution();
             fnResolve(!this.bError);

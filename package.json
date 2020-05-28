@@ -1,6 +1,6 @@
 {
   "name": "@neptunelabs/fsi-server-api-client",
-  "version": "1.0.37",
+  "version": "1.0.38",
   "description": "API client for NeptuneLabs FSI Server",
   "homepage": "https://github.com/neptunelabs/fsi-server-api-client-js#readme",
   "main": "dist/index.js",
@@ -12,8 +12,7 @@
     "test-integration": "mocha -r ts-node/register -r tsconfig-paths/register ./test test/src/integration/**.ts",
     "test-unit": "mocha -r ts-node/register -r tsconfig-paths/register test/src/unit/**.ts",
     "test-operation": "mocha -r ts-node/register -r tsconfig-paths/register test/src/optest.ts",
-    "test-translation": "mocha -r ts-node/register -r tsconfig-paths/register test/src/translations.ts",
-    "test-simulateLargeList": "mocha -r ts-node/register -r tsconfig-paths/register --expose-gc test/src/simulateLargeList/index.ts"
+    "test-translation": "mocha -r ts-node/register -r tsconfig-paths/register test/src/translations.ts"
   },
   "repository": {
     "type": "git",
@@ -42,8 +41,8 @@
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.0.1",
     "@types/ungap__url-search-params": "^0.1.0",
-    "@typescript-eslint/eslint-plugin": "^3.0.1",
-    "@typescript-eslint/parser": "^3.0.1",
+    "@typescript-eslint/eslint-plugin": "^3.0.2",
+    "@typescript-eslint/parser": "^3.0.2",
     "chai": "^4.2.0",
     "eslint": "^7.1.0",
     "json-schema": "^0.2.5",

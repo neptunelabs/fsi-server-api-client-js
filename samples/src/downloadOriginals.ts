@@ -23,7 +23,7 @@ if (!targetPath) {
 else {
 
     const client = new FSIServerClient(serverVars.host);
-    client.setLogLevel(LogLevel.warn);
+    client.setLogLevel(LogLevel.info);
     client.setProgressFunction(FSIServerClient.defaultProgress);
 
     const queue = client.createQueue(

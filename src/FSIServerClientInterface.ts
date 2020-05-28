@@ -1,4 +1,4 @@
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse,} from "axios";
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
 
 import {APIErrors} from "./resources/APIErrors";
 import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
@@ -12,7 +12,7 @@ import {APIErrorSupplier} from "./APIErrorSupplier";
 import {APITask} from "./APITask";
 import {APITaskSupplier} from "./APITaskSupplier";
 import {ClientSummaryInfo} from "./ClientSummaryInfo";
-import {FSIServerClientUtils, IStringAnyMap, IStringStringMap} from "./FSIServerClientUtils";
+import {FSIServerClientUtils, IStringAnyMap} from "./FSIServerClientUtils";
 import {MimeTypes} from "./MimeTypes";
 import {TaskController} from "./TaskController";
 import {TaskProgress} from "./TaskProgress";
@@ -103,7 +103,7 @@ export class FSIServerClientInterface {
         if (modeNode){
 
             const httpAgentOptions = {
-                "keepAlive": true
+                keepAlive: true
             };
 
             const httpAgent  = new http.Agent(httpAgentOptions);
@@ -130,9 +130,12 @@ export class FSIServerClientInterface {
             this.iAxios.defaults.headers.common[key] = this.defaultHeaders[key];
         }
 
+
         this.iAxios.defaults.validateStatus = (): boolean => {
             return true; // accept all HTTP status codes as valid reply, we catch them on our own
         };
+
+
     }
 
     public static GET_TRUE_PROMISE(): Promise<boolean> {
@@ -411,13 +414,23 @@ export class FSIServerClientInterface {
     }
 
 
-    public getJSON(url: string, mainErrorData: IAPIErrorData, config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions): Promise<IStringAnyMap> {
+
+    public getResponse(url: string, mainErrorData: IAPIErrorData | undefined, config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions): Promise<AxiosResponse> {
 
         if (!config) {
             config = this.getAxiosRequestConfig(httpOptions);
         }
 
-        return this.runAxiosJSONPromise(this.iAxios.get(url, config), mainErrorData);
+        return this.runAxiosResponsePromise(this.iAxios.get(url, config), mainErrorData, httpOptions);
+    }
+
+    public getJSON(url: string, mainErrorData?: IAPIErrorData, config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions): Promise<IStringAnyMap> {
+
+        if (!config) {
+            config = this.getAxiosRequestConfig(httpOptions);
+        }
+
+        return this.runAxiosJSONPromise(this.iAxios.get(url, config), mainErrorData, httpOptions);
     }
 
     public postJSON(url: string, data: any, mainErrorData?: IAPIErrorData, config?: AxiosRequestConfig | null,
@@ -427,8 +440,32 @@ export class FSIServerClientInterface {
             config = this.getAxiosRequestConfig(httpOptions);
         }
 
-        return this.runAxiosJSONPromise(this.iAxios.post(url, data, config), mainErrorData);
+        return this.runAxiosJSONPromise(this.iAxios.post(url, data, config), mainErrorData, httpOptions);
     }
+
+
+    public postResponse(url: string, data: any, mainErrorData?: IAPIErrorData, config?: AxiosRequestConfig | null,
+                    httpOptions?: IHTTPOptions): Promise<IStringAnyMap> {
+
+        if (!config) {
+            config = this.getAxiosRequestConfig(httpOptions);
+        }
+
+        return this.runAxiosResponsePromise(this.iAxios.post(url, data, config), mainErrorData, httpOptions);
+    }
+
+
+
+    public postJSONBoolean(url: string, data: any, mainErrorData?: IAPIErrorData, config?: AxiosRequestConfig | null,
+                    httpOptions?: IHTTPOptions): Promise<boolean> {
+
+        if (!config) {
+            config = this.getAxiosRequestConfig(httpOptions);
+        }
+
+        return this.runAxiosBooleanPromise(this.iAxios.post(url, data, config), mainErrorData, httpOptions);
+    }
+
 
 
     public putJsonBoolean(url: string, data: any,
@@ -455,97 +492,80 @@ export class FSIServerClientInterface {
 
     public runAxiosBooleanPromise(
         p: Promise<AxiosResponse>,
-        mainErrorData: IAPIErrorData,
+        mainErrorData?: IAPIErrorData,
         httpOptions: IHTTPOptions = {}
     ): Promise<boolean> {
 
-        const mainError: APIError | undefined = (mainErrorData) ? this.err.get(mainErrorData.def, mainErrorData.content) : undefined;
+        return this.runAxiosResponsePromise(
+            p,
+            mainErrorData,
+            httpOptions
+        )
+        .then( (response) => {
+            return (response.status < 400);
+        })
 
-
-        return p
-            .then(response => {
-
-                if (response.status !== 200) {
-                    if (httpOptions.ignoreErrors && httpOptions.ignoreErrors[response.status]) {
-                        return {
-                            statuscode: response.status
-                        }
-                    } else {
-
-                        const throwError: APIError = this.err.get(APIErrors.httpError,
-                            [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
-
-                        if (mainError) {
-                            mainError.setSubError(throwError);
-                            throw mainError;
-                        }
-
-                        throw throwError;
-
-
-                    }
-                } else {
-                    return response.data;
-                }
-
-            })
-            .then(async (body) => {
-
-                if (typeof (body) === "object" && body.statuscode) {
-
-                    if (body.statuscode > 399) {
-
-                        if (httpOptions.ignoreErrors && httpOptions.ignoreErrors[body.statuscode]) {
-
-                            if (httpOptions.handleIgnoredError && body.statuscode) {
-                                await httpOptions.handleIgnoredError(body.statuscode);
-                            }
-                            return true;
-                        }
-
-
-                        const throwError: APIError = this.err.get(APIErrors.httpErrorShort,
-                            [APIHTTPErrorCodes.GET_CODE(body.statuscode)]);
-                        if (mainError) {
-                            mainError.setSubError(throwError);
-                            throw mainError;
-                        }
-
-                        throw throwError;
-                    }
-
-                    return true;
-                } else {
-                    throw this.err.get(APIErrors.invalidServerReply);
-                }
-
-            })
-            .catch(error => {
-                throw error;
-            });
     }
 
     private runAxiosJSONPromise(
         p: Promise<AxiosResponse>,
-        mainError?: IAPIErrorData
+        mainError?: IAPIErrorData,
+        options?: IOptions
     ): Promise<any> {
 
+        return this.runAxiosResponsePromise(p, mainError, options)
+            .then ( response => {
+               return response.data;
+            })
+
+    }
+
+
+    public runAxiosResponsePromise(
+        p: Promise<AxiosResponse>,
+        mainError?: IAPIErrorData,
+        httpOptions?: IHTTPOptions
+    ): Promise<AxiosResponse> {
+
         return p
-            .then(response => {
-                if (response.status === 200) {
-                    return response.data;
-                } else {
-                    if (mainError && mainError.def) {
-                        throw this.err.get(mainError.def, mainError.content, APIErrors.httpError,
-                            [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
-                    } else {
-                        throw this.err.get(APIErrors.httpError,
-                            [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
+            .then( async (response) => {
+                // release the abort controller before doing anything else
+                // impossible to do that in finally, because handleIgnoredError()
+                // might initiate another request
+                if (httpOptions && httpOptions.abortController) httpOptions.abortController.release();
+
+                if (response.status > 399) {
+
+                    if (httpOptions && httpOptions.ignoreErrors && httpOptions.ignoreErrors[response.status]) {
+
+                        if (httpOptions.handleIgnoredError) {
+                            await httpOptions.handleIgnoredError(response.status);
+                        }
+
+                        response.status = 200;
                     }
+                    else {
+
+                        if (mainError && mainError.def) {
+                            throw this.err.get(mainError.def, mainError.content, APIErrors.httpError,
+                                [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
+                        } else {
+                            throw this.err.get(APIErrors.httpError,
+                                [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
+                        }
+                    }
+
                 }
+
+                return response;
             })
             .catch(error => {
+                // release the abort controller before doing anything else
+                if (httpOptions && httpOptions.abortController) httpOptions.abortController.release();
+
                 throw error;
-            });
+            })
+
+
     }
 }

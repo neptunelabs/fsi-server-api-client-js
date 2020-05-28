@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import urlSearchParams from '@ungap/url-search-params';
 import {APIErrors} from "./resources/APIErrors";
-import {APIHTTPErrorCodes} from "./resources/APIHTTPErrorCodes";
 import {APITasks} from "./resources/APITasks";
 import {ITranslations} from "./resources/TranslatableTemplate";
 import {APIAbortController} from "./APIAbortController";
@@ -56,26 +55,25 @@ export class Login {
 
         // 1) get random salt from server
 
-        return this.com.iAxios.get(
+
+        return this.com.getResponse(
             this.servicePath,
-            this.com.getAxiosRequestConfig(options)
+            {def: APIErrors.login, content: [username]},
+            undefined,
+            options
         )
             .then(async response => {
+
                 const responseURL: string = (typeof (response.config.url) === "string") ? response.config.url : "";
 
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                 bHTTPS = responseURL.toUpperCase().indexOf("HTTPS://") === 0;
 
-                if (response.status === 200) {
-                    // we need to set the session cookie for node only
-                    // browsers do that automatically
-                    if (modeNode) {
-                        self.extractSessionCookie(response.headers);
-                    }
-                } else {
-                    throw this.com.err.get(APIErrors.login, [username],
-                        APIErrors.httpError, [APIHTTPErrorCodes.GET_CODE(response.status), responseURL]);
+                // we need to set the session cookie for node only
+                // browsers do that automatically
+                if (modeNode) {
+                    self.extractSessionCookie(response.headers);
                 }
 
 
@@ -175,10 +173,9 @@ export class Login {
                             throw this.com.err.get(APIErrors.login, [username], APIErrors.serverError, [bodySend.message]);
                         }
                     })
-                    .catch(error => {
-                        throw error;
-                    });
-            })
+
+            });
+
 
     }
 
@@ -204,9 +201,6 @@ export class Login {
                     throw this.com.err.get(APIErrors.logout, undefined, APIErrors.invalidServerReply);
                 }
             })
-            .catch(error => {
-                throw error;
-            });
 
     }
 

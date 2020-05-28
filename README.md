@@ -158,5 +158,4 @@ To run a samples type e.g.:
 node readMetaData.js
 ```
 
-
 Please refer to the wiki for a [complete documentation](../../wiki).

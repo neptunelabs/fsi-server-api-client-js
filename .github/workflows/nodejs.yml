@@ -52,6 +52,10 @@ jobs:
       - name: Check version changes
         id: check
         uses: EndBug/version-check@v1
+        with:
+          diff-search: true
+          file-name: package.json
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Version update detected
         if: steps.check.outputs.changed == 'true'
@@ -97,7 +101,7 @@ jobs:
   build-release:
     needs: build
     name: Upload Release Asset
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -105,6 +109,10 @@ jobs:
       - name: Check if version has been updated
         id: check
         uses: EndBug/version-check@v1
+        with:
+          diff-search: true
+          file-name: package.json
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache node modules
         uses: actions/cache@v1

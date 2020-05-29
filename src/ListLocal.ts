@@ -375,7 +375,11 @@ export class ListLocal {
 
         // create entry for the base path
         if (depth === 0) {
-            ListLocal.addDirEntryFromPath(ld, path);
+            if (!options.dropEntries) ListLocal.addDirEntryFromPath(ld, path);
+            else {
+                ld.summary.entryCount++;
+                ld.summary.directoryCount++;
+            }
         }
 
 
@@ -414,7 +418,7 @@ export class ListLocal {
                         ld.summary.completeCount += ldSub.summary.completeCount;
                         ld.summary.clientInfo.totalSize += ldSub.summary.clientInfo.totalSize;
 
-                        ld.entries = ld.entries.concat(ldSub.entries);
+                        if (!options.dropEntries) ld.entries = ld.entries.concat(ldSub.entries);
                     })
 
                     .catch ( err => {
@@ -522,7 +526,7 @@ export class ListLocal {
 
                                         if (resFilter.passed) {
                                             ld.summary.entryCount++;
-                                            ld.entries.push(entry);
+                                            if (!options.dropEntries) ld.entries.push(entry);
 
                                             if (type === "file") {
                                                 ld.summary.imageCount++;

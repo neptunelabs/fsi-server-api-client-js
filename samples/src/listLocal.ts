@@ -9,8 +9,10 @@ import {ServerVars} from "./ServerVars";
 import {FSIServerClient, LogLevel} from "@neptunelabs/fsi-server-api-client";
 const serverVars = new ServerVars();
 
+
 const myArgs = process.argv.slice(2);
 const sourcePath = (myArgs && myArgs[0]);
+
 
 if (!sourcePath) {
     console.error("Please pass the local directory to list as the first argument.");
@@ -27,17 +29,17 @@ else {
     const queue = client.createQueue(
         {continueOnError: true});
 
-    // list content of dir recursively and keep only files with width < 4000
+    // list content of dir recursively and keep only files with valid image extensions
     queue.listLocal(sourcePath, {
         fnFileFilter: FSIServerClient.FN_FILE_FILTER_VALID_IMAGES,
         recursive: true
     });
 
+    // output of all entries matching criteria
+    //queue.logBatchContent();
+
     // output summary of all entries matching criteria
     queue.logBatchContentSummary();
-
-    // output of all entries matching criteria
-    queue.logBatchContent();
 
     // run the queued commands
     queue.runWithResult();

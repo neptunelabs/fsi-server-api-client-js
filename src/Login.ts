@@ -76,7 +76,6 @@ export class Login {
                     self.extractSessionCookie(response.headers);
                 }
 
-
                 APIAbortController.THROW_IF_ABORTED(options.abortController);
 
                 const map: IStringAnyMap = response.data;

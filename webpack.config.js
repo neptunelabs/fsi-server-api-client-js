@@ -8,7 +8,7 @@ module.exports = {
     },
     target: "web",
     devtool: 'source-map',
-    mode: "production", // or "development",
+    mode: "production",
     node: {
         fs: 'empty',
         readline: 'empty',
@@ -49,13 +49,6 @@ module.exports = {
         library: 'FSIServerAPIClient',
         libraryExport: 'default'
     },
-    /*
-    optimization: {
-        splitChunks: {
-        chunks: 'all',
-        }
-    },
-     */
     externals: [
         nodeExternals({
             whitelist: [
@@ -66,16 +59,13 @@ module.exports = {
         }),
         {
             "crypto": "window.crypto",
-            "url-search-params": "URLSearchParams"
+            "@ungap/url-search-params": "URLSearchParams"
         }
     ],
     plugins: [
         new webpack.DefinePlugin({
             'process.env.FSISERVERCLIENTVERSION': JSON.stringify(require("./package.json").version)
         })
-
-
-
     ]
 
 };

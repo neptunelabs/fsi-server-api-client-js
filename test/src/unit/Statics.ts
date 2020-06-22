@@ -23,6 +23,9 @@ it('check client static properties and public functions', function() {
 
     expect(FSIServerClient.ImportStatus).to.deep.equal(ImportStatus);
     expect(FSIServerClient.ArchiveType).to.deep.equal(IArchiveType);
+    expect(FSIServerClient.ArchiveType["zip"]).equals("zip");
+    expect(FSIServerClient.ArchiveType["tar.gz"]).equals("tar.gz");
+    expect(FSIServerClient.ArchiveType["tar.bz2"]).equals("tar.bz2");
     expect(FSIServerClient.defaultPrompt).to.be.a( "object");
     expect(FSIServerClient.defaultPrompt).to.have.property("ctx");
     expect(FSIServerClient.defaultPrompt).to.have.property("fn");

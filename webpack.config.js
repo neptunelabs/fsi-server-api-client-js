@@ -13,7 +13,7 @@ module.exports = {
         fs: 'empty',
         readline: 'empty',
         http: 'empty',
-        https: 'empty',
+        https: 'empty'
     },
     module: {
         rules: [{

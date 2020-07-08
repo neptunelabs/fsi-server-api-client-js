@@ -46,9 +46,9 @@ it('queue.abort()', () => {
             nock.cleanAll();
         });
 
-    setTimeout( () => {
-        queue.abort();
-    }, 10)
+
+    queue.abort();
+
 
 
     return res;

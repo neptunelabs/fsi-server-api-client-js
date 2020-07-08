@@ -22,8 +22,8 @@ it('login with http error', () => {
 
 
     // run test
-    return client.login("admin", "wrong").then(
-        () => {
+    return client.login("admin", "wrong")
+        .then( () => {
             expect("result").equals("must catch");
         },
         err => {

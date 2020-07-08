@@ -22,19 +22,26 @@ it('queue.abort()', () => {
         .reply(200, data.listReply3);
 
 
-    const queue = client.createQueue();
+    const queue = client.createQueue({continueOnError: true});
     queue.listServer("images/", {"recursive":true});
 
     const res = queue.run()
         .then( () => {
-            expect(queue.getAborted()).equals(true);
+                expect("result").equals("must catch");
+            },
+            (error) => {
+                expect(error.message).to.not.contain("must catch");
 
-            const errors = queue.getErrors();
-            expect(errors).to.have.lengthOf(1);
-            const err: APIError = errors[0] as APIError;
-            expect(err).to.have.property("type");
-            if (err.type) expect(err.type).to.equal("aborted");
-        })
+                expect(queue.getAborted()).equals(true);
+
+                const errors = queue.getErrors();
+                expect(errors).to.have.lengthOf(1);
+                const err: APIError = errors[0] as APIError;
+                expect(err).to.have.property("type");
+                if (err.type) expect(err.type).to.equal("aborted");
+
+
+            })
         .finally( ()  => {
             nock.cleanAll();
         });

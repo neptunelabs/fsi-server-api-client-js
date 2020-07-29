@@ -260,8 +260,8 @@ export class ListServer {
             loopData.blackList = blackListNormalized;
         }
 
-
-        this.callProgress(LogLevel.trace, options, APITasks.readListServer, [path], 0, 100);
+        if (path === "/") this.callProgress(LogLevel.trace, options, APITasks.readListConnectors, [], 0, 100);
+        else this.callProgress(LogLevel.trace, options, APITasks.readListServer, [path], 0, 100);
 
         const baseDir = (options.baseDir) ? options.baseDir : path;
 

@@ -51,7 +51,7 @@ module.exports = {
     },
     externals: [
         nodeExternals({
-            whitelist: [
+            allowlist: [
                 '@ungap/url-search-params',
                 'bytes', 'make-dir', 'pify', 'semver', 'ow',
                 'axios', 'is-buffer', 'follow-redirects'

@@ -101,6 +101,7 @@ export const german: { [key: string]: any; } = {
         reImportDir: "Ordner \"%s\" wird für den Re-Import markiert",
         reImportFile: "Datei \"%s\" wird für den Re-Import markiert",
         readDataTransfer: "Erstelle Liste lokaler Dateien",
+        readListConnectors: "Lade Liste der Connectors",
         readListLocal: "Lese lokales Verzeichnis \"%s\"",
         readListServer: "Lade Ordnerinhalt von \"%s\"",
         readSubDir: "Lese Inhalt von Unterordner \"%s\"",

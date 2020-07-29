@@ -40,6 +40,11 @@ export class APITasks {
         key: "logout",
         template: "Logging out from \"%s\""
     };
+    public static readonly readListConnectors: IAPITaskDef = {
+        isTask: true,
+        key: "readListConnectors",
+        template: "Retrieving list of connectors"
+    };
     public static readonly readListServer: IAPITaskDef = {
         isTask: true,
         key: "readListServer",

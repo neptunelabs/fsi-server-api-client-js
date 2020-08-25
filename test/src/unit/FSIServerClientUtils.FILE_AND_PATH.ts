@@ -60,7 +60,8 @@ const cases = [
             dir: 'foo',
             error: {
                 isError: true,
-                key: 'invalidPath'
+                key: 'invalidPath',
+                template: ""
             },
             errorContent: [ '' ]
         }
@@ -73,7 +74,8 @@ const cases = [
             dir: 'test.jpg',
             error: {
                 isError: true,
-                key: 'noValidFile'
+                key: 'noValidFile',
+                template: ""
             }
         }
     }
@@ -88,8 +90,10 @@ it('FSIServerClientUtils.FILE_AND_PATH should return the path and a file name', 
 
     for (const item of cases) {
         const result = FSIServerClientUtils.FILE_AND_PATH(item.src);
-        if (result.error && result.error.template) delete result.error.template;
 
+        if (item.result && item.result.error && result.error && result.error.template) {
+            item.result.error.template = result.error.template;
+        }
         expect(result).to.be.an('object').that.deep.include(item.result);
     }
 });

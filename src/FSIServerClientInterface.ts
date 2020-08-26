@@ -534,6 +534,11 @@ export class FSIServerClientInterface {
                 // might initiate another request
                 if (httpOptions && httpOptions.abortController) httpOptions.abortController.release();
 
+                // use the status code value provided in the response body, if present
+                if (response.data && response.data.statuscode){
+                    response.status = response.data.statuscode;
+                }
+
                 if (response.status > 399) {
 
                     if (httpOptions && httpOptions.ignoreErrors && httpOptions.ignoreErrors[response.status]) {

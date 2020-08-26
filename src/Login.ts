@@ -14,6 +14,7 @@ import {FSIServerClient} from "./index";
 import {IAPIClassInit} from "./utils/IAPIClassInit";
 import {IOptions} from "./utils/IOptions";
 import {IHTTPOptions} from "./utils/IHTTPOptions";
+import {APIHTTPErrorCodes} from "library/resources/APIHTTPErrorCodes";
 
 const modeNode = FSIServerClientUtils.GET_MODE_NODE();
 const URLSearchParams = urlSearchParams;

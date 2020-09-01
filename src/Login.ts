@@ -14,7 +14,8 @@ import {FSIServerClient} from "./index";
 import {IAPIClassInit} from "./utils/IAPIClassInit";
 import {IOptions} from "./utils/IOptions";
 import {IHTTPOptions} from "./utils/IHTTPOptions";
-import {APIHTTPErrorCodes} from "library/resources/APIHTTPErrorCodes";
+import {ILoginOptions} from "./utils/ILoginOptions";
+
 
 const modeNode = FSIServerClientUtils.GET_MODE_NODE();
 const URLSearchParams = urlSearchParams;
@@ -47,7 +48,7 @@ export class Login {
         this.servicePath = this.client.getServicePath('login');
     }
 
-    public authenticate(username: string, password: string, options: IOptions = {}): Promise<ILoginReply> {
+    public authenticate(username: string, password: string, options: ILoginOptions = {}): Promise<ILoginReply> {
 
         APIAbortController.THROW_IF_ABORTED(options.abortController);
 
@@ -96,6 +97,13 @@ export class Login {
                 }
 
                 let hashedPassword: string | null;
+
+                if (options.sendPlainLoginPassword) {
+                    map.loginmethod = "plain";
+                }
+
+
+
                 if (map.loginmethod !== "plain") {
                     hashedPassword = await this.hash(map.salt + await this.hash(password));
                 } else {
@@ -127,11 +135,11 @@ export class Login {
                         } else {
                             throw this.com.err.get(APIErrors.login, [username], APIErrors.serverRefusedPlainPassword);
                         }
-
-
                     }
+
                     hashedPassword = password;
                 }
+
 
                 const query = new URLSearchParams();
                 query.set("username", username);

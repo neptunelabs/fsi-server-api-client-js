@@ -95,6 +95,10 @@ export default class FSIServerClient {
         };
     }
 
+    public lookupMimeType(fileName: string): string | false {
+        return this.com.lookupMimeType(fileName);
+    }
+
     public static ENCODE_PATH(path: string): string{
 
         const parts = path.split("/");

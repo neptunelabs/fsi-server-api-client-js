@@ -1,4 +1,3 @@
-import {extname} from "path";
 import {MimeDB as db} from "./resources/MimeDB"
 
 export class MimeTypes {
@@ -35,10 +34,11 @@ export class MimeTypes {
             return false;
         }
 
-        // get the extension ("ext" or ".ext" or full path)
-        const extension = extname('x.' + path)
-            .toLowerCase()
-            .substr(1);
+        let extension = "";
+        const matches = path.match(/.([a-z0-9]*)$/i);
+        if (matches && matches.length === 2){
+          extension = matches[1].toLocaleLowerCase();
+        }
 
         if (!extension) {
             return false;

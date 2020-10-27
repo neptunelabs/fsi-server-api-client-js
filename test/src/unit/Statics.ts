@@ -21,6 +21,7 @@ it('ListServer.ImportStatus should return valid status values', function() {
 
 it('check client static properties and public functions', function() {
 
+    expect(client.lookupMimeType("../foo/bar.next.JPG")).to.equal("image/jpeg");
     expect(FSIServerClient.ImportStatus).to.deep.equal(ImportStatus);
     expect(FSIServerClient.ArchiveType).to.deep.equal(IArchiveType);
     expect(FSIServerClient.ArchiveType["zip"]).equals("zip");

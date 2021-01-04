@@ -110,7 +110,7 @@ jobs:
 
       - name: Get version
         if: steps.check.outputs.changed == 'true'
-        run: echo ::set-env name=version::$(node -pe "require('./package.json').version")
+        run: echo client_version=$(node -pe "require('./package.json').version")
 
       - name: Create Release
         if: steps.check.outputs.changed == 'true'
@@ -119,8 +119,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.version }}
-          release_name: Release v${{ env.version }}
+          tag_name: v${{ client_version }}
+          release_name: Release v${{ client_version }}
           draft: false
           prerelease: false
 

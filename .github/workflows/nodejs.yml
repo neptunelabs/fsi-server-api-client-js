@@ -110,7 +110,7 @@ jobs:
 
       - name: Get version
         if: steps.check.outputs.changed == 'true'
-        run: echo client_version=$(node -pe "require('./package.json').version")
+        run: echo client_version=$(node -pe "require('./package.json').version") >> $GITHUB_ENV
 
       - name: Create Release
         if: steps.check.outputs.changed == 'true'

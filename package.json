@@ -8,7 +8,7 @@
     "tsc": "tsc",
     "watch-ts": "tsc -w",
     "build-mod": "node make.js build",
-    "build": "webpack --display-error-details --config webpack.config.js",
+    "build": "webpack --stats-error-details --config webpack.config.js",
     "test-integration": "mocha -r ts-node/register -r tsconfig-paths/register ./test test/src/integration/**.ts",
     "test-unit": "mocha -r ts-node/register -r tsconfig-paths/register test/src/unit/**.ts",
     "test-operation": "mocha -r ts-node/register -r tsconfig-paths/register test/src/optest.ts",

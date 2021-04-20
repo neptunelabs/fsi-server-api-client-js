@@ -138,7 +138,7 @@ export default class FSIServerClient {
 
     public static HAS_VALID_IMAGE_FILE_EXTENSION(path: string, ignoreCase: boolean = true): boolean {
         chk.PATH(path);
-        chk.BOOL(ignoreCase, "ignoreCase");
+        chk.IS_BOOL(ignoreCase, "ignoreCase");
 
         let res: boolean = false;
 
@@ -155,7 +155,7 @@ export default class FSIServerClient {
     }
 
     public static VALIDATE_TRANSLATION(translation: { [key: string]: any }): boolean {
-        chk.OBJ(translation, "translation");
+        chk.IS_OBJECT(translation, "translation");
 
         return FSIServerClientInterface.VALIDATE_TRANSLATION(translation);
     }
@@ -196,7 +196,7 @@ export default class FSIServerClient {
     }
 
     public setTranslations(translations: ITranslations): void{
-        chk.OBJ(translations, "translations");
+        chk.IS_OBJECT(translations, "translations");
 
         this.com.setTranslations(translations);
     }
@@ -264,7 +264,7 @@ export default class FSIServerClient {
 
     public createQueue(options: IQueueOptions = {}): Queue {
 
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
         if (options.fnProgress === undefined && this.fnProgress) {
             options.fnProgress = this.fnProgress;
         }
@@ -329,7 +329,7 @@ export default class FSIServerClient {
 
     public listLocal(path: string, options: IListOptions = {}, taskController?: TaskController): Promise<IListData> {
         chk.PATH(path);
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         taskController = this.initTaskController(taskController);
 
@@ -421,7 +421,7 @@ export default class FSIServerClient {
 
     public getMetaData(path: string, options: IMetaDataOptions = {}, taskController?: TaskController): Promise<IMetaData> {
         chk.PATH(path);
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         taskController = this.initTaskController(taskController);
 
@@ -466,7 +466,7 @@ export default class FSIServerClient {
         chk.PATH(src, "src");
         chk.PATH(service, "service");
         chk.PATH(commands, "command");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         service = service.toLocaleLowerCase();
 
@@ -506,7 +506,7 @@ export default class FSIServerClient {
                           options: IHTTPOptions = {}, taskController?: TaskController): Promise<boolean> {
         chk.PATH(currentPassword, "currentPassword");
         chk.PATH(newPassWord, "newPassWord");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.changePassWord, [this.getCurrentUser()]);
@@ -517,7 +517,7 @@ export default class FSIServerClient {
 
     public changeUser(user: string, options: IHTTPOptions = {}, taskController?: TaskController): Promise<boolean> {
         chk.PATH(user, "user");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.changeUser, [user]);
@@ -526,7 +526,7 @@ export default class FSIServerClient {
     }
 
     public getUserList(options: IHTTPOptions = {}, taskController?: TaskController): Promise<string[]> {
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.getUserList);
@@ -571,7 +571,7 @@ export default class FSIServerClient {
 
     public addEntries(paths: string[], options: IListOptions = {}, taskController?: TaskController): Promise<IListData[]> {
         chk.STRING_ARRAY(paths, "paths");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.addEntries, [paths.length]);
@@ -585,8 +585,8 @@ export default class FSIServerClient {
     public addEntryObjects(entries: IStringAnyMap[], options: IListOptions = {},
                            addOptions: IAddEntryOptions = {}, taskController?: TaskController): Promise<IListData[]> {
         chk.OBJECT_ARRAY(entries, "paths");
-        chk.OBJ(options, "options");
-        chk.OBJ(addOptions, "addOptions");
+        chk.IS_OBJECT(options, "options");
+        chk.IS_OBJECT(addOptions, "addOptions");
 
         taskController = this.initTaskController(taskController);
         taskController.setCurrentTask(LogLevel.debug, APITasks.addEntries, [entries.length]);
@@ -629,7 +629,7 @@ export default class FSIServerClient {
                   options: IUploadOptions = {}, taskController?: TaskController): Promise<boolean> {
         chk.OBJECT_OR_STRING(source, "pathOrEntry");
         chk.PATH(targetPath, "targetPath");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         taskController = this.initTaskController(taskController);
 
@@ -720,7 +720,7 @@ export default class FSIServerClient {
     ): Promise<boolean> {
         chk.RENAME(oldPath, newPath);
         chk.SERVICE_FD(strService);
-        chk.BOOL(move, "move");
+        chk.IS_BOOL(move, "move");
 
         oldPath = FSIServerClientUtils.NORMALIZE_PATH(oldPath);
         newPath = FSIServerClientUtils.NORMALIZE_PATH(newPath);

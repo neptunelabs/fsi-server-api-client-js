@@ -9,12 +9,6 @@ module.exports = {
     target: "web",
     devtool: 'source-map',
     mode: "production",
-    node: {
-        fs: 'empty',
-        readline: 'empty',
-        http: 'empty',
-        https: 'empty'
-    },
     module: {
         rules: [{
             test: /\.tsx?$/,
@@ -40,7 +34,13 @@ module.exports = {
             path.resolve('node_modules'),
             path.resolve('src/resources'),
             path.resolve('src/utils')
-        ]
+        ],
+        fallback: {
+            fs: false,
+            readline: false,
+            http: false,
+            https: false
+        },
     },
     output: {
         filename: '[name].js',
@@ -63,6 +63,9 @@ module.exports = {
         }
     ],
     plugins: [
+        new webpack.DefinePlugin({
+            'process': {}
+        }),
         new webpack.DefinePlugin({
             'process.env.FSISERVERCLIENTVERSION': JSON.stringify(require("./package.json").version)
         })

@@ -275,14 +275,14 @@ export class Queue {
     //region command methods
     public login(username: string, password: string, options: IOptions = {}): void {
         chk.LOGIN(username, password);
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("login", [username, password, options, this.taskController]);
     }
 
     public logout(options: IOptions = {}): void {
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
         this.setDefaultOptionFunction(options);
 
         this.addTask("logout", [options, this.taskController]);
@@ -291,7 +291,7 @@ export class Queue {
     public changePassword(currentPassword: string, newPassWord: string, options: IHTTPOptions = {}): void {
         chk.PATH(currentPassword, "currentPassword");
         chk.PATH(newPassWord, "newPassWord");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("changePassword", [currentPassword, newPassWord, options, this.taskController]);
@@ -299,14 +299,14 @@ export class Queue {
 
     public changeUser(user: string, options: IHTTPOptions = {}): void {
         chk.PATH(user, "user");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("changeUser", [user, options, this.taskController]);
     }
 
     public getUserList(options: IHTTPOptions = {}): void {
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("getUserList", [options, this.taskController]);
@@ -314,7 +314,7 @@ export class Queue {
 
     public listServer(path: string, options: IListOptions = {}): void {
         chk.LIST_SERVER(path, options);
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("listServer", [path, options, this.taskController]);
@@ -322,7 +322,7 @@ export class Queue {
 
     public listLocal(path: string, options: IListOptions = {}): void {
         chk.PATH(path);
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("listLocal", [path, options, this.taskController]);
@@ -330,7 +330,7 @@ export class Queue {
 
     public createDirectory(path: string, copyOptions: ICopyOptions = {}): void {
         chk.PATH(path);
-        chk.OBJ(copyOptions, "copyOptions");
+        chk.IS_OBJECT(copyOptions, "copyOptions");
 
         this.setDefaultOptionFunction(copyOptions);
 
@@ -339,7 +339,7 @@ export class Queue {
 
     public renameFile(oldPath: string, newPath: string, copyOptions: ICopyOptions = {}): void {
         chk.RENAME(oldPath, newPath);
-        chk.OBJ(copyOptions, "copyOptions");
+        chk.IS_OBJECT(copyOptions, "copyOptions");
 
         this.setDefaultOptionFunction(copyOptions);
         this.addTask("renameFile", [oldPath, newPath, copyOptions, this.taskController]);
@@ -347,7 +347,7 @@ export class Queue {
 
     public renameDirectory(oldPath: string, newPath: string, copyOptions: ICopyOptions = {}): void {
         chk.RENAME(oldPath, newPath);
-        chk.OBJ(copyOptions, "copyOptions");
+        chk.IS_OBJECT(copyOptions, "copyOptions");
 
         this.setDefaultOptionFunction(copyOptions);
         this.addTask("renameDirectory", [oldPath, newPath, copyOptions, this.taskController]);
@@ -356,7 +356,7 @@ export class Queue {
     public reImportDir(path: string, image: boolean = true, metaData: boolean = true, httpOptions: IHTTPOptions = {}): void {
         chk.PATH(path);
         chk.RE_IMPORT(image, metaData);
-        chk.OBJ(httpOptions, "httpOptions");
+        chk.IS_OBJECT(httpOptions, "httpOptions");
 
         this.setDefaultOptionFunction(httpOptions);
         this.addTask("reImportDir", [path, image, metaData, httpOptions, this.taskController]);
@@ -365,7 +365,7 @@ export class Queue {
     public reImportFile(path: string, image: boolean = true, metaData: boolean = true, httpOptions: IHTTPOptions = {}): void {
         chk.PATH(path);
         chk.RE_IMPORT(image, metaData);
-        chk.OBJ(httpOptions, "httpOptions");
+        chk.IS_OBJECT(httpOptions, "httpOptions");
 
         this.setDefaultOptionFunction(httpOptions);
         this.addTask("reImportFile", [path, image, metaData, httpOptions, this.taskController]);
@@ -373,7 +373,7 @@ export class Queue {
 
     public deleteFile(path: string, httpOptions: IHTTPOptions = {}): void {
         chk.PATH(path);
-        chk.OBJ(httpOptions, "httpOptions");
+        chk.IS_OBJECT(httpOptions, "httpOptions");
 
         this.setDefaultOptionFunction(httpOptions);
         this.addTask("deleteFile", [path, httpOptions, this.taskController]);
@@ -381,7 +381,7 @@ export class Queue {
 
     public deleteDirectory(path: string, httpOptions: IHTTPOptions = {}): void {
         chk.PATH(path);
-        chk.OBJ(httpOptions, "httpOptions");
+        chk.IS_OBJECT(httpOptions, "httpOptions");
 
         this.setDefaultOptionFunction(httpOptions);
         this.addTask("deleteDirectory", [path, httpOptions, this.taskController]);
@@ -389,7 +389,7 @@ export class Queue {
 
     public getMetaData(path: string, options: IMetaDataOptions = {}): void {
         chk.GET_META_DATA(path, options);
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("getMetaData", [path, options, this.taskController]);
@@ -397,7 +397,7 @@ export class Queue {
 
     public setMetaData(path: string, data: IMetaData, service: string = "file", options: IMetaDataOptions = {}): void {
         chk.META_DATA(path, data, service);
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("setMetaData", [path, data, service, options, this.taskController]);
@@ -408,7 +408,7 @@ export class Queue {
         chk.PATH(src, "src");
         chk.PATH(service, "service");
         chk.PATH(command, "command");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
 
         this.setDefaultOptionFunction(options);
@@ -417,7 +417,7 @@ export class Queue {
 
     public deleteMetaData(path: string, data: IMetaData, service: string = "file", options: IMetaDataOptions = {}): void {
         chk.META_DATA(path, data, service);
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("setMetaData", [path, data, service, options, this.taskController]);
@@ -425,7 +425,7 @@ export class Queue {
 
     public restoreMetaData(path: string, data: IMetaData, service: string = "file", options: IMetaDataOptions = {}): void {
         chk.META_DATA(path, data, service);
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("setMetaData", [path, data, service, options, this.taskController]);
@@ -446,7 +446,7 @@ export class Queue {
     public copyFile(path: string, toPath: string, copyOptions: ICopyOptions = {}): void {
         chk.PATH(path);
         chk.PATH(toPath, "toPath");
-        chk.OBJ(copyOptions, "copyOptions");
+        chk.IS_OBJECT(copyOptions, "copyOptions");
 
         this.setDefaultOptionFunction(copyOptions);
         this.addTask("copyFile", [path, toPath, copyOptions, this.taskController]);
@@ -455,7 +455,7 @@ export class Queue {
     public moveFile(path: string, toPath: string, copyOptions: ICopyOptions = {}): void {
         chk.PATH(path);
         chk.PATH(toPath, "toPath");
-        chk.OBJ(copyOptions, "copyOptions");
+        chk.IS_OBJECT(copyOptions, "copyOptions");
 
         this.setDefaultOptionFunction(copyOptions);
         this.addTask("moveFile", [path, toPath, copyOptions, this.taskController]);
@@ -464,7 +464,7 @@ export class Queue {
     public moveDirectory(path: string, toPath: string, copyOptions: ICopyOptions = {}): void {
         chk.PATH(path);
         chk.PATH(toPath, "toPath");
-        chk.OBJ(copyOptions, "copyOptions");
+        chk.IS_OBJECT(copyOptions, "copyOptions");
 
         this.setDefaultOptionFunction(copyOptions);
         this.addTask("moveDirectory", [path, toPath, copyOptions, this.taskController]);
@@ -474,7 +474,7 @@ export class Queue {
     public download(pathOrEntry: string | IListEntry, targetPath: string, options: IDownloadOptions = {}): void {
         chk.OBJECT_OR_STRING(pathOrEntry, "pathOrEntry");
         chk.PATH(targetPath, "targetPath");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
         if (options && options.archiveType) chk.ARCHIVE_TYPE(options.archiveType);
 
         this.setDefaultOptionFunction(options);
@@ -484,7 +484,7 @@ export class Queue {
     public downloadICCProfile(pathOrEntry: string | IListEntry, targetPath: string, options: IDownloadOptions = {}): void {
         chk.OBJECT_OR_STRING(pathOrEntry, "pathOrEntry");
         chk.PATH(targetPath, "targetPath");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
         if (options && options.archiveType) chk.ARCHIVE_TYPE(options.archiveType);
 
         this.setDefaultOptionFunction(options);
@@ -494,7 +494,7 @@ export class Queue {
     public upload(sourcePath: string, targetPath: string, options: IUploadOptions = {}): void {
         chk.PATH(sourcePath, "sourcePath");
         chk.PATH(targetPath, "targetPath");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
         this.addTask("upload", [sourcePath, targetPath, options, this.taskController]);
@@ -516,21 +516,21 @@ export class Queue {
 
     public addEntries(paths: string[], options: IListOptions = {recursive: true}): void {
         chk.STRING_ARRAY(paths, "paths");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.addTask("addEntries", [paths, options]);
     }
 
     public addEntryObjects(entries: IStringAnyMap[], options: IListOptions = {}, addOptions: IAddEntryOptions = {}): void {
         chk.OBJECT_ARRAY(entries, "paths");
-        chk.OBJ(options, "options");
-        chk.OBJ(addOptions, "addOptions");
+        chk.IS_OBJECT(options, "options");
+        chk.IS_OBJECT(addOptions, "addOptions");
 
         this.addTask("addEntryObjects", [entries, options, addOptions]);
     }
 
     public batchRename(fnRename: (entry: IListEntry) => Promise<string>): void {
-        chk.FN(fnRename, "fnRename");
+        chk.IS_FN(fnRename, "fnRename");
 
         this.addTask("batchRename", [fnRename]);
     }
@@ -549,55 +549,55 @@ export class Queue {
     }
 
     public batchGetMetaData(options: IMetaDataOptions = {}): void {
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.addTask("batchGetMetaData", [options]);
     }
 
     public batchSetMetaData(data: IMetaData | ((entry: IListEntry) => Promise<IMetaData | null>), options: IMetaDataOptions = {}): void {
         chk.FN_OBJECT_OR_FUNCTION(data, "data");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.addTask("batchSetMetaData", [data, "saveMetaData", options]);
     }
 
     public batchDeleteMetaData(data: IMetaData | ((entry: IListEntry) => Promise<IMetaData | null>), options: IMetaDataOptions = {}): void {
         chk.FN_OBJECT_OR_FUNCTION(data, "data");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.addTask("batchSetMetaData", [data, "deleteMetaData", options]);
     }
 
     public batchRestoreMetaData(data: IMetaData | ((entry: IListEntry) => Promise<IMetaData | null>), options: IMetaDataOptions = {}): void {
         chk.FN_OBJECT_OR_FUNCTION(data, "data");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.addTask("batchSetMetaData", [data, "restoreMetaData", options]);
     }
 
     public batchCopy(targetPath: string, options: ICopyOptions = {}): void {
         chk.PATH(targetPath, "targetPath");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.addTask("batchCopy", [targetPath, options]);
     }
 
     public batchDelete(options: IHTTPOptions = {}): void {
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
         this.addTask("batchDelete", [options]);
     }
 
 
     public batchDownload(targetPath: string, options: IDownloadOptions = {}): void {
         chk.PATH(targetPath, "targetPath");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.addTask("batchDownload", [targetPath, options]);
     }
 
     public batchDownloadICCProfiles(targetPath: string, options: IDownloadOptions = {}): void {
         chk.PATH(targetPath, "targetPath");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         options.getICCProfile = true;
 
@@ -606,7 +606,7 @@ export class Queue {
 
     public batchUpload(targetPath: string, options: IUploadOptions = {}): void {
         chk.PATH(targetPath, "targetPath");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.addTask("batchUpload", [targetPath, options]);
     }
@@ -614,7 +614,7 @@ export class Queue {
     public batchSendServiceCommands(service: string, command: string, options: IHTTPOptions = {}): void {
         chk.STRING(service, "service");
         chk.STRING(command, "command");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(options, "options");
 
         this.addTask("batchSendServiceCommands", [service, command, options]);
     }
@@ -637,8 +637,8 @@ export class Queue {
                      ...args: any[]
     ): void {
 
-        chk.OBJ(scope, "scope");
-        chk.FN(fn, "fn");
+        chk.IS_OBJECT(scope, "scope");
+        chk.IS_FN(fn, "fn");
 
         if (typeof(args) !== "object" || typeof(args.concat) !== "function") args = [];
 
@@ -655,8 +655,8 @@ export class Queue {
     }
 
     public addItemsFromDataTransferItemList(dataTransferItemList: DataTransferItemList, options: IListOptions = {}): Promise<IListData | boolean> {
-        chk.OBJ(dataTransferItemList, "dataTransferItemList");
-        chk.OBJ(options, "options");
+        chk.IS_OBJECT(dataTransferItemList, "dataTransferItemList");
+        chk.IS_OBJECT(options, "options");
 
         this.setDefaultOptionFunction(options);
 

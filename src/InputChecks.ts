@@ -1,71 +1,114 @@
-import ow from "ow";
 import {IListOptions} from "./ListServer";
-import {IProgressFunction} from "./utils/IProgressFunction";
-import {IPromptFunction} from "./utils/IPromptFunction";
 import {IMetaData, IMetaDataOptions} from "./MetaDataClient";
 
 export class InputChecks {
 
-    public static LOGIN(username: string, password: string): void {
-        ow(username, "username", ow.string.not.empty);
-        ow(password, "password", ow.string.not.empty);
+    private static THROW_ERROR(str:string){
+        throw(new Error(str));
     }
 
-    public static LIST_SERVER(path: string, options: IListOptions = {}): void {
+    public static CHECK_ARGUMENT_TYPE(val:any, argName:string, expectedType:string){
+        const isType:string = typeof(val);
+
+        if (isType !== expectedType){
+            InputChecks.THROW_ERROR(
+                "Expected argument '" + argName + "' to be of type '" + expectedType
+                + "', but received type '" + isType+"'")
+        }
+    }
+
+    public static IS_ARRAY(val:any, argName:string){
+        if (typeof(val) !== "object" || typeof(val.concat) !== "function"){
+            InputChecks.THROW_ERROR(
+                "Expected argument '" + argName + "' to be an array, but received type '" + typeof(val) + "'.");
+        }
+    }
+
+    public static IS_ARRAY_NOT_EMPTY(val:any, argName:string){
+        InputChecks.IS_ARRAY(val, argName);
+        if (val.length < 1){
+            InputChecks.THROW_ERROR("Expected '" + argName + "' to be a non empty array.");
+        }
+    }
+
+    public static ARRAY_CONTAINS(val:any, argName:string, type:string){
+        for (const item of val) {
+            if (typeof(item) !== type) InputChecks.THROW_ERROR("Argument '" + argName + "' may only contain elements of type '" + type + "'.");
+        }
+
+    }
+
+    public static IS_STRING(val:any, argName:string){
+        InputChecks.CHECK_ARGUMENT_TYPE(val, argName, "string");
+    }
+
+    public static IS_STRING_NOT_EMPTY(val:any, argName:string){
+        InputChecks.IS_STRING(val, argName);
+        if (val.length < 1){
+            InputChecks.THROW_ERROR("Argument '" + argName + "' may not be an empty string.");
+        }
+
+    }
+
+    public static PATH(path: any, argName: string = "path"): void {
+        InputChecks.IS_STRING_NOT_EMPTY(path, argName);
+    }
+
+    public static LOGIN(username: any, password: any): void {
+        InputChecks.IS_STRING_NOT_EMPTY(username, "username");
+        InputChecks.IS_STRING_NOT_EMPTY(password, "password");
+    }
+
+    public static LIST_SERVER(path: any, options: IListOptions = {}): void {
         InputChecks.PATH(path);
-        ow(options, "options", ow.object);
+        InputChecks.IS_OBJECT(options, "options");
     }
 
-    public static PATH(path: string, argName: string = "path"): void {
-        ow(path, argName, ow.string.not.empty);
+    public static STRING(str: any, argName: string = "path"): void {
+        InputChecks.IS_STRING(str, argName);
     }
 
-    public static STRING(str: string, argName: string = "path"): void {
-        ow(str, argName, ow.string);
+    public static IS_BOOL(bool: any, argName: string): void {
+        InputChecks.CHECK_ARGUMENT_TYPE(bool, argName, "boolean");
     }
 
-    public static BOOL(bool: boolean, argName: string): void {
-        ow(bool, argName, ow.boolean);
+    public static IS_OBJECT(obj: any, argName: string): void {
+        InputChecks.CHECK_ARGUMENT_TYPE(obj, argName, "object");
+        if (obj === null) InputChecks.THROW_ERROR("Expected argument '" + argName + "' to be an object, but received 'null'");
     }
 
-    public static OBJ(obj: any, argName: string): void {
-        ow(obj, argName, ow.object);
+    public static IS_FN(fn: any, argName: string): void {
+        InputChecks.CHECK_ARGUMENT_TYPE(fn, argName, "function");
     }
 
-    public static FN(fn: (...args: any[]) => any, argName: string): void {
-        ow(fn, argName, ow.function);
-    }
-
-    public static FN_CTX_OR_UNDEFINED(some: IProgressFunction | IPromptFunction | undefined, argName: string): void {
+    public static FN_CTX_OR_UNDEFINED(some: any, argName: string): void {
         if (some !== undefined) {
-            ow(some, argName, ow.object);
-            InputChecks.OBJ(some.ctx, argName + ".ctx");
-            InputChecks.FN(some.fn, argName + ".fn");
+            InputChecks.IS_OBJECT(some, argName);
+            InputChecks.IS_OBJECT(some.ctx, argName + ".ctx");
+            InputChecks.IS_FN(some.fn, argName + ".fn");
         }
     }
 
     public static HOST(host: string): void {
-        ow(host, "host", ow.string.not.empty.is(
-            (theHost: string) => {
 
-                return ((theHost.match(/^(http|https):\/\//) !== null) ||
-                    "Expected 'host' to be a valid host URL.")
-            }));
+        InputChecks.IS_STRING_NOT_EMPTY(host, "host");
+        if (host.match(/^(http|https):\/\//) === null){
+            InputChecks.THROW_ERROR("Expected 'host' to be a valid host URL.");
+        }
     }
 
     public static NUM(num: number, argName: string, min: number, max: number): void {
-        ow(num, argName, ow.number.is(
-            (theNum: number) => {
 
-                return (theNum >= min && theNum <= max) ||
-                    "Expected '" + argName + "' to be number between " + min + " and " + max + "."
-            }));
+        InputChecks.CHECK_ARGUMENT_TYPE(num, argName, "number");
+        if (num < min || num > max){
+            InputChecks.THROW_ERROR("Expected '" + argName + "' to be a number between " + min + " and " + max + ".")
+        }
     }
 
 
     public static GET_META_DATA(path: string, options: IMetaDataOptions = {}): void {
         InputChecks.PATH(path);
-        ow(options, "options", ow.object);
+        InputChecks.IS_OBJECT(options, "options");
     }
 
     public static RENAME(oldPath: string, newPath: string): void {
@@ -74,67 +117,69 @@ export class InputChecks {
     }
 
     public static RE_IMPORT(image: boolean = true, metaData: boolean = true): void {
-        InputChecks.BOOL(image, "image");
-        InputChecks.BOOL(metaData, "metaData");
+        InputChecks.IS_BOOL(image, "image");
+        InputChecks.IS_BOOL(metaData, "metaData");
     }
 
     public static FN_OBJECT_OR_FUNCTION(some: any, argName: string): void {
-        InputChecks.notEmptyTwoTypes(some, argName, "object", "function");
+        InputChecks.NotEmptyTwoTypes(some, argName, "object", "function");
     }
 
     public static OBJECT_OR_STRING(some: any, argName: string): void {
-        InputChecks.notEmptyTwoTypes(some, argName, "object", "string");
+        InputChecks.NotEmptyTwoTypes(some, argName, "object", "string");
     }
 
-    public static SERVICE_FD(service: string): void {
-        ow(service, "service", ow.string.not.empty.is(
-            (theService: string) => {
-                return (theService === "file" || theService === "directory") ||
-                    "Expected 'service' to be either 'file' or 'directory'."
-            }));
+    public static SERVICE_FD(service: any): void {
+        InputChecks.IS_STRING_NOT_EMPTY(service, "service");
+        if (service !== "file" && service !== "directory"){
+            InputChecks.THROW_ERROR("Expected 'service' to be either 'file' or 'directory', but received '" + service + "'.")
+        }
     }
 
     public static META_DATA(path: string, data: IMetaData, service: string): void {
         InputChecks.PATH(path);
-        InputChecks.OBJ(data, "data");
+        InputChecks.IS_OBJECT(data, "data");
         InputChecks.SERVICE_FD(service);
     }
 
     public static COPY(path: string, toPath: string, listOptions: any): void {
         InputChecks.PATH(path);
         InputChecks.PATH(toPath, "toPath");
-        InputChecks.OBJ(listOptions, "listOptions");
+        InputChecks.IS_OBJECT(listOptions, "listOptions");
     }
 
     public static STRING_ARRAY(strings: string[], argName: string): void {
-        ow(strings, argName, ow.array.nonEmpty.ofType(ow.string));
+        InputChecks.IS_ARRAY_NOT_EMPTY(strings, argName);
+        InputChecks.ARRAY_CONTAINS(strings, argName, "string");
     }
 
     public static OBJECT_ARRAY(objects: object[], argName: string): void {
-        ow(objects, argName, ow.array.nonEmpty.ofType(ow.object));
+        InputChecks.IS_ARRAY_NOT_EMPTY(objects, argName);
+        InputChecks.ARRAY_CONTAINS(objects, argName, "object");
     }
 
-    public static STRING_ARRAY_OR_EMPTY_ARRAY(strings: string[], argName: string): void {
-        ow(strings, argName, ow.array.ofType(ow.string));
+    public static STRING_ARRAY_OR_EMPTY_ARRAY(strings: any, argName: string): void {
+        InputChecks.IS_ARRAY(strings, argName);
+        InputChecks.ARRAY_CONTAINS(strings, argName, "string");
     }
 
     public static ARCHIVE_TYPE(type: string): void {
-        ow(type, "archiveType", ow.string.not.empty.is(
-            (at: string) => {
-                return (at === "zip" || at === "tar.gz" || at === "tar.bz2") ||
-                    "Expected 'options.archiveType' to be 'zip', 'tar.gz' or 'tar.bz2', but received '"
-                    + type + "'."
-            }));
+
+        InputChecks.IS_STRING_NOT_EMPTY(type, "options.archiveType");
+        if (type !== "zip" && type !== "tar.gz" && type !== "tar.bz2"){
+            InputChecks.THROW_ERROR("Expected 'options.archiveType' to be 'zip', 'tar.gz' or 'tar.bz2', but received '"
+                + type + "'.")
+        }
     }
 
-    private static notEmptyTwoTypes(some: any, argName: string, type1: string, type2: string): void {
+    public static NotEmptyTwoTypes(some: any, argName: string, type1: string, type2: string): void {
 
         if (!some) {
-            throw new Error("Argument '" + argName + " empty or missing.");
+            InputChecks.THROW_ERROR("Argument '" + argName + "' empty or missing.");
         }
 
         if ((typeof (some) !== type1 && typeof (some) !== type2)) {
-            throw new Error("Expected '" + argName + " to be of type '" + type1 + "' or '" + type2 + "', but received '"
+            InputChecks.THROW_ERROR("Expected '" + argName + "' to be of type '" + type1 + "' or '" + type2 + "', but received '"
                 + typeof (some) + "'.");
         }
     }

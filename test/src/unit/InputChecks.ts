@@ -3,23 +3,17 @@ import {InputChecks} from "library/InputChecks";
 
 
 it('InputChecks.IS_STRING', function() {
-    expect(function(){InputChecks.IS_STRING(undefined, "stringArg")}).to.throw("Expected argument 'stringArg' to be of type 'string', but received type 'undefined'");
-    expect(function(){InputChecks.IS_STRING(123, "stringArg")}).to.throw("Expected argument 'stringArg' to be of type 'string', but received type 'number'");
     expect(function(){InputChecks.IS_STRING("abc", "stringArg")}).to.not.throw();
 });
 
 
 it('InputChecks.IS_STRING_NOT_EMPTY', function() {
-    expect(function(){InputChecks.IS_STRING_NOT_EMPTY(undefined, "stringArg")}).to.throw("Expected argument 'stringArg' to be of type 'string', but received type 'undefined'");
-
     expect(function(){InputChecks.IS_STRING_NOT_EMPTY("", "stringArg")}).to.throw("Argument 'stringArg' may not be an empty string.");
 
     expect(function(){InputChecks.IS_STRING_NOT_EMPTY("a", "stringArg")}).to.not.throw();
 });
 
 it('InputChecks.IS_OBJECT', function() {
-    expect(function(){InputChecks.IS_OBJECT(undefined, "objArg")}).to.throw("Expected argument 'objArg' to be of type 'object', but received type 'undefined'");
-
     expect(function(){InputChecks.IS_OBJECT(null, "objArg")}).to.throw("Expected argument 'objArg' to be an object, but received 'null'");
 
     expect(function(){InputChecks.IS_OBJECT({}, "objArg")}).to.not.throw();
@@ -32,17 +26,12 @@ it('InputChecks.IS_FN', function() {
 });
 
 it('InputChecks.IS_ARRAY', function() {
-    expect(function(){InputChecks.IS_ARRAY(undefined, "arrayArg")}).to.throw("Expected argument 'arrayArg' to be an array, but received type 'undefined'.");
-
     expect(function(){InputChecks.IS_ARRAY([], "arrayArg")}).to.not.throw();
     expect(function(){InputChecks.IS_ARRAY([1,2,3], "arrayArg")}).to.not.throw();
 });
 
 
 it('InputChecks.IS_ARRAY_NOT_EMPTY', function() {
-    expect(function(){InputChecks.IS_ARRAY_NOT_EMPTY(undefined, "arrayArg")}).to.throw("Expected argument 'arrayArg' to be an array, but received type 'undefined'.");
-
-    expect(function(){InputChecks.IS_ARRAY_NOT_EMPTY("abc", "arrayArg")}).to.throw("Expected argument 'arrayArg' to be an array, but received type 'string'.");
 
     expect(function(){InputChecks.IS_ARRAY_NOT_EMPTY([], "arrayArg")}).to.throw("Expected 'arrayArg' to be a non empty array.");
 
@@ -52,22 +41,9 @@ it('InputChecks.IS_ARRAY_NOT_EMPTY', function() {
 });
 
 
-it('InputChecks.ARRAY_CONTAINS', function() {
-    expect(function(){InputChecks.ARRAY_CONTAINS([1], "arrayArg", "string")}).to.throw("Argument 'arrayArg' may only contain elements of type 'string'.");
-
-    expect(function(){InputChecks.ARRAY_CONTAINS(["a", 1, "c"], "arrayArg", "string")}).to.throw("Argument 'arrayArg' may only contain elements of type 'string'.");
-
-    expect(function(){InputChecks.ARRAY_CONTAINS([], "arrayArg", "string")}).to.not.throw();
-
-    expect(function(){InputChecks.ARRAY_CONTAINS(["a"], "arrayArg", "string")}).to.not.throw();
-
-    expect(function(){InputChecks.ARRAY_CONTAINS(["foo", "bar"], "arrayArg", "string")}).to.not.throw();
-});
-
 it('InputChecks.PATH', function() {
-    expect(function(){InputChecks.PATH(1, "pathArg")}).to.throw("Expected argument 'pathArg' to be of type 'string', but received type 'number'");
-
     expect(function(){InputChecks.PATH("", "pathArg")}).to.throw("Argument 'pathArg' may not be an empty string.");
+    expect(function(){InputChecks.PATH("foo", "pathArg")}).to.not.throw();
 });
 
 it('InputChecks.FN_CTX_OR_UNDEFINED', function() {
@@ -97,7 +73,6 @@ it('InputChecks.notEmptyTwoTypes', function() {
 });
 
 it('InputChecks.STRING_ARRAY_OR_EMPTY_ARRAY', function() {
-    expect(function(){InputChecks.STRING_ARRAY_OR_EMPTY_ARRAY([1,2,3], "someArg")}).to.throw("Argument 'someArg' may only contain elements of type 'string'");
 
     expect(function(){InputChecks.STRING_ARRAY_OR_EMPTY_ARRAY([], "someArg")}).to.not.throw();
 

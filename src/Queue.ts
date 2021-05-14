@@ -1311,7 +1311,7 @@ export class Queue {
             const curName: string = entry.src;
             const service: string = (entry.type === "file") ? "file" : "directory";
 
-            let promise: Promise<number>;
+            let promise: Promise<boolean>;
             if (service === "file") {
                 promise = self.client.reImportFile(basePath + curName, image, metaData, httpOptions, this.taskController);
             } else {
@@ -1320,8 +1320,8 @@ export class Queue {
 
             self.beforeBatchTask();
 
-            promise.then((nCount) => {
-                count += nCount;
+            promise.then(() => {
+                count ++;
                 self.batchNext();
                 self.nextBatchReImport(self, image, metaData, httpOptions, count, fnResolve, fnReject);
             })
@@ -1337,7 +1337,7 @@ export class Queue {
                         fnReject(err);
                     }
                 });
-        } else { // rename done
+        } else { // reimport done
             this.onBatchFinished();
             fnResolve(count);
         }

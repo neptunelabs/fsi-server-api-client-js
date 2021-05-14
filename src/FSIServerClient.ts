@@ -378,7 +378,7 @@ export default class FSIServerClient {
     }
 
     public reImportDir(path: string, image: boolean = true, metaData: boolean = true,
-                       httpOptions?: IHTTPOptions, taskController?: TaskController): Promise<number> {
+                       httpOptions?: IHTTPOptions, taskController?: TaskController): Promise<boolean> {
         chk.PATH(path);
         chk.RE_IMPORT(image, metaData);
 
@@ -386,11 +386,11 @@ export default class FSIServerClient {
         taskController.setCurrentTask(LogLevel.debug, APITasks.reImportDir, [path]);
 
         return taskController.wrapPromise(
-            new FileOps(this.classInit, taskController).reImportDir(path, image, metaData, httpOptions)) as Promise<number>;
+            new FileOps(this.classInit, taskController).reImportDir(path, image, metaData, httpOptions));
     }
 
     public reImportFile(path: string, image: boolean = true, metaData: boolean = true,
-                        httpOptions?: IHTTPOptions, taskController?: TaskController): Promise<number> {
+                        httpOptions?: IHTTPOptions, taskController?: TaskController): Promise<boolean> {
         chk.PATH(path);
         chk.RE_IMPORT(image, metaData);
 
@@ -398,7 +398,7 @@ export default class FSIServerClient {
         taskController.setCurrentTask(LogLevel.debug, APITasks.reImportFile, [path]);
 
         return taskController.wrapPromise(
-            new FileOps(this.classInit, taskController).reImportFile(path, image, metaData, httpOptions)) as Promise<number>;
+            new FileOps(this.classInit, taskController).reImportFile(path, image, metaData, httpOptions));
     }
 
     public deleteFile(path: string, httpOptions?: IHTTPOptions, taskController?: TaskController): Promise<boolean> {

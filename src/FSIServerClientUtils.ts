@@ -87,8 +87,6 @@ export class FSIServerClientUtils {
         return path + "/";
     }
 
-
-
     public static EXTRACT_LAST_DIR(path: string): IPathAndDir {
         let dir: string;
 
@@ -104,8 +102,6 @@ export class FSIServerClientUtils {
 
         if (parts.length > 0) path = FSIServerClientUtils.NORMALIZE_PATH(parts.join("/"));
         else path = "";
-
-
 
         return {path, dir, error: undefined, errorContent: [path]};
     }
@@ -137,6 +133,7 @@ export class FSIServerClientUtils {
 
     private static readonly RGX_GET_PARENT_PATH_1 = /\/+$/;
     private static readonly RGX_GET_PARENT_PATH_2 = /\/[^/]*$/;
+
     public static GET_PARENT_PATH(path: string): string {
         path = path.replace(this.RGX_GET_PARENT_PATH_1, "");
         let ret: string = path.replace(this.RGX_GET_PARENT_PATH_2, "");
@@ -166,6 +163,7 @@ export class FSIServerClientUtils {
     }
 
     private static readonly RGX_REPLACE_FILE_EXTENSION = /\.[^.].*$/;
+
     public static REPLACE_FILE_EXTENSION(path: string, ext: string): string {
         return path.replace(this.RGX_REPLACE_FILE_EXTENSION, "." + ext);
     }
@@ -178,6 +176,7 @@ export class FSIServerClientUtils {
         /^[^/]*:\/\//,
         /^\/+/
     ];
+
     public static MAKE_RELATIVE_PATH(path: string): string {
 
         path = path.replace(this.RGX_MAKE_RELATIVE_PATH[0], "")
@@ -243,6 +242,7 @@ export class FSIServerClientUtils {
     }
 
     private static readonly RGX_GET_NEW_RELATIVE_PATH = /\/$/;
+
     public static GET_NEW_RELATIVE_PATH(path: string, basePath: string, targetPath: string,
                                         entry: IListEntry, options: ICopyOptions = {}, tries: number = 0): string {
 

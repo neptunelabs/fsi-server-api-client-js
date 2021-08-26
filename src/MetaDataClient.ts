@@ -200,13 +200,11 @@ const MetaDataBooleanDefaults: { [key: string]: { [key: string]: boolean; } } = 
     }
 };
 
-
 export interface IMetaDataOptions extends IHTTPOptions {
     template?: string,
     renderer?: string,
     headers?: string
 }
-
 
 export class MetaDataClient {
 
@@ -264,7 +262,6 @@ export class MetaDataClient {
             return this.com.getAbortPromise();
         }
 
-
         path = FSIServerClientUtils.NORMALIZE_FILE_PATH(path);
 
         this.taskController.setCurrentTask(LogLevel.debug, APITasks.getMetaData, [path]);
@@ -309,15 +306,11 @@ export class MetaDataClient {
                     }
                 }
 
-
                 return meta;
             } else {
                 throw this.com.err.get(APIErrors.getMetaData, [path], APIErrors.invalidServerReply);
             }
-
-
         })
-
     }
 
     public setByFunction(entry: IListEntry, cmd: string = "saveMetaData", fnMeta: (entry: IListEntry) => Promise<IMetaData | null>,
@@ -341,7 +334,6 @@ export class MetaDataClient {
                     } else {
                         return resolve(FSIServerClientInterface.GET_TRUE_PROMISE());
                     }
-
 
                 })
                 .catch(err => {
@@ -378,7 +370,6 @@ export class MetaDataClient {
         .then(() => {
             return true;
         })
-
     }
 
     public delete(path: string, service: string, data: IMetaData, options: IMetaDataOptions = {}): Promise<boolean> {

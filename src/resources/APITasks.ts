@@ -305,43 +305,36 @@ export class APITasks {
         key: "waitDownload",
         template: "Waiting for server to create archive \"%s\""
     };
-
     public static readonly sendPlainPassword: IAPITaskDef = {
         isTask: true,
         key: "sendPlainPassword",
         template: "The server requested an unencrypted password.<br/>You are currently <b>not using an SSL secured connection</b>.<br/><br/>Do you want to continue anyways and send an <b>unencrypted password</b>?;"
     };
-
     public static readonly batchSendServiceCommands: IAPITaskDef = {
         isTask: true,
         key: "batchSendServiceCommands",
         template: "Sending command \"%s\" to %s %s items"
     };
-
     public static readonly sendServiceCommand: IAPITaskDef = {
         isTask: true,
         key: "sendServiceCommand",
         template: "Sending command \"%s\" to %s \"%s\""
     };
-
     public static readonly changePassWord: IAPITaskDef = {
         isTask: true,
         key: "changePassWord",
         template: "Setting a new password for user \"%s\""
     };
-
     public static readonly changeUser: IAPITaskDef = {
         isTask: true,
         key: "changeUser",
         template: "Changing current user to \"%s\""
     };
-
     public static readonly getUserList: IAPITaskDef = {
         isTask: true,
         key: "getUserList",
         template: "Loading user list"
     };
-
 
 }
 

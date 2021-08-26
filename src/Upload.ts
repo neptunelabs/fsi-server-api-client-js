@@ -40,7 +40,6 @@ export class Upload {
     private readonly client: FSIServerClient;
     private readonly com: FSIServerClientInterface;
 
-
     constructor(private readonly classInit: IAPIClassInit, private taskController: TaskController) {
 
         this.client = classInit.client;
@@ -48,7 +47,6 @@ export class Upload {
 
         this.baseURL = this.client.getServerBaseQuery();
     }
-
 
     public store(source: string | IListEntryUpload, targetPath: string, options: IUploadOptions = {}): Promise<boolean> {
 
@@ -97,9 +95,8 @@ export class Upload {
         const pd: IPathAndDir = FSIServerClientUtils.FILE_AND_PATH(sourcePath);
 
         let mimeType: string | false = this.com.lookupMimeType(pd.dir);
-        if (!mimeType) {
-            mimeType = "application/unknown";
-        }
+        if (!mimeType) mimeType = "application/unknown";
+
 
         const fileName: string = (options.fileName) ? options.fileName : pd.dir;
 
@@ -110,7 +107,6 @@ export class Upload {
 
         const targetDir = FSIServerClientUtils.NORMALIZE_PATH(targetPath + relPath);
         const finalPath: string = targetDir + fileName;
-
 
         const onCreateDirError = async (httpStatus: number): Promise<IOverwriteReply> => {
             if (httpStatus === 409) {
@@ -324,10 +320,7 @@ export class Upload {
             onProgress(progressEvent.loaded, progressEvent.total);
         };
 
-
         setProgress(0, bytesTotal);
-
-
 
         return new Promise((resolve, reject) => {
 
@@ -351,5 +344,4 @@ export class Upload {
                 })
         });
     }
-
 }

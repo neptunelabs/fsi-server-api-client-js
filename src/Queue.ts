@@ -142,25 +142,22 @@ export class Queue {
         const client = this.client;
 
         this.queueMethods = {
-            "addDirectoryContent":      {"ctx": this, "fn": this.runAddDirectoryContent},
-            "addEntries":               {"ctx": this, "fn": this.runAddEntries},
-            "addEntryObjects":          {"ctx": this, "fn": this.runAddEntryObjects},
-            "batchCopy":                {"ctx": this, "fn": this.runBatchCopy},
-            "batchDelete":              {"ctx": this, "fn": this.runBatchDelete},
-            "batchDownload":            {"ctx": this, "fn": this.runBatchDownLoad},
-            "batchGetMetaData":         {"ctx": this, "fn": this.runBatchGetMetaData},
-            "batchMove":                {"ctx": this, "fn": this.runBatchMove},
-            "batchReimport":            {"ctx": this, "fn": this.runBatchReimport},
-            "batchRename":              {"ctx": this, "fn": this.runBatchRename},
-            "batchSendServiceCommands":     {"ctx": this, "fn": this.runBatchSendServiceCommands},
-            "batchSetMetaData":         {"ctx": this, "fn": this.runBatchSetMetaData},
-            // "batchDeleteMetaData":      {"ctx":this, "fn":this.runBatchSetMetaData},
-            // "batchRestoreMetaData":     {"ctx":this, "fn":this.runBatchSetMetaData},
-            // "batchDownloadICCProfiles": {"ctx":this, "fn":this.runBatchDownLoad},
-            "batchUpload":              {"ctx": this, "fn": this.runBatchUpload},
+            "addDirectoryContent":      {"ctx": this,   "fn": this.runAddDirectoryContent},
+            "addEntries":               {"ctx": this,   "fn": this.runAddEntries},
+            "addEntryObjects":          {"ctx": this,   "fn": this.runAddEntryObjects},
+            "batchCopy":                {"ctx": this,   "fn": this.runBatchCopy},
+            "batchDelete":              {"ctx": this,   "fn": this.runBatchDelete},
+            "batchDownload":            {"ctx": this,   "fn": this.runBatchDownLoad},
+            "batchGetMetaData":         {"ctx": this,   "fn": this.runBatchGetMetaData},
+            "batchMove":                {"ctx": this,   "fn": this.runBatchMove},
+            "batchReimport":            {"ctx": this,   "fn": this.runBatchReimport},
+            "batchRename":              {"ctx": this,   "fn": this.runBatchRename},
+            "batchSendServiceCommands": {"ctx": this,   "fn": this.runBatchSendServiceCommands},
+            "batchSetMetaData":         {"ctx": this,   "fn": this.runBatchSetMetaData},
+            "batchUpload":              {"ctx": this,   "fn": this.runBatchUpload},
             "changePassword":           {"ctx": client, "fn": client.changePassword},
             "changeUser":               {"ctx": client, "fn": client.changeUser},
-            "clearList":                {"ctx": this, "fn": this.runClearList},
+            "clearList":                {"ctx": this,   "fn": this.runClearList},
             "copyDirectory":            {"ctx": client, "fn": client.copyDirectory},
             "copyDirectoryContent":     {"ctx": client, "fn": client.copyDirectoryContent},
             "copyFile":                 {"ctx": client, "fn": client.copyFile},
@@ -174,8 +171,8 @@ export class Queue {
             "getUserList":              {"ctx": client, "fn": client.getUserList},
             "listLocal":                {"ctx": client, "fn": client.listLocal},
             "listServer":               {"ctx": client, "fn": client.listServer},
-            "logBatchContent":          {"ctx": this, "fn": this.runLogBatchContent},
-            "logBatchContentSummary":   {"ctx": this, "fn": this.runLogBatchContentSummary},
+            "logBatchContent":          {"ctx": this,   "fn": this.runLogBatchContent},
+            "logBatchContentSummary":   {"ctx": this,   "fn": this.runLogBatchContentSummary},
             "login":                    {"ctx": client, "fn": client.login},
             "logout":                   {"ctx": client, "fn": client.logout},
             "moveFile":                 {"ctx": client, "fn": client.moveFile},
@@ -185,8 +182,8 @@ export class Queue {
             "renameDirectory":          {"ctx": client, "fn": client.renameDirectory},
             "renameFile":               {"ctx": client, "fn": client.renameFile},
             "restoreMetaData":          {"ctx": client, "fn": client.restoreMetaData},
-            "runCustomTask":            {"ctx": this, "fn": this.runCustomTask},
-            "sendServiceCommand":           {"ctx": client, "fn": client.sendServiceCommand},
+            "runCustomTask":            {"ctx": this,   "fn": this.runCustomTask},
+            "sendServiceCommand":       {"ctx": client, "fn": client.sendServiceCommand},
             "setMetaData":              {"ctx": client, "fn": client.setMetaData},
             "upload":                   {"ctx": client, "fn": client.upload}
         };
@@ -257,7 +254,6 @@ export class Queue {
 
             self.taskController.log(level, "Total size: " + sz);
 
-
             for (let i: number = 0; i < 6; i++) {
                 self.taskController.log(level, "Import state " + i + ": " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.importStates[i]));
             }
@@ -267,7 +263,6 @@ export class Queue {
         }
 
         self.onSingleStepBatchDone();
-
 
         return true;
     }
@@ -410,7 +405,6 @@ export class Queue {
         chk.PATH(command, "command");
         chk.IS_OBJECT(options, "options");
 
-
         this.setDefaultOptionFunction(options);
         this.addTask("sendServiceCommand", [src, service, command, options, this.taskController]);
     }
@@ -500,11 +494,9 @@ export class Queue {
         this.addTask("upload", [sourcePath, targetPath, options, this.taskController]);
     }
 
-
     public abort(): boolean {
         return this.abortController.abort();
     }
-
 
     public logBatchContentSummary(): void {
         this.addTask("logBatchContentSummary");
@@ -543,7 +535,6 @@ export class Queue {
 
     public batchReimport(image: boolean = true, metaData: boolean = true, httpOptions?: IHTTPOptions): void {
         chk.RE_IMPORT(image, metaData);
-
 
         this.addTask("batchReimport", [image, metaData, httpOptions]);
     }
@@ -586,7 +577,6 @@ export class Queue {
         chk.IS_OBJECT(options, "options");
         this.addTask("batchDelete", [options]);
     }
-
 
     public batchDownload(targetPath: string, options: IDownloadOptions = {}): void {
         chk.PATH(targetPath, "targetPath");
@@ -666,7 +656,6 @@ export class Queue {
 
         this.taskController.setCurrentTask(LogLevel.debug, APITasks.readDataTransfer);
         this.queueProgress.currentTask = this.taskController.getCurrentTask();
-
         this.queueProgress.timeStart = FSIServerClientUtils.NOW();
         this.queueProgress.length = 1;
         this.queueProgress.pos = 1;
@@ -710,9 +699,7 @@ export class Queue {
 
     public onTaskProgress(tPrg: TaskProgress | QueueProgress): void {
 
-        if (this.canceled) {
-            return;
-        }
+        if (this.canceled) return;
 
         this.queueProgress.currentTask.setSubTaskInstance(tPrg.currentTask);
         this.queueProgress.task.currentTask = tPrg.currentTask;
@@ -732,12 +719,9 @@ export class Queue {
             if (this.queueProgress.timeElapsed > 0) {
                 this.queueProgress.bytesPerSecond = this.queueProgress.bytesDone / this.queueProgress.timeElapsed * 1000;
             }
-
-
         }
 
         this.queueProgress.task.clientSummary = tPrg.clientSummary;
-
 
         if (tPrg.logLevel > -1) {
             this.taskController.log(tPrg.logLevel, this.queueProgress.currentTask.getMessage());
@@ -745,7 +729,6 @@ export class Queue {
 
         this.runProgress(this.queueProgress);
 
-        // if (previousSubTask) { this.queueProgress.currentTask.setSubTaskInstance(previousSubTask); }
     }
 
     public addProgressCallbacks(lo: IListOptions | null): void {
@@ -761,9 +744,7 @@ export class Queue {
                 fn: this.addError
             };
         }
-
     }
-
 
     public getExecutionDurationMS(): number {
         return this.queueProgress.timeElapsed;
@@ -820,7 +801,6 @@ export class Queue {
         }
     }
 
-
     public getRunning(): boolean {
         return (this.bRunning && !this.canceled);
     }
@@ -846,7 +826,6 @@ export class Queue {
             });
         }
     }
-
 
     public async runWithResult(): Promise<any[]> {
         await this.run()
@@ -876,7 +855,6 @@ export class Queue {
         if (this.bRunning) this.runProgress(this.queueProgress);
     }
 
-
     private checkAborted(): void {
 
         if (!this.aborted && this.abortController.getAborted()) {
@@ -886,7 +864,6 @@ export class Queue {
             this.canceled = this.aborted = true;
         }
     }
-
 
     private async continueOnError(err: APIError | Error): Promise<boolean> {
 
@@ -948,7 +925,6 @@ export class Queue {
     private error(error: APIError): void {
         this.taskController.error(error);
     }
-
 
     private runProgress(prg: QueueProgress): void {
         prg.calcTotal();
@@ -1028,7 +1004,6 @@ export class Queue {
         this.queueProgress.bDone = true;
         this.batchTask.position++;
         this.batchTask.revPosition--;
-
 
         this.queueProgress.task.pos = this.batchTask.position;
 
@@ -1343,7 +1318,6 @@ export class Queue {
         }
     }
 
-
     private runBatchMove(newPath: string): Promise<boolean> {
 
         const self = this;
@@ -1376,7 +1350,6 @@ export class Queue {
         });
 
     }
-
 
     private runBatchRename(fnRename: (entry: IListEntry) => Promise<string>, move: boolean = false): Promise<boolean> {
 
@@ -1470,9 +1443,7 @@ export class Queue {
                             {abortController: self.abortController},
                             self.taskController);
                     }
-
                 }
-
             }
 
             self.beforeBatchTask();
@@ -1506,7 +1477,6 @@ export class Queue {
                             // this.com.lockCurrentTask(false);
                             return fnReject(err);
                         }
-
                     }
                 }
 
@@ -1540,7 +1510,6 @@ export class Queue {
         this.taskController.setCurrentTask(LogLevel.debug, APITasks.batchGetMateData,
             [this.currentBatch.entries.length]);
         this.onBatchStart("batchGetMetaData");
-
 
         return new Promise((resolve, reject) => {
             if (this.batchContainsLocalFiles()) {
@@ -1650,7 +1619,6 @@ export class Queue {
             fnResolve(true);
         }
     }
-
 
     private runBatchSetMetaData(data: IMetaData | ((entry: IListEntry) => Promise<IMetaData | null>),
                                 cmd: string = "saveMetaData", options: IMetaDataOptions = {}): Promise<boolean> {
@@ -1853,7 +1821,6 @@ export class Queue {
         });
     }
 
-
     private getSkipOverwriteReply(): Promise<IOverwriteReply> {
         return new Promise((resolve) => {
             return resolve({"reply": "Retrying", "continue": true});
@@ -1922,7 +1889,6 @@ export class Queue {
                     },
                     self.taskController);
             }
-
 
             self.beforeBatchTask();
 
@@ -2163,7 +2129,6 @@ export class Queue {
         for (let i: number = 0; i < 6; i++) {
             this.currentBatch.clientInfo.importStates[i] += ld.summary.clientInfo.importStates[i];
         }
-
     }
 
     private batchContainsNonLocalFiles(): boolean {
@@ -2270,7 +2235,6 @@ export class Queue {
                         baseDir = FSIServerClientUtils.GET_PARENT_PATH(entry.path);
                     }
 
-
                     self.client.listServer(entry.path,
                         {recursive: true,
                             baseDir,
@@ -2290,10 +2254,8 @@ export class Queue {
 
                 getNext();
             }
-
         });
     }
-
 
 
     private runCustomTask(scope: any, fn: (...args: any[]) => Promise<boolean>, ...args: any[]): Promise<boolean> {
@@ -2323,7 +2285,6 @@ export class Queue {
 
 
     private async handleFileExists(finalPath: string, httpStatus: number, taskDef: IAPITaskDef): Promise<IOverwriteReply> {
-
 
         if (httpStatus === 409) {
             const pf: IPromptFunction | undefined = this.client.getPromptFunction();
@@ -2368,6 +2329,4 @@ export class Queue {
             }
         }
     }
-
-
 }

@@ -29,8 +29,6 @@ import * as http from "http";
 import * as https from "https";
 
 
-
-
 const modeNode: boolean = FSIServerClientUtils.GET_MODE_NODE();
 
 export interface IMapStringMethodArguments {
@@ -134,8 +132,6 @@ export class FSIServerClientInterface {
         this.iAxios.defaults.validateStatus = (): boolean => {
             return true; // accept all HTTP status codes as valid reply, we catch them on our own
         };
-
-
     }
 
     public static GET_TRUE_PROMISE(): Promise<boolean> {
@@ -173,7 +169,9 @@ export class FSIServerClientInterface {
         const strLevel: string = "[" + FSIServerClientInterface.logLevelLabels[level] + "] ";
 
         const d: Date = new Date();
-        return "[" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.toTimeString().substr(0, 8) + "." + ("00" + d.getUTCMilliseconds()).slice(-3) + "] " + strLevel;
+        return "[" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " "
+            + d.toTimeString().substr(0, 8) + "."
+            + ("00" + d.getUTCMilliseconds()).slice(-3) + "] " + strLevel;
     }
 
     private static validateTranslationSection(translation: { [key: string]: any }, theClass: any, sectionName: string): boolean {
@@ -218,7 +216,6 @@ export class FSIServerClientInterface {
         }
     }
 
-
     public isAbortError(err: APIError): boolean {
         if (axios.isCancel(err)) {
             err.type = "aborted";
@@ -259,7 +256,6 @@ export class FSIServerClientInterface {
         this.logLevel = level;
     }
 
-
     public getAxiosRequestConfig(options: IHTTPOptions | null = null, headers?: IStringAnyMap): AxiosRequestConfig {
 
         // axios does not send default headers if headers is an object
@@ -285,7 +281,6 @@ export class FSIServerClientInterface {
             ret.cancelToken = options.abortController.renewCancelToken();
         }
 
-
         return ret;
     }
 
@@ -301,13 +296,11 @@ export class FSIServerClientInterface {
         }
     }
 
-
     public log(level: number, message: string): void {
         if (level >= this.logLevel) {
             this.doLogLine(FSIServerClientInterface.getLogPrefix(level) + message);
         }
     }
-
 
     public setTranslations(translations: ITranslations): void {
         this.translations = translations;
@@ -378,7 +371,6 @@ export class FSIServerClientInterface {
             promptReply.reply = buttons[0];
         }
 
-
         if (taskController) {
             taskController.evaluateDecision(promptReply);
         }
@@ -413,8 +405,6 @@ export class FSIServerClientInterface {
         );
     }
 
-
-
     public getResponse(url: string, mainErrorData: IAPIErrorData | undefined, config?: AxiosRequestConfig | null, httpOptions?: IHTTPOptions): Promise<AxiosResponse> {
 
         if (!config) {
@@ -443,7 +433,6 @@ export class FSIServerClientInterface {
         return this.runAxiosJSONPromise(this.iAxios.post(url, data, config), mainErrorData, httpOptions);
     }
 
-
     public postResponse(url: string, data: any, mainErrorData?: IAPIErrorData, config?: AxiosRequestConfig | null,
                     httpOptions?: IHTTPOptions): Promise<IStringAnyMap> {
 
@@ -454,8 +443,6 @@ export class FSIServerClientInterface {
         return this.runAxiosResponsePromise(this.iAxios.post(url, data, config), mainErrorData, httpOptions);
     }
 
-
-
     public postJSONBoolean(url: string, data: any, mainErrorData?: IAPIErrorData, config?: AxiosRequestConfig | null,
                     httpOptions?: IHTTPOptions): Promise<boolean> {
 
@@ -465,8 +452,6 @@ export class FSIServerClientInterface {
 
         return this.runAxiosBooleanPromise(this.iAxios.post(url, data, config), mainErrorData, httpOptions);
     }
-
-
 
     public putJsonBoolean(url: string, data: any,
                           mainErrorData: IAPIErrorData,
@@ -504,7 +489,6 @@ export class FSIServerClientInterface {
         .then( (response) => {
             return (response.status < 400);
         })
-
     }
 
     private runAxiosJSONPromise(
@@ -517,9 +501,7 @@ export class FSIServerClientInterface {
             .then ( response => {
                return response.data;
             })
-
     }
-
 
     public runAxiosResponsePromise(
         p: Promise<AxiosResponse>,
@@ -559,7 +541,6 @@ export class FSIServerClientInterface {
                                 [APIHTTPErrorCodes.GET_CODE(response.status), response.config.url]);
                         }
                     }
-
                 }
 
                 return response;
@@ -570,7 +551,5 @@ export class FSIServerClientInterface {
 
                 throw error;
             })
-
-
     }
 }

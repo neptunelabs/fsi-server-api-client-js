@@ -56,6 +56,7 @@ export default class FSIServerClient {
         ctx: global,
         fn: FSIServerClient.DEFAULT_PROGRESS_FUNCTION
     };
+
     public static defaultPrompt: IPromptFunction = {
         ctx: global,
         fn: ConsolePrompt.GET
@@ -228,11 +229,9 @@ export default class FSIServerClient {
         return this.host + "server";
     }
 
-
     public getService(serviceEndpoint: string): string {
         return this.host + 'service/' + serviceEndpoint.toLocaleLowerCase();
     }
-
 
     public getServicePath(serviceEndpoint: string): string {
         return 'service/' + serviceEndpoint;
@@ -284,7 +283,6 @@ export default class FSIServerClient {
         return abortController.release();
     }
 
-
     //region commands
     public login(username: string, password: string, options?: IOptions, taskController?: TaskController): Promise<ILoginReply> {
         chk.LOGIN(username, password);
@@ -313,7 +311,6 @@ export default class FSIServerClient {
 
         return ret;
     }
-
 
     public listServer(path: string, options: IListOptions = {}, taskController?: TaskController): Promise<IListData> {
         chk.LIST_SERVER(path, options);
@@ -535,7 +532,6 @@ export default class FSIServerClient {
             new Login(this.classInit, taskController).getUserList(options)) as Promise<string[]>;
     }
 
-
     public copyDirectory(path: string, toPath: string, listOptions: IListOptions = {},
                          taskController?: TaskController, queue?: Queue,): Promise<boolean> {
         chk.COPY(path, toPath, listOptions);
@@ -568,7 +564,6 @@ export default class FSIServerClient {
             new FileOps(this.classInit, taskController).copyFile(path, toPath, copyOptions)) as Promise<boolean>;
     }
 
-
     public addEntries(paths: string[], options: IListOptions = {}, taskController?: TaskController): Promise<IListData[]> {
         chk.STRING_ARRAY(paths, "paths");
         chk.IS_OBJECT(options, "options");
@@ -580,7 +575,6 @@ export default class FSIServerClient {
             new ListServer(this.classInit, taskController).addEntries(paths, options)) as Promise<IListData[]>;
 
     }
-
 
     public addEntryObjects(entries: IStringAnyMap[], options: IListOptions = {},
                            addOptions: IAddEntryOptions = {}, taskController?: TaskController): Promise<IListData[]> {
@@ -594,7 +588,6 @@ export default class FSIServerClient {
         return taskController.wrapPromise(
             new ListServer(this.classInit, taskController).addEntryObjects(entries, options, addOptions)) as Promise<IListData[]>;
     }
-
 
     public download(pathOrEntry: string | IListEntry, targetPath: string,
                     options?: IDownloadOptions, taskController?: TaskController): Promise<boolean> {
@@ -678,7 +671,6 @@ export default class FSIServerClient {
         return ret;
     }
 
-
     public httpHead(url: string, options?: IHTTPOptions, headers?: IStringAnyMap): Promise<AxiosResponse> {
         return this.request(this.iAxios.head(url, this.getAxiosRequestConfigUserAgent(options, headers))
             , options);
@@ -712,7 +704,6 @@ export default class FSIServerClient {
 
         return FSIServerClientUtils.FORMAT_TIME_PERIOD(ms, includeMS, bHuman, this.com.getTranslations().timePeriods);
     }
-
 
     private rename(oldPath: string, newPath: string, strService: string,
                    copyOptions: ICopyOptions = {}, move: boolean = false,

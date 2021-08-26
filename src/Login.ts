@@ -57,7 +57,6 @@ export class Login {
 
         // 1) get random salt from server
 
-
         return this.com.getResponse(
             this.servicePath,
             {def: APIErrors.login, content: [username]},
@@ -131,7 +130,6 @@ export class Login {
                                 throw this.com.err.get(APIErrors.userAborted);
                             }
 
-
                         } else {
                             throw this.com.err.get(APIErrors.login, [username], APIErrors.serverRefusedPlainPassword);
                         }
@@ -181,7 +179,6 @@ export class Login {
                             throw this.com.err.get(APIErrors.login, [username], APIErrors.serverError, [bodySend.message]);
                         }
                     })
-
             });
 
 
@@ -286,7 +283,6 @@ export class Login {
                     } else {
                         reject(err);
                     }
-
                 })
         });
     }

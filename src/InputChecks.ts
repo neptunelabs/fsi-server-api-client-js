@@ -61,7 +61,6 @@ export class InputChecks {
         if (val.length < 1){
             InputChecks.THROW_ERROR("Argument '" + argName + "' may not be an empty string.");
         }
-
     }
 
     public static PATH(path: string, argName: string = "path"): void {
@@ -124,7 +123,6 @@ export class InputChecks {
             InputChecks.THROW_ERROR("Expected '" + argName + "' to be a number between " + min + " and " + max + ".")
         }
     }
-
 
     public static GET_META_DATA(path: string, options: IMetaDataOptions = {}): void {
         InputChecks.PATH(path);

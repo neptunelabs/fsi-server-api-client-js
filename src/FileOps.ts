@@ -73,7 +73,6 @@ export class FileOps {
             return this.com.getAbortPromise();
         }
 
-
         path = FSIServerClientUtils.NORMALIZE_PATH(path);
         path = path.replace(/\/$/, "");
 
@@ -169,12 +168,9 @@ export class FileOps {
         query.set("cmd", "reimport");
 
         const options: string[] = [];
-        if (image) {
-            options.push("image");
-        }
-        if (metaData) {
-            options.push("metadata");
-        }
+
+        if (image) options.push("image");
+        if (metaData) options.push("metadata");
 
         if (options.length === 0) {
             return this.taskController.getErrorPromise(APIErrors.reImportNothing);
@@ -246,7 +242,6 @@ export class FileOps {
             query.set("overwrite", "true");
         }
 
-
         return this.com.postJSONBoolean(url, query,
             {def: APIErrors.copyFile, content: [path, toPath]}, null, copyOptions);
     }
@@ -291,10 +286,8 @@ export class FileOps {
                 toPath = FSIServerClientUtils.NORMALIZE_PATH(toPath + pdPath.dir);
             }
 
-
             const promise: Promise<boolean> = self.client.createDirectory(toPath,
                 {overwrite: true, abortController: listOptions.abortController}, self.taskController);
-
 
             promise.then(() => {
 
@@ -361,7 +354,6 @@ export class FileOps {
                                         })
                                 }))
                             }
-
                         })
                         .catch(err => {
                             return reject(err);

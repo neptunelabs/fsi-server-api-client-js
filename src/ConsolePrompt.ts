@@ -16,7 +16,6 @@ export class ConsolePrompt {
             const replyString: string = "(" + answers.join("|") + "):";
             question = question + " " + replyString;
 
-
             const doPrompt = async (): Promise<void> => {
 
                 rl.question(question, (input) => {
@@ -29,8 +28,6 @@ export class ConsolePrompt {
                         rl.close();
                         return resolve(res);
                     }
-
-
                 });
             };
 

@@ -257,6 +257,4 @@ export class SHA256 {
         }
         return output;
     }
-
-
 }

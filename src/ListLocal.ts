@@ -43,7 +43,6 @@ export class ListLocal {
             passed: true,
             post: true,
             pre: true
-
         };
 
         if (options.fnDirFilter && entry.type === "directory" && !await options.fnDirFilter(ld, entry)) {
@@ -82,7 +81,6 @@ export class ListLocal {
         ld.summary.clientInfo.directoryCount++;
 
         return entry;
-
     }
 
     public read(path: string, options: IListOptions = {}): Promise<IListData> {
@@ -130,7 +128,6 @@ export class ListLocal {
         });
     }
 
-
     public addItemsFromDataTransferItemList(fl: DataTransferItemList, options: IListOptions = {}): Promise<IListData> {
 
         const ld: IListData = ListServer.GET_EMPTY_LIST_DATA();
@@ -153,7 +150,6 @@ export class ListLocal {
                 return new Promise((resolveInner): void => {
 
                     APIAbortController.THROW_IF_ABORTED(options.abortController);
-
 
                     const addEntry = async (listEntry: IListEntryUpload): Promise<void> => {
                         const resFilter: IFiltersPassed = await ListLocal.applyFilters(options, ld, listEntry);
@@ -358,7 +354,6 @@ export class ListLocal {
                                  useDirs: boolean, useFiles: boolean, depth: number = 0,
                                  loopData: ILoopData, progressStart: number, progressSize: number): Promise<IListData> {
 
-
         this.taskController.setCurrentTask(LogLevel.debug, APITasks.readListLocal, [path]);
 
         if (options.fnProgress !== undefined || options._fnQueueProgress !== undefined) {
@@ -548,6 +543,5 @@ export class ListLocal {
 
             fs.readdir(path, {withFileTypes: false}, onResult);
         });
-
     }
 }

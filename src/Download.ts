@@ -89,7 +89,6 @@ export class Download {
 
         let targetPath: string = (typeof(targetPathArg) !== "string")?"":targetPathArg;
 
-
         const self = this;
         const taskDef: IAPITaskDef = (modeNode) ? APITasks.downloadFile : APITasks.preparingFile;
         const downloadAbortController: APIAbortController = this.com.getNewAbortController();
@@ -104,10 +103,7 @@ export class Download {
         };
 
 
-
-
         const path: string = (typeof (pathOrEntry) === "string") ? pathOrEntry : pathOrEntry.path;
-
 
         if (options.fnProgress !== undefined || options._fnQueueProgress !== undefined) {
             options._taskProgress = new TaskProgress();
@@ -121,7 +117,6 @@ export class Download {
         if (options.getICCProfile) {
             logPath += ".icc";
         }
-
 
         const onProgress = (loaded: number, total: number): void => {
 
@@ -150,7 +145,6 @@ export class Download {
 
 
         let stream: fs.WriteStream;
-
 
         const mainPromise = new Promise<boolean>((resolve, reject) => {
 
@@ -198,7 +192,6 @@ export class Download {
             }
 
             targetPath = FSIServerClientUtils.NORMALIZE_PATH(targetPath);
-
 
             const createStream = async (headers: IStringStringMap): Promise<void> => {
 
@@ -337,7 +330,6 @@ export class Download {
                             }
                         });
                     }
-
                 });
 
                 stream.on("error", (err) => {
@@ -356,8 +348,6 @@ export class Download {
                 const config: AxiosRequestConfig = this.com.getAxiosRequestConfig(
                     {abortController: downloadAbortController}, {Accept: "*/*"});
                 config.responseType = "stream";
-
-
 
                 this.com.getResponse(
                     url,
@@ -414,10 +404,7 @@ export class Download {
                 .catch(err => {
                     return rejectWithError(err);
                 });
-
-
         });
-
 
         return new Promise((resolveMain, rejectMain) => {
 
@@ -431,7 +418,6 @@ export class Download {
                 });
         });
     }
-
 
     public createAndDownloadArchive(options: IDownloadOptions): Promise<string> {
 
@@ -487,7 +473,6 @@ export class Download {
                     options._taskProgress.temporary = true;
                 }
             };
-
 
             const waitForArchive = (): void => {
 

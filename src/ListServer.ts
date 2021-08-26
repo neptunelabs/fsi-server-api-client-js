@@ -105,7 +105,6 @@ export interface IFNListError {
 }
 
 interface IAddEntryRequiredList {
-
     imageCount: number,
     directoryCount: number,
     entries: IListEntry[],
@@ -287,7 +286,6 @@ export class ListServer {
                         ld.entries.splice(i, 1);
                         i--;
                     }
-
                 }
             }
         }
@@ -316,7 +314,6 @@ export class ListServer {
             }
         }
     };
-
 
     private getSubdirectories = async (
         path: string,
@@ -387,8 +384,6 @@ export class ListServer {
         }
 
     };
-
-
 
     public async doRead(path: string, baseDir: string, options: IListOptions, depth: number = 0, loopData: ILoopData,
                   progressStart: number, progressSize: number): Promise<IListData> {
@@ -513,8 +508,6 @@ export class ListServer {
                     await ListServer.dirFilterEntries(ld, options)
                 }
 
-
-
                 return ld;
 
             })
@@ -534,7 +527,6 @@ export class ListServer {
 
                         return ld;
                     } else {
-
 
                         const nEnd = ld.entries.length;
 
@@ -558,9 +550,7 @@ export class ListServer {
                                     subDirsToRead.push(ld.entries[i].src);
                                 }
                             }
-                            else {
-                                break;
-                            }
+                            else break;
                         }
 
                         return ld;
@@ -617,10 +607,7 @@ export class ListServer {
 
                 return ld;
             })
-
-
 }
-
 
     public addEntries(paths: string[], options: IListOptions): Promise<IListData[]> {
 
@@ -650,7 +637,6 @@ export class ListServer {
             }, 0);
         });
     }
-
 
     public addEntryObjects(entries: IStringAnyMap[], options: IListOptions, addOptions: IAddEntryOptions = {}): Promise<IListData[]> {
 
@@ -702,10 +688,8 @@ export class ListServer {
                     }
                 }
 
-                if (!found) {
-                    // console.log("NOT found: " + type + " \"" + nam + "\"");
-                    return false;
-                }
+                if (!found) return false;
+
             }
 
             return true;
@@ -769,7 +753,6 @@ export class ListServer {
                 }
             });
         }
-
     }
 
     private callProgress(level: number, options: IListOptions, apiTaskDef: IAPITaskDef, content: any[],
@@ -819,7 +802,6 @@ export class ListServer {
         return this.getEntryInfo(data.paths[data.pos], options);
     }
 
-
     private getConnectorTypeMap(items: string[] = [], options: IListOptions): Promise<IStringStringMap> {
         return new Promise((resolve) => {
 
@@ -827,7 +809,6 @@ export class ListServer {
                 abortController: options.abortController,
                 readInternalConnectors: true,
                 recursive: false,
-
             };
 
             if (items.length > 0) {
@@ -839,7 +820,6 @@ export class ListServer {
             this.read("", listOptions)
                 .then(list => {
 
-
                     for (const entry of list.entries) {
                         if (entry.connectorType !== undefined) {
                             map[entry.src] = entry.connectorType;
@@ -850,7 +830,6 @@ export class ListServer {
                 });
         });
     }
-
 
     private doAddNextEntry(data: IAddEntriesData, options: IListOptions, addOptions?: IAddEntryOptions): Promise<void> {
 
@@ -953,7 +932,6 @@ export class ListServer {
             return resolve();
 
         });
-
 
     }
 
@@ -1092,7 +1070,6 @@ export class ListServer {
         ld.summary.clientInfo.directoryCount    = ld.summary.directoryCount;
         ld.summary.clientInfo.fileCount         = ld.summary.imageCount;
         ld.summary.clientInfo.entryCount        = ld.summary.entryCount;
-
 
         let sz = 0;
         let entries: number = 0;

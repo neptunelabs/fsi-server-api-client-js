@@ -9,8 +9,6 @@ import {FSIServerClient} from "./index";
 import {IAPIClassInit} from "./utils/IAPIClassInit";
 import {LogLevel} from "./LogLevel";
 
-
-
 export interface IUserDecisions {
     [key: string]: IPromptReply;
 }
@@ -23,7 +21,6 @@ export class TaskController {
     private readonly com: FSIServerClientInterface;
     private userDecisions: IUserDecisions = {};
 
-
     constructor(private readonly classInit: IAPIClassInit, private name: string) {
         this.client = classInit.client;
         this.com = classInit.com;
@@ -35,7 +32,6 @@ export class TaskController {
         this.currentTask = undefined;
         this.resetUserDecisions();
     }
-
 
     public resetSubTask(): void {
         if (this.currentTask) {
@@ -54,7 +50,6 @@ export class TaskController {
             const task = this.com.taskSupplier.get(mainDef, mainContent, subDef, subContent);
             this.log(level, task.getMessage());
         }
-
     }
 
     public error(err: APIError, prefix: string = "", task?: APITask): void {
@@ -74,7 +69,6 @@ export class TaskController {
                 if (prefix) {
                     msg = prefix + msg;
                 }
-
 
                 this.log(LogLevel.error, msg);
             }
@@ -117,7 +111,6 @@ export class TaskController {
         return task;
     }
 
-
     public getErrorPromise(mainDef: IAPIErrorDef, mainContent: any[] = [],
                            subDef?: IAPIErrorDef, subContent?: any[]): Promise<boolean> {
 
@@ -133,12 +126,10 @@ export class TaskController {
         });
     }
 
-
     public updateTaskProgress(prg: TaskProgress): void {
         prg.percent = (prg.length === 0) ? 100 : prg.pos / prg.length * 100;
         prg.timeElapsed = FSIServerClientUtils.NOW() - prg.timeStart;
     }
-
 
     public onStepProgress(level: number, options: IProgressOptions, apiTaskDef: IAPITaskDef, content: any[],
                           pos: number = 0, length: number = 0): void {
@@ -170,7 +161,6 @@ export class TaskController {
         }
     }
 
-
     public onPromiseError(msg: string, error: APIError): void {
         if (error.message) msg += " -> " + error.message;
         this.log(LogLevel.error, "ERROR: " + msg);
@@ -188,13 +178,10 @@ export class TaskController {
     }
 
     public getUserDecision(keys: string): IPromptReply {
-        // console.log("GET: "+keys);
         return this.userDecisions[keys];
     }
 
     public evaluateDecision(promptReply: IPromptReply): void {
-
-        // console.log("SET: "+promptReply.errKeys);
 
         const r: string = promptReply.reply;
 
@@ -207,9 +194,7 @@ export class TaskController {
         if (promptReply.replyAll) {
             this.userDecisions[promptReply.errKeys] = promptReply;
         }
-
     }
-
 
     public wrapPromise(p: Promise<any>): Promise<any> {
 
@@ -224,6 +209,4 @@ export class TaskController {
             throw error;
         });
     }
-
-
 }

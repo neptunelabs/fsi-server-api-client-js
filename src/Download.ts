@@ -235,7 +235,8 @@ export class Download {
                     try {
                         fs.accessSync(thePath, fs.constants.W_OK);
                         ret.writeable = true;
-                    } catch (err) {
+                    } catch (err:any) {
+
                         if (err.code !== 'ENOENT') { // error is not "file does not exist"
                             ret.exists = true;
                             ret.err = err;
@@ -254,7 +255,7 @@ export class Download {
                                 ret.err = self.com.err.get(APIErrors.downloadFile, [path],
                                     APIErrors.isDirectory, [thePath]);
                             }
-                        } catch (err) {
+                        } catch (err:any) {
                             ret.err = err;
                         }
                     }

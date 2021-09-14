@@ -876,7 +876,7 @@ export class ListServer {
 
                     entry = await this.getEntryFromPath(data, options);
                 }
-            } catch (err) {
+            } catch (err:any) {
 
                 if (!options.continueOnError) {
                     return reject(err);
@@ -978,7 +978,7 @@ export class ListServer {
                         return fnReject(err);
                     });
             }
-        } catch (err) {
+        } catch (err:any) {
             return fnReject(err);
         }
     }
@@ -1024,7 +1024,7 @@ export class ListServer {
                     this.initListData(ld, options);
                     ListServer.updateClientSummary(ld, options);
 
-                } catch (err) {
+                } catch (err:any) {
 
                     if (!options.continueOnError) {
                         return fnReject(err);

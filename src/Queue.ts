@@ -1473,7 +1473,7 @@ export class Queue {
                                     self.taskController);
                             }
                             // this.com.lockCurrentTask(false);
-                        } catch (err) {
+                        } catch (err:any) {
                             // this.com.lockCurrentTask(false);
                             return fnReject(err);
                         }
@@ -1904,7 +1904,7 @@ export class Queue {
                         try {
                             await new FileOps(self.classInit, self.taskController).copyFile(path,
                                 finalPath, {overwrite: true});
-                        } catch (err) {
+                        } catch (err:any) {
                             return fnReject(err);
                         }
                     }

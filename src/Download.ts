@@ -370,7 +370,7 @@ export class Download {
                             response.data.pipe(stream);
 
                             let timeLast: number = FSIServerClientUtils.NOW();
-                            const totalSize = response.headers['content-length'];
+                            const totalSize:number = parseInt(response.headers['content-length']);
                             let downloaded: number = 0;
 
                             response.data.on('data', (chunk: ArrayBuffer) => {

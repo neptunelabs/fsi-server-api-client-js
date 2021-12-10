@@ -782,7 +782,7 @@ export class ListServer {
                 const entry: IListEntry = response as IListEntry;
                 const dir: string = FSIServerClientUtils.GET_PARENT_PATH(entry.src);
                 entry.path = entry.src;
-                entry.src = entry.src.substr(dir.length);
+                entry.src = entry.src.substring(dir.length);
 
                 if (entry.size === undefined) {
                     entry.size = 0;

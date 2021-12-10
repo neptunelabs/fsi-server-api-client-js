@@ -170,7 +170,7 @@ export class FSIServerClientInterface {
 
         const d: Date = new Date();
         return "[" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " "
-            + d.toTimeString().substr(0, 8) + "."
+            + d.toTimeString().substring(0, 8) + "."
             + ("00" + d.getUTCMilliseconds()).slice(-3) + "] " + strLevel;
     }
 

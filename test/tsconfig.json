@@ -1,0 +1,23 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "module": "commonjs",
+    "strictPropertyInitialization": false,
+    "isolatedModules": false,
+    "strict": true,
+    "noImplicitAny": false,
+    "typeRoots" : [
+      "../node_modules/@types"
+    ],
+    "paths": {
+      "library/*": ["../src/*"]
+    }
+  },
+  "exclude": [
+    "../node_modules"
+  ],
+  "include": [
+    "./**/*.ts"
+  ]
+}

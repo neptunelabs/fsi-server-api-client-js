@@ -73,7 +73,7 @@ export const german: { [key: string]: any; } = {
     batchSetMetaData: "Speichere Metadaten von %s Elementen",
     batchUpload: "Lade %s Dateien nach \"%s\" hoch",
     changePassWord: "Ändere das Passwort für den Benutzer \"%s\"",
-    changeUser: "Ändere den altuellen Benutzer zu \"%s\"",
+    changeUser: "Ändere den aktuellen Benutzer zu \"%s\"",
     continueAfterError: "%s Wollen Sie die Ausführung fortsetzen ?",
     copyDir: "Kopiere Ordner \"%s\" nach \"%s\"",
     copyFile: "Kopiere Datei \"%s\" nach \"%s\"",

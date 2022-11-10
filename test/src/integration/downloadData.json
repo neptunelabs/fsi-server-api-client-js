@@ -1,15 +1,42 @@
 {
   "listURL": "/fsi/server?type=list&tpl=interface_thumbview_default.json&source=images%2F",
-  "listReply": {"summary":{"dir":"images/","connectorType":"STORAGE","entryCount":2,"imageCount":2,"directoryCount":0,"completeCount":0,"lastModified":1588588531874},
-    "entries" : [{"id":"1","src":"a.jpg","size":"1748","lastmodified":"1588158291326","width":"200","height":"200","importstatus":"1","type":"file"},
-      {"id":"2","src":"ä ö ü.jpg","size":"1617","lastmodified":"1588158291326","width":"200","height":"200","importstatus":"1","type":"file"},
-      {}]},
-
-
+  "listReply": {
+    "summary": {
+      "dir": "images/",
+      "connectorType": "STORAGE",
+      "entryCount": 2,
+      "imageCount": 2,
+      "directoryCount": 0,
+      "completeCount": 0,
+      "lastModified": 1588588531874
+    },
+    "entries": [
+      {
+        "id": "1",
+        "src": "a.jpg",
+        "size": "1748",
+        "lastmodified": "1588158291326",
+        "width": "200",
+        "height": "200",
+        "importstatus": "1",
+        "type": "file"
+      },
+      {
+        "id": "2",
+        "src": "ä ö ü.jpg",
+        "size": "1617",
+        "lastmodified": "1588158291326",
+        "width": "200",
+        "height": "200",
+        "importstatus": "1",
+        "type": "file"
+      },
+      {}
+    ]
+  },
   "downloadURL1": "/fsi/service/file/images/a.jpg",
   "downloadURL2": "/fsi/service/file/images/%C3%A4%20%C3%B6%20%C3%BC.jpg",
   "downloadURLICC1": "/fsi/service/icc/images/a.jpg",
   "downloadURLICC2": "/fsi/service/icc/images/%C3%A4%20%C3%B6%20%C3%BC.jpg",
-
   "listURLFails": "/fsi/server?type=list&tpl=interface_thumbview_default.json&source=foo%2F"
 }

@@ -1,16 +1,65 @@
 {
   "listURL1": "/fsi/server?type=list&tpl=interface_thumbview_default.json&source=images%2F",
   "listURL2": "/fsi/server?type=list&tpl=interface_thumbview_default.json&source=moreimages%2F",
-  "listReply1": {"summary":{"dir":"images/","connectorType":"STORAGE","entryCount":2,"imageCount":2,"directoryCount":0,"completeCount":0,"lastModified":1588588531874},
-    "entries" : [{"id":"1","src":"a.jpg","size":"1748","lastmodified":"1588158291326","width":"200","height":"200","importstatus":"1","type":"file"},
-      {"id":"2","src":"ä ö ü.jpg","size":"1617","lastmodified":"1588158291326","width":"200","height":"200","importstatus":"1","type":"file"},
-      {}]},
-
-
-  "listReply2": {"summary":{"dir":"moreimages/","connectorType":"STORAGE","entryCount":2,"imageCount":2,"directoryCount":0,"completeCount":0,"lastModified":1588588531874},
-    "entries" : [{"id":"1","src":"a.jpg","size":"1748","lastmodified":"1588158291326","width":"200","height":"200","importstatus":"1","type":"file"},
-      {}]},
-
-  "renameReply": {"statuscode":200}
-
+  "listReply1": {
+    "summary": {
+      "dir": "images/",
+      "connectorType": "STORAGE",
+      "entryCount": 2,
+      "imageCount": 2,
+      "directoryCount": 0,
+      "completeCount": 0,
+      "lastModified": 1588588531874
+    },
+    "entries": [
+      {
+        "id": "1",
+        "src": "a.jpg",
+        "size": "1748",
+        "lastmodified": "1588158291326",
+        "width": "200",
+        "height": "200",
+        "importstatus": "1",
+        "type": "file"
+      },
+      {
+        "id": "2",
+        "src": "ä ö ü.jpg",
+        "size": "1617",
+        "lastmodified": "1588158291326",
+        "width": "200",
+        "height": "200",
+        "importstatus": "1",
+        "type": "file"
+      },
+      {}
+    ]
+  },
+  "listReply2": {
+    "summary": {
+      "dir": "moreimages/",
+      "connectorType": "STORAGE",
+      "entryCount": 2,
+      "imageCount": 2,
+      "directoryCount": 0,
+      "completeCount": 0,
+      "lastModified": 1588588531874
+    },
+    "entries": [
+      {
+        "id": "1",
+        "src": "a.jpg",
+        "size": "1748",
+        "lastmodified": "1588158291326",
+        "width": "200",
+        "height": "200",
+        "importstatus": "1",
+        "type": "file"
+      },
+      {}
+    ]
+  },
+  "renameReply": {
+    "statuscode": 200
+  }
 }

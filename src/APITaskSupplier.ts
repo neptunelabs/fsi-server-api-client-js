@@ -6,17 +6,17 @@ import {APITemplateSupplier} from "./APITemplateSupplier";
 export class APITaskSupplier extends APITemplateSupplier {
 
 
-    public get(mainDef: IAPITaskDef, mainContent: any[] = [],
-               subDef?: IAPITaskDef, subContent?: any[]): APITask {
+  public get(mainDef: IAPITaskDef, mainContent: any[] = [],
+             subDef?: IAPITaskDef, subContent?: any[]): APITask {
 
-        return new APITask(this, this.translationsSection, mainDef, mainContent, subDef, subContent);
+    return new APITask(this, this.translationsSection, mainDef, mainContent, subDef, subContent);
+  }
+
+  public setTranslations(translations: ITranslations): void {
+
+    super.setTranslations(translations);
+    if (this.translations) {
+      this.translationsSection = this.translations.tasks;
     }
-
-    public setTranslations(translations: ITranslations): void {
-
-        super.setTranslations(translations);
-        if (this.translations) {
-            this.translationsSection = this.translations.tasks;
-        }
-    }
+  }
 }

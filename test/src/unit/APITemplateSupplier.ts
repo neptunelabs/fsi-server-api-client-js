@@ -4,10 +4,10 @@ import {APITemplateSupplier} from "library/APITemplateSupplier";
 const tsp: APITemplateSupplier = new APITemplateSupplier();
 
 
-it('APITemplateSupplier.getThousandSeparator should return ","', function() {
-    expect(tsp.getThousandSeparator()).equals(",");
+it('APITemplateSupplier.getThousandSeparator should return ","', function () {
+  expect(tsp.getThousandSeparator()).equals(",");
 });
 
-it('APITemplateSupplier.getDecimalSeparator should return "."', function() {
-    expect(tsp.getDecimalSeparator()).equals(".");
+it('APITemplateSupplier.getDecimalSeparator should return "."', function () {
+  expect(tsp.getDecimalSeparator()).equals(".");
 });

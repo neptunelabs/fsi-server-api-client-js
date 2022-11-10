@@ -3,7 +3,7 @@ import {ResponseType} from "axios";
 import {IPromptFunction} from "./IPromptFunction";
 
 export interface IOptions {
-    fnPrompt?: IPromptFunction | false
-    abortController?: APIAbortController,
-    responseType?: ResponseType
+  fnPrompt?: IPromptFunction | false
+  abortController?: APIAbortController,
+  responseType?: ResponseType
 }

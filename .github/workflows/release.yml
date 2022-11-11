@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Release CI
 
 on:
   push:
@@ -6,10 +6,8 @@ on:
       - "v*"
 
 jobs:
-
   build-release:
-    needs: build
-    name: Upload Release Asset
+    name: Release Package
     runs-on: ubuntu-latest
 
     steps:

@@ -76,41 +76,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  build-release:
-    needs: build
-    name: Upload Release Asset
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name : Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-          registry-url: https://registry.npmjs.org/
-
-      - name: Check if version has been updated
-        id: check
-        uses: EndBug/version-check@v2
-        with:
-          diff-search: true
-          file-name: package.json
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install dependencies
-        if: steps.check.outputs.changed == 'true'
-        run: npm ci
-
-      - name: Build Web Lib
-        if: steps.check.outputs.changed == 'true'
-        run: npm run build
-
-      - name: Build project # This would actually build your project, using zip for an example artifact
-        if: steps.check.outputs.changed == 'true'
-        run: |
-          zip --junk-paths fsi_server_api_client dist/*
-
       - name: Get version
         if: steps.check.outputs.changed == 'true'
         run: echo "client_version=$(node -pe "require('./package.json').version")" >> $GITHUB_ENV
@@ -122,22 +87,3 @@ jobs:
           git push origin v${{ env.client_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create Release
-        if: steps.check.outputs.changed == 'true'
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ env.client_version }}
-          release_name: Release v${{ env.client_version }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        if: steps.check.outputs.changed == 'true'
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "fsi_server_api_client.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}

@@ -137,7 +137,7 @@ jobs:
 
       - name: Upload Release Asset
         if: steps.check.outputs.changed == 'true'
-        id: upload-release-asset
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
-          files: fsi_server_api_client.zip
+          artifacts: "fsi_server_api_client.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -17,8 +17,8 @@ API client for NeptuneLabs FSI Server
 - [Concepts](#concepts)
   - [Promise based API versus queue API](#Promise-based-API-versus-queue-API)
 - [Getting started](#getting-started)
-  - [Basic examples](#Basic-Examples)
-  - [Running the samples](#Running-the-samples)
+  - [Basic Examples](#Basic-Examples)
+  - [More Examples](#More-Examples)
 - [Documentation](../../wiki)
 
 ## About
@@ -149,28 +149,8 @@ queue.logout();
 queue.runWithResult();
 ~~~
 
-### Running the samples
+### More Examples
 
-- build the module by running these commands in the project root directory:
+A repository containing various examples how to use this API in TypeScript is available [here](https://github.com/neptunelabs/fsi-server-api-client-js-samples).<br/><br/>
 
-```bash
-npm i
-npm run build-mod
-```
-
-- go to <b>/samples/src</b> directory.<br/>
-- edit the file <b>/samples/src/ServerVars.ts</b> and enter the host and credentials of the FSI Server instance to use.
-- run the following commands in the samples/src folder to compile the samples:
-
-```bash
-npm i
-tsc
-```
-
-To run a samples type e.g.:
-
-```bash
-node readMetaData.js
-```
-
-Please refer to the wiki for a [complete documentation](../../wiki).
+Please refer to the wiki for a [complete API documentation](../../wiki).

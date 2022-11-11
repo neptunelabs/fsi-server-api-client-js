@@ -1,9 +1,9 @@
 name: Node.js CI
 
 on:
-  pull_request:
-    branches: [ master ]
-    types: [closed]
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -131,8 +131,5 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         id: upload-release-asset
         uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: fsi_server_api_client.zip
-          upload_url: ${{ steps.create_release.outputs.upload_url }}

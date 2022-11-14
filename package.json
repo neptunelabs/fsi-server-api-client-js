@@ -1,6 +1,6 @@
 {
   "name": "@neptunelabs/fsi-server-api-client",
-  "version": "1.0.80",
+  "version": "1.0.81",
   "description": "API client for NeptuneLabs FSI Server",
   "homepage": "https://github.com/neptunelabs/fsi-server-api-client-js#readme",
   "scripts": {

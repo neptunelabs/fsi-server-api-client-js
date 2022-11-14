@@ -1,14 +1,10 @@
 name: Release CI
 
-on:
-  push:
-    tags:
-      - '*'
+on: release
 
 jobs:
   build-release:
     name: Release Package
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-22.04
 
     steps:
@@ -28,13 +24,27 @@ jobs:
           file-name: package.json
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Version update detected
+        if: steps.check.outputs.changed == 'true'
+        run: 'echo "Version change found! New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
+
       - name: Install dependencies
         if: steps.check.outputs.changed == 'true'
         run: npm ci
 
+      - name: Build mod
+        if: steps.check.outputs.changed == 'true'
+        run: npm run build-mod
+
       - name: Build Web Lib
         if: steps.check.outputs.changed == 'true'
         run: npm run build
+
+      - name: Publish to NPM
+        if: steps.check.outputs.changed == 'true'
+        run: cd ./dist && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build project # This would actually build your project, using zip for an example artifact
         if: steps.check.outputs.changed == 'true'

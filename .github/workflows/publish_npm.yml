@@ -44,12 +44,6 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: npm run build
 
-      - name: Publish to NPM
-        if: steps.check.outputs.changed == 'true'
-        run: cd ./dist && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Get version
         if: steps.check.outputs.changed == 'true'
         run: echo "client_version=$(node -pe "require('./package.json').version")" >> $GITHUB_ENV
@@ -61,3 +55,9 @@ jobs:
           git push origin v${{ env.client_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to NPM
+        if: steps.check.outputs.changed == 'true'
+        run: cd ./dist && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

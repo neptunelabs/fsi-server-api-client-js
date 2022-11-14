@@ -61,3 +61,22 @@ jobs:
         run: cd ./dist && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Release
+        if: steps.check.outputs.changed == 'true'
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.client_version }}
+          release_name: Release v${{ env.client_version }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        if: steps.check.outputs.changed == 'true'
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "fsi_server_api_client.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}

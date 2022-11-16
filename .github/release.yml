@@ -3,7 +3,7 @@ changelog:
     labels:
       - ignore-for-release
     authors:
-      - octocat
+      - neptunelabs
   categories:
     - title: Breaking Changes 🛠
       labels:

@@ -8,7 +8,6 @@ on:
 jobs:
   publish-npm:
     name: On Merge-Push CI
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-22.04
 
     steps:

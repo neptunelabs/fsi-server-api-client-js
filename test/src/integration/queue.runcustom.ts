@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, IBatchContent, LogLevel, Queue} from "library/index";
+import {FSIServerClient, FSIServerClientUtils, IBatchContent, LogLevel, Queue} from "library/index";
 import {default as data} from "./reImportData.json"
 
 
@@ -9,7 +9,7 @@ const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.none);
 
-axios.defaults.adapter = require('axios/lib/adapters/http');
+axios.defaults.adapter = "http";
 
 
 it('queue.runCustom() and queue.logBatchContent()', () => {
@@ -45,13 +45,13 @@ it('queue.runCustom() and queue.logBatchContent()', () => {
   nock(host)
     .get(data.listURL1)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply1);
 
   nock(host)
     .get(data.listURL2)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply2);
 
 

@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, LogLevel} from "library/index";
+import {FSIServerClient, FSIServerClientUtils, LogLevel} from "library/index";
 import {default as data} from "./reImportData.json"
 
 
@@ -9,7 +9,7 @@ const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.error);
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
+axios.defaults.adapter = "http";
 
 
 it('re-import and listServer', () => {
@@ -21,14 +21,14 @@ it('re-import and listServer', () => {
   nock(host)
     .get(data.listURL1)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply1);
 
 
   nock(host)
     .get(data.listURL2)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply2);
 
 
@@ -43,7 +43,7 @@ it('re-import and listServer', () => {
     nock(host)
       .post("/fsi/service/file/" + FSIServerClient.ENCODE_PATH(path), data.reImportRequestBody)
       .matchHeader('accept', 'application/json')
-      .matchHeader("user-agent", "FSI Server API Client")
+      .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
       .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
       .matchHeader("content-length", "37")
       .reply(200, data.reImportReply);
@@ -54,7 +54,7 @@ it('re-import and listServer', () => {
   nock(host)
     .post("/fsi/service/file/images/a.jpg", data.reImportRequestBody)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
     .matchHeader("content-length", "37")
     .reply(200, data.reImportReply);
@@ -63,7 +63,7 @@ it('re-import and listServer', () => {
   nock(host)
     .post("/fsi/service/directory/images/foo", data.reImportRequestBody)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
     .matchHeader("content-length", "37")
     .reply(200, data.reImportReply);

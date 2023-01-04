@@ -278,7 +278,8 @@ export class FSIServerClientInterface {
       };
 
     if (options !== null && options.abortController) {
-      ret.cancelToken = options.abortController.renewCancelToken();
+      //ret.cancelToken = options.abortController.renewCancelToken();
+      ret.signal = options.abortController.renew();
     }
 
     return ret;

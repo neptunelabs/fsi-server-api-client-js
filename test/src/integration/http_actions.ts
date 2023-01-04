@@ -1,14 +1,14 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, LogLevel} from "library/index";
+import {FSIServerClient, FSIServerClientUtils, LogLevel} from "library/index";
 
 
 const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.none);
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
+axios.defaults.adapter = "http";
 
 
 // HEAD
@@ -16,7 +16,7 @@ it('client.httpHead', () => {
   nock(host)
     .head("/foo.html")
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader('x-test', 'test')
     .reply(200, "ok");
 
@@ -35,7 +35,7 @@ it('client.httpGet', () => {
   nock(host)
     .get("/foo.html")
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, "ok");
 
 
@@ -53,7 +53,7 @@ it('client.httpPost', () => {
   nock(host)
     .post("/foo.html", "payload")
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, "ok");
 
 
@@ -72,7 +72,7 @@ it('client.httpDelete', () => {
   nock(host)
     .delete("/foo.html")
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, "ok");
 
 
@@ -91,7 +91,7 @@ it('client.httpPut', () => {
   nock(host)
     .put("/foo.html", "payload")
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, "ok");
 
 

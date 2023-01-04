@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, LogLevel} from "library/index";
+import {FSIServerClient, FSIServerClientUtils, LogLevel} from "library/index";
 import {default as data} from "./uploadData.json"
 
 
@@ -10,7 +10,7 @@ const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.error);
 
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
+axios.defaults.adapter = "http";
 
 
 it('upload and listLocal', () => {
@@ -21,7 +21,7 @@ it('upload and listLocal', () => {
   // create dir 1
   nock(host)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded")
     .put(data.createDirURL1)
     .reply(200, {"statuscode": 200});
@@ -29,7 +29,7 @@ it('upload and listLocal', () => {
   // create dir 2
   nock(host)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded")
     .put(data.createDirURL2)
     .reply(200, {"statuscode": 200});
@@ -37,7 +37,7 @@ it('upload and listLocal', () => {
   // create dir 3
   nock(host)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded")
     .put(data.createDirURL3)
     .reply(200, {"statuscode": 200});
@@ -47,7 +47,7 @@ it('upload and listLocal', () => {
   nock(host)
     .filteringRequestBody(/Lastmodified=[0-9]+[^&]*/, 'Lastmodified=xxx')
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
     .matchHeader("content-length", "144")
     .post(data.postRequestURL, data.postBody1)
@@ -57,7 +57,7 @@ it('upload and listLocal', () => {
   // put file 1
   nock(host)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "image/jpeg")
     .matchHeader("content-length", "1617")
     .matchHeader('last-modified', /[0-9]+/)
@@ -68,7 +68,7 @@ it('upload and listLocal', () => {
   nock(host)
     .filteringRequestBody(/Lastmodified=[0-9]+[^&]*/, 'Lastmodified=xxx')
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
     .matchHeader("content-length", "125")
     .post(data.postRequestURL, data.postBody2)
@@ -77,7 +77,7 @@ it('upload and listLocal', () => {
   // put file 2
   nock(host)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "image/jpeg")
     .matchHeader("content-length", "1748")
     .matchHeader('last-modified', /[0-9]+/)
@@ -113,7 +113,7 @@ it('upload and listLocal existing files', () => {
   // create dir 1
   nock(host)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded")
     .put(data.createDirURL1)
     .reply(200, {"statuscode": 200});
@@ -121,7 +121,7 @@ it('upload and listLocal existing files', () => {
   // create dir 2
   nock(host)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded")
     .put(data.createDirURL2)
     .reply(200, {"statuscode": 200});
@@ -129,7 +129,7 @@ it('upload and listLocal existing files', () => {
   // create dir 3
   nock(host)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded")
     .put(data.createDirURL3)
     .reply(200, {"statuscode": 200});
@@ -139,7 +139,7 @@ it('upload and listLocal existing files', () => {
   nock(host)
     .filteringRequestBody(/Lastmodified=[0-9]+[^&]*/, 'Lastmodified=xxx')
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
     .matchHeader("content-length", "144")
     .post(data.postRequestURL, data.postBody1)
@@ -149,7 +149,7 @@ it('upload and listLocal existing files', () => {
   nock(host)
     .filteringRequestBody(/Lastmodified=[0-9]+[^&]*/, 'Lastmodified=xxx')
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
     .matchHeader("content-length", "125")
     .post(data.postRequestURL, data.postBody2)

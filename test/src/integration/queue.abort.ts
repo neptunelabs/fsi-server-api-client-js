@@ -1,24 +1,23 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {APIError, FSIServerClient, LogLevel} from "library/index";
+import {APIError, FSIServerClient, FSIServerClientUtils, LogLevel} from "library/index";
 import {default as data} from "./reImportData.json"
 
 const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.none);
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
+axios.defaults.adapter = "http";
 
 it('queue.abort()', () => {
 
   // setup replies
   // list
   nock(host)
-    .persist()
     .get(/\/fsi\/server\?type=list&tpl=interface_thumbview_default.json&source=.*/)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply3);
 
 
@@ -30,6 +29,8 @@ it('queue.abort()', () => {
         expect("result").equals("must catch");
       },
       (error) => {
+
+
         expect(error.message).to.not.contain("must catch");
 
         expect(queue.getAborted()).equals(true);

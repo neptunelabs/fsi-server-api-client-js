@@ -1,6 +1,6 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
-const webpack = require('webpack');
+
 
 module.exports = {
     entry: {
@@ -61,14 +61,6 @@ module.exports = {
             "crypto": "window.crypto",
             "@ungap/url-search-params": "URLSearchParams"
         }
-    ],
-    plugins: [
-        new webpack.DefinePlugin({
-            'process': {}
-        }),
-        new webpack.DefinePlugin({
-            'process.env.FSISERVERCLIENTVERSION': JSON.stringify(require("./package.json").version)
-        })
     ]
 
 };

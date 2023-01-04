@@ -1,6 +1,7 @@
 import {APIErrors, IAPIErrorDef} from "./resources/APIErrors";
 import {IListEntry} from "./ListServer";
 import {ICopyOptions} from "./FileOps";
+import {LIB_VERSION} from "./Version";
 
 const bNow = (typeof (Date.now) === "function");
 
@@ -26,7 +27,7 @@ export interface IPathAndDir {
 
 export class FSIServerClientUtils {
 
-  public static USERAGENT = 'FSI Server API Client';
+  public static USERAGENT = 'FSI Server API Client JS (' + LIB_VERSION + ')';
   private static readonly RGX_JOIN_PATH_1 = /^\//;
   private static readonly RGX_JOIN_PATH_2 = /\/$/;
   private static readonly RGX_ESCAPE_REG_EX = /[-/\\^$*+?.()|[\]{}]/g;

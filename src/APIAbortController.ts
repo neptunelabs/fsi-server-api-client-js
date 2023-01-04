@@ -1,10 +1,9 @@
-import axios, {CancelToken, CancelTokenSource} from "axios";
 import {APIError} from "./APIError";
 
 export class APIAbortController {
 
-  private axiosCancelTokenSource: CancelTokenSource = axios.CancelToken.source();
-  private tokenInUse: boolean = false;
+  private controller: AbortController = new AbortController();
+  private inUse: boolean = false;
   private aborted: boolean = false;
   private abortThrown: boolean = false;
 
@@ -12,9 +11,7 @@ export class APIAbortController {
   }
 
   public static THROW_IF_ABORTED(controller?: APIAbortController): void {
-    if (controller) {
-      controller.throwIfAborted();
-    }
+    if (controller) controller.throwIfAborted();
   }
 
   public static IS_ABORTED(controller?: APIAbortController): boolean {
@@ -34,30 +31,26 @@ export class APIAbortController {
 
 
   public reset(): void {
-    this.renewCancelToken();
-    this.aborted = this.abortThrown = this.tokenInUse = false;
+    this.renew();
+    this.aborted = this.abortThrown = this.inUse = false;
   }
 
   public release(): boolean {
 
     if (!this.aborted) {
-      this.renewCancelToken();
-      this.tokenInUse = false;
+      this.renew();
+      this.inUse = false;
       return true;
     } else return false;
   }
 
-  public renewCancelToken(): CancelToken {
+  public renew(): AbortSignal {
 
-    if (this.tokenInUse) {
+    if (this.inUse) {
+      this.controller = new AbortController();
+    } else this.inUse = true;
 
-      // the token keeps a reference to each request!
-      // therefore we need to get a new token for each sequential request,
-      // ! otherwise we create a memory leak !
-      this.axiosCancelTokenSource = axios.CancelToken.source();
-    } else this.tokenInUse = true;
-
-    return this.axiosCancelTokenSource.token;
+    return this.controller.signal;
   }
 
   public abort(): boolean {
@@ -65,10 +58,10 @@ export class APIAbortController {
     if (!this.aborted) {
       this.aborted = true;
 
-      this.axiosCancelTokenSource.cancel(this.abortError.message);
+      this.controller.abort(this.abortError.message);
 
-      this.renewCancelToken();
-      this.tokenInUse = false;
+      this.renew();
+      this.inUse = false;
 
       return true;
     } else {

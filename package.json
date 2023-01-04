@@ -1,13 +1,14 @@
 {
   "name": "@neptunelabs/fsi-server-api-client",
-  "version": "1.0.88",
+  "version": "1.0.89-dev",
   "description": "API client for NeptuneLabs FSI Server",
   "homepage": "https://github.com/neptunelabs/fsi-server-api-client-js#readme",
   "scripts": {
     "tsc": "tsc",
     "watch-ts": "tsc -w",
-    "build-mod": "node make.js build",
-    "build": "webpack --stats-error-details --config webpack.config.js",
+    "prebuild": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/Version.ts",
+    "build-mod": "npm run prebuild && node make.js build",
+    "build": "npm run prebuild && webpack",
     "test-integration": "mocha -r ts-node/register -r tsconfig-paths/register ./test test/src/integration/**.ts",
     "test-unit": "mocha -r ts-node/register -r tsconfig-paths/register test/src/unit/**.ts",
     "test-operation": "mocha -r ts-node/register -r tsconfig-paths/register test/src/optest.ts",
@@ -58,7 +59,7 @@
   },
   "dependencies": {
     "@ungap/url-search-params": "^0.2.2",
-    "axios": "^0.27.2",
+    "axios": "^1.2.2",
     "bytes": "^3.1.2"
   }
 }

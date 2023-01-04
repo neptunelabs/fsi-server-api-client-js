@@ -9,7 +9,7 @@ const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.none);
 
-axios.defaults.adapter = require('axios/lib/adapters/http');
+axios.defaults.adapter = "http";
 
 
 it('login using wrong password', () => {

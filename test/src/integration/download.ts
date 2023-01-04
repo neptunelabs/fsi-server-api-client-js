@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {APIError, FSIServerClient, LogLevel} from "library/index";
+import {APIError, FSIServerClient, FSIServerClientUtils, LogLevel} from "library/index";
 import {default as data} from "./downloadData.json"
 
 import {default as fs} from "fs";
@@ -11,7 +11,8 @@ const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.error);
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
+
+axios.defaults.adapter = "http";
 
 
 it('download and listServer', () => {
@@ -24,7 +25,7 @@ it('download and listServer', () => {
   nock(host)
     .get(data.listURL)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply);
 
 
@@ -32,13 +33,13 @@ it('download and listServer', () => {
   nock(host)
     .get(data.downloadURL1)
     .matchHeader('accept', '*/*')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, "first");
 
   nock(host)
     .get(data.downloadURL2)
     .matchHeader('accept', '*/*')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, "second");
 
 
@@ -89,7 +90,7 @@ it('batchDownloadICCProfiles()', () => {
   nock(host)
     .get(data.listURL)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply);
 
 
@@ -97,13 +98,13 @@ it('batchDownloadICCProfiles()', () => {
   nock(host)
     .get(data.downloadURLICC1)
     .matchHeader('accept', '*/*')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, "first");
 
   nock(host)
     .get(data.downloadURLICC2)
     .matchHeader('accept', '*/*')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, "second");
 
 
@@ -152,7 +153,7 @@ it('downloadICCProfile', () => {
   nock(host)
     .get(data.downloadURLICC1)
     .matchHeader('accept', '*/*')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, "first");
 
   const queue = client.createQueue();
@@ -197,7 +198,7 @@ it('download non existing dir', () => {
   nock(host)
     .get(data.listURLFails)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(403, "Access to one or more of the requested resources denied");
 
 

@@ -1,4 +1,4 @@
-import {AxiosRequestConfig} from "axios";
+import {AxiosProgressEvent, AxiosRequestConfig} from "axios";
 import {default as fs, ReadStream} from "fs";
 import URLSearchParams from "@ungap/url-search-params";
 import {APIErrors} from "./resources/APIErrors";
@@ -316,7 +316,7 @@ export class Upload {
 
 
     const config: AxiosRequestConfig = this.com.getAxiosRequestConfig(options, headers);
-    config.onUploadProgress = (progressEvent: ProgressEvent): void => {
+    config.onUploadProgress = (progressEvent: AxiosProgressEvent): void => {
       onProgress(progressEvent.loaded, progressEvent.total || 0);
     };
 

@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, LogLevel} from "library/index";
+import {FSIServerClient, FSIServerClientUtils, LogLevel} from "library/index";
 import {default as data} from "./reImportData.json"
 
 
@@ -9,7 +9,7 @@ const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.error);
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
+axios.defaults.adapter = "http";
 
 const paths = [
   "images/a.jpg",
@@ -25,14 +25,14 @@ const nockLists = (): void => {
   nock(host)
     .get(data.listURL1)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply1);
 
   // list
   nock(host)
     .get(data.listURL2)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply2);
 };
 
@@ -41,7 +41,7 @@ const nockPostReplies = (postData: any): void => {
     nock(host)
       .post("/fsi/service/file/" + FSIServerClient.ENCODE_PATH(path), postData)
       .matchHeader('accept', 'application/json')
-      .matchHeader("user-agent", "FSI Server API Client")
+      .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
       .reply(200, metaDataReply);
 
   }
@@ -53,7 +53,7 @@ const nockGetReplies = (): void => {
     nock(host)
       .get("/fsi/server?type=info&tpl=foo&renderer=bar&headers=webinterface&source=" + encodeURIComponent(path))
       .matchHeader('accept', 'application/json')
-      .matchHeader("user-agent", "FSI Server API Client")
+      .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
       .reply(200, metaDataReply);
 
   }

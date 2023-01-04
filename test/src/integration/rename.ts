@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import axios from 'axios'
 import {default as nock} from 'nock'
-import {FSIServerClient, IListEntry, LogLevel} from "library/index";
+import {FSIServerClient, FSIServerClientUtils, IListEntry, LogLevel} from "library/index";
 import {default as data} from "./renameData.json"
 
 
@@ -9,7 +9,7 @@ const host = 'http://fsi.fake.tld';
 const client = new FSIServerClient(host);
 client.setLogLevel(LogLevel.error);
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
+axios.defaults.adapter = "http";
 
 
 it('rename and listServer', () => {
@@ -21,14 +21,14 @@ it('rename and listServer', () => {
   nock(host)
     .get(data.listURL1)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply1);
 
 
   nock(host)
     .get(data.listURL2)
     .matchHeader('accept', 'application/json')
-    .matchHeader("user-agent", "FSI Server API Client")
+    .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
     .reply(200, data.listReply2);
 
 
@@ -52,7 +52,7 @@ it('rename and listServer', () => {
     nock(host)
       .post(url, body)
       .matchHeader('accept', 'application/json')
-      .matchHeader("user-agent", "FSI Server API Client")
+      .matchHeader("user-agent", FSIServerClientUtils.USERAGENT)
       .matchHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8")
       .matchHeader("content-length", body.length.toString())
       .reply(200, data.renameReply);

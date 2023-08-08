@@ -15,10 +15,10 @@ API client for NeptuneLabs FSI Server
 - [About](#about)
 - [How to install](#how-to-install)
 - [Concepts](#concepts)
-  - [Promise based API versus queue API](#Promise-based-API-versus-queue-API)
+  - [Promise based API versus queue API](#promise-based-api-versus-queue-api)
 - [Getting started](#getting-started)
-  - [Basic Examples](#Basic-Examples)
-  - [More Examples](#More-Examples)
+  - [Basic Examples](#basic-examples)
+  - [More Examples](#more-examples)
 - [Documentation](../../wiki)
 
 ## About

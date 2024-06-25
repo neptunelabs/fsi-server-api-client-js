@@ -9,11 +9,6 @@ export interface IStringStringMap {
   [key: string]: string;
 }
 
-export interface IStringStringUndefinedMap {
-  [key: string]: string | undefined;
-}
-
-
 export interface IStringAnyMap {
   [key: string]: any;
 }

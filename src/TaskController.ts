@@ -162,13 +162,13 @@ export class TaskController {
   }
 
   public onPromiseError(msg: string, error: APIError): void {
+
     if (error.message) msg += " -> " + error.message;
     this.log(LogLevel.error, "ERROR: " + msg);
   }
 
   public onPromiseOk(): void {
     if (this.currentTask) {
-
       this.log(LogLevel.trace, "DONE: " + this.currentTask.getMessage());
     }
   }
@@ -200,10 +200,11 @@ export class TaskController {
 
     const msg: string = (this.currentTask) ? this.currentTask.getMessage() : "unknown";
 
-    return p.then(arg => {
+    return p
+      .then(arg => {
       this.onPromiseOk();
       return arg;
-    })
+      })
       .catch(error => {
         this.onPromiseError(msg, error);
         throw error;

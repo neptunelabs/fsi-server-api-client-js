@@ -97,7 +97,7 @@ it('queue.changePassword(), queue.changeUser() and queue.getUserList()', () => {
   queue.getUserList();
 
 
-  const res = queue.run()
+  const result = queue.run()
     .then((res) => {
       expect(res).equals(true);
       expect(client.getCurrentUser()).equals("someUser", "client.getCurrentUser() !== \"someUser\"");
@@ -111,7 +111,7 @@ it('queue.changePassword(), queue.changeUser() and queue.getUserList()', () => {
     });
 
 
-  return res;
+  return result;
 });
 
 

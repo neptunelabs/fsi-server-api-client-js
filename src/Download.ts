@@ -1,11 +1,11 @@
-import {AxiosRequestConfig} from "axios";
+import { AxiosRequestConfig, AxiosResponseHeaders } from "axios";
 import {default as fs} from "fs";
 import urlSearchParams from "@ungap/url-search-params";
 import {APIErrors, IAPIErrorDef} from "./resources/APIErrors";
 import {APITasks, IAPITaskDef} from "./resources/APITasks";
 import {APIAbortController} from "./APIAbortController";
 import {FSIServerClientInterface, IProgressOptions, IPromptReply} from "./FSIServerClientInterface";
-import {FSIServerClientUtils, IPathAndDir, IStringStringMap, IStringStringUndefinedMap} from "./FSIServerClientUtils";
+import {FSIServerClientUtils, IPathAndDir, IStringStringMap} from "./FSIServerClientUtils";
 import {IListData, IListEntry, IListEntryDownload, IListOptions} from "./ListServer";
 import {TaskController} from "./TaskController";
 import {TaskProgress} from "./TaskProgress";
@@ -193,7 +193,7 @@ export class Download {
 
       targetPath = FSIServerClientUtils.NORMALIZE_PATH(targetPath);
 
-      const createStream = async (headers: IStringStringUndefinedMap): Promise<void> => {
+      const createStream = async (headers: AxiosResponseHeaders | any): Promise<void> => {
 
 
         if (options.getICCProfile === true) {

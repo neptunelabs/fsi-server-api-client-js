@@ -861,7 +861,6 @@ export class Queue {
   }
 
   private checkAborted(): void {
-
     if (!this.aborted && this.abortController.getAborted()) {
       const err: APIError = this.com.err.get(APIErrors.userAborted);
       this.addError(err);

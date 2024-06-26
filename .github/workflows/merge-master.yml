@@ -8,10 +8,10 @@ on:
 jobs:
   publish-npm:
     name: On Merge-Push CI
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check if version has been updated
         id: check
@@ -33,9 +33,9 @@ jobs:
 
       - name : Setup Node
         if: steps.check.outputs.changed == 'true'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: '18.x'
           registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies

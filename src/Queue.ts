@@ -213,7 +213,7 @@ export class Queue {
 
         if (entry.type === "file") {
           line += " " + self.com.taskSupplier.getLocaleFloat(bytes(entry.size,
-            {thousandsSeparator: ",", unitSeparator: " "}));
+            {thousandsSeparator: ",", unitSeparator: " "}) || "");
 
           line += " importState: " + entry.importStatus;
 
@@ -249,7 +249,7 @@ export class Queue {
       self.taskController.log(level, "Files: " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.fileCount));
       self.taskController.log(level, "Directories: " + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.directoryCount));
 
-      let sz: string = bytes(self.currentBatch.clientInfo.totalSize);
+      let sz: string = bytes(self.currentBatch.clientInfo.totalSize) || "";
       sz += " (" + self.com.taskSupplier.niceInt(self.currentBatch.clientInfo.totalSize) + " bytes)";
 
       self.taskController.log(level, "Total size: " + sz);

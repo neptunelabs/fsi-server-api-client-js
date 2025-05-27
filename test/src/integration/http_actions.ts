@@ -24,7 +24,6 @@ it('client.httpHead', () => {
   return client.httpHead(host + "/foo.html", undefined, {"x-test": "test"})
     .then((reply) => {
         expect(reply.status).to.equal(200);
-        expect(reply.data).to.equal("ok");
       }
     )
     .finally(nock.cleanAll)

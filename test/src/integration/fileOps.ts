@@ -420,3 +420,4 @@ it('queue.addItemsFromDataTransferItemList()', () => {
   const queue = client.createQueue();
   expect(queue.addItemsFromDataTransferItemList).to.be.a("function");
 });
+

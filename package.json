@@ -1,6 +1,6 @@
 {
   "name": "@neptunelabs/fsi-server-api-client",
-  "version": "1.0.95",
+  "version": "1.0.96",
   "description": "API client for NeptuneLabs FSI Server",
   "homepage": "https://github.com/neptunelabs/fsi-server-api-client-js#readme",
   "scripts": {
@@ -37,29 +37,29 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/bytes": "^3.1.5",
-    "@types/chai": "^4.3.20",
+    "@types/chai": "^5.2.3",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.15.23",
+    "@types/node": "^24.9.2",
     "@types/ungap__url-search-params": "^0.1.2",
-    "@typescript-eslint/eslint-plugin": "^8.33.0",
-    "@typescript-eslint/parser": "^8.33.0",
-    "chai": "^4.5.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "chai": "^6.2.0",
     "json-schema": "^0.4.0",
-    "mocha": "^11.5.0",
-    "nock": "^14.0.4",
-    "prettier": "^3.5.3",
+    "mocha": "^11.7.4",
+    "nock": "^14.0.10",
+    "prettier": "^3.6.2",
     "shelljs": "^0.10.0",
-    "ts-loader": "^9.5.2",
+    "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.8.3",
-    "webpack": "^5.99.9",
+    "typescript": "^5.9.3",
+    "webpack": "^5.102.1",
     "webpack-cli": "^6.0.1",
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
     "@ungap/url-search-params": "^0.2.2",
-    "axios": "^1.9.0",
+    "axios": "^1.13.1",
     "bytes": "^3.1.2"
   }
 }
